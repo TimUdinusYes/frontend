@@ -79,9 +79,18 @@ export default function SelectRole() {
     return Object.keys(errors).length === 0
   }
 
+  /**
+   * Alur Submit Akhir:
+   * 1. Validasi input data diri dan pemilihan role.
+   * 2. Simpan detail profil ke tabel 'user_profiles' (upsert).
+   * 3. Update role user di tabel 'user' utama (menjadi student atau pending_mentor).
+   * 4. Redirect user berdasarkan pilihan role.
+   */
   async function handleFinalSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!user || !selectedRole) return
+    
+    // Pastikan semua field wajib terisi
     if (!validateForm()) {
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
@@ -90,6 +99,7 @@ export default function SelectRole() {
     setUpdating(true)
 
     try {
+      // Step 1: Simpan data ke tabel detail profile (user_profiles)
       const { success: profileSuccess, error: profileError } = await upsertUserProfile(user.id, {
         nama: formData.nama,
         tanggal_lahir: formData.tanggal_lahir || null,
@@ -100,10 +110,12 @@ export default function SelectRole() {
 
       if (!profileSuccess) throw new Error('Gagal menyimpan profil: ' + profileError)
 
+      // Step 2: Perbarui role di tabel user utama
       const { success: roleSuccess, error: roleError } = await updateProfile({ role: selectedRole })
       
       if (!roleSuccess) throw new Error('Gagal memperbarui role: ' + roleError)
       
+      // Step 3: Redirect sesuai pilihan
       if (selectedRole === 'student') {
         router.push('/')
       } else {
