@@ -261,7 +261,7 @@ export default function UserProfileForm({ userId, onSuccess }: UserProfileFormPr
           {/* Gender */}
           <div>
             <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Gender <span className="text-red-500">*</span>
+              Jenis Kelamin <span className="text-red-500">*</span>
             </label>
             <select
               id="gender"
@@ -342,14 +342,21 @@ export default function UserProfileForm({ userId, onSuccess }: UserProfileFormPr
             </div>
           )}
 
-          {/* Submit Button */}
+          {/* Submit & Cancel Button */}
           <div className="flex gap-4">
             <button
               type="submit"
               disabled={loading || uploading}
-              className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold"
             >
-              {loading ? 'Saving...' : profile ? 'Update Profile' : 'Create Profile'}
+              {loading ? 'Menyimpan...' : profile ? 'Perbarui Profil' : 'Buat Profil'}
+            </button>
+            <button
+              type="button"
+              onClick={() => window.location.href = '/'}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors font-semibold"
+            >
+              Batal
             </button>
           </div>
         </form>

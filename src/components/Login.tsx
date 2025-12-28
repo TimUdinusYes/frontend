@@ -31,10 +31,20 @@ export default function Login() {
 
         if (error) throw error
 
-        setMessage({
-          type: 'success',
-          text: 'Sign up successful! Please check your email to confirm your account.'
-        })
+        if (data.session) {
+           setMessage({
+            type: 'success',
+            text: 'Sign up successful! Logging you in...'
+          })
+          setTimeout(() => {
+            window.location.href = '/'
+          }, 1000)
+        } else {
+          setMessage({
+            type: 'success',
+            text: 'Sign up successful! Please check your email to confirm your account.'
+          })
+        }
       } else {
         let loginEmail = emailOrUsername
         if (!emailOrUsername.includes('@')) {

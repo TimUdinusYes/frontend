@@ -94,6 +94,16 @@ export default function UserNav() {
           {profile.username.charAt(0).toUpperCase()}
         </div>
       )}
+      
+      {profile.role === 'superadmin' && (
+        <Link
+          href="/admin/dashboard"
+          className="px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors font-semibold"
+        >
+          Admin Dashboard
+        </Link>
+      )}
+
       <Link
         href="/profile"
         className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
