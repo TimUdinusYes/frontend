@@ -48,7 +48,7 @@ export default function UserProfileForm({ userId, onSuccess }: UserProfileFormPr
         setFormData({
           nama: data.nama || '',
           tanggal_lahir: data.tanggal_lahir || '',
-          gender: data.gender || 'male',
+          gender: data.gender || 'pria',
           interest: data.interest || [],
           avatar_url: data.avatar_url || '',
         })

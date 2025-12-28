@@ -17,7 +17,7 @@ export default function SelectRole() {
   const [formData, setFormData] = useState({
     nama: '',
     tanggal_lahir: '',
-    gender: 'male' as Gender,
+    gender: 'Pria' as Gender,
     interest: [] as string[],
   })
   const [newInterest, setNewInterest] = useState('')

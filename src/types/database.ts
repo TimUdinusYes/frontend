@@ -1,5 +1,5 @@
 export type UserRole = 'user' | 'admin' | 'teacher' | 'student' | 'mentor' | 'pending_mentor' | 'superadmin'
-export type Gender = 'male' | 'female' | 'other'
+export type Gender = 'Pria' | 'Wanita' | 'Lainnya'
 
 // Table: user (profiles table)
 export interface Profile {
