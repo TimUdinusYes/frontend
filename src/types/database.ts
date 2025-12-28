@@ -1,4 +1,4 @@
-export type UserRole = 'user' | 'admin' | 'teacher' | 'student'
+export type UserRole = 'user' | 'admin' | 'teacher' | 'student' | 'mentor' | 'pending_mentor' | 'superadmin'
 export type Gender = 'male' | 'female' | 'other'
 
 // Table: user (profiles table)
