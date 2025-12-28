@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import type { UserProfile, UserProfileUpdate, Gender } from '@/types/database'
 
 interface UserProfileFormProps {
-  userId?: string // UUID from auth.users.id
+  userId?: string 
   onSuccess?: () => void
 }
 

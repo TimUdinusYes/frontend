@@ -5,13 +5,16 @@ import { supabase } from '@/lib/supabase'
 import type { Topic, Material } from '@/types/database'
 import AddMaterialModal from './AddMaterialModal'
 import AddTopicModal from './AddTopicModal'
+import MaterialDetailModal from './MaterialDetailModal'
 
 export default function MaterialList() {
   const [topics, setTopics] = useState<Topic[]>([])
   const [materials, setMaterials] = useState<{ [topicId: number]: Material[] }>({})
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null)
+  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null)
   const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false)
   const [isTopicModalOpen, setIsTopicModalOpen] = useState(false)
+  const [isMaterialDetailOpen, setIsMaterialDetailOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
 
@@ -99,6 +102,16 @@ export default function MaterialList() {
     setIsTopicModalOpen(false)
   }
 
+  const handleMaterialClick = (material: Material) => {
+    setSelectedMaterial(material)
+    setIsMaterialDetailOpen(true)
+  }
+
+  const handleCloseMaterialDetail = () => {
+    setIsMaterialDetailOpen(false)
+    setSelectedMaterial(null)
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -177,7 +190,8 @@ export default function MaterialList() {
                     {materials[topic.id].map((material) => (
                       <div
                         key={material.id}
-                        className="flex items-start p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                        onClick={() => handleMaterialClick(material)}
+                        className="flex items-start p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer"
                       >
                         {/* Material Type Icon */}
                         <div className="flex-shrink-0 mr-4">
@@ -201,14 +215,9 @@ export default function MaterialList() {
                               {material.material_type}
                             </span>
                             {material.url && (
-                              <a
-                                href={material.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
-                              >
+                              <span className="text-xs text-indigo-600 dark:text-indigo-400">
                                 Lihat Sumber
-                              </a>
+                              </span>
                             )}
                           </div>
                         </div>
@@ -245,6 +254,14 @@ export default function MaterialList() {
           userId={userId}
           onClose={() => setIsTopicModalOpen(false)}
           onSuccess={handleTopicAdded}
+        />
+      )}
+
+      {/* Material Detail Modal */}
+      {isMaterialDetailOpen && selectedMaterial && (
+        <MaterialDetailModal
+          material={selectedMaterial}
+          onClose={handleCloseMaterialDetail}
         />
       )}
     </div>
