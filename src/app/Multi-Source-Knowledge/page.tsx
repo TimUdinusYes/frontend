@@ -1,17 +1,28 @@
-import Link from "next/link";
+'use client'
 
-export default function Fitur3Page() {
+import Link from "next/link"
+import MaterialList from "@/components/MaterialList"
+
+export default function MultiSourceKnowledgePage() {
   return (
-    <div className="min-h-screen p-8">
-      <Link href="/" className="text-blue-600 hover:underline mb-4 inline-block">
-        ← Kembali ke Home
-      </Link>
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-4">Fitur 3</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Ini adalah halaman untuk Fitur 3. Silakan tambahkan konten sesuai kebutuhan Anda.
-        </p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <Link href="/" className="text-indigo-600 hover:underline mb-4 inline-block font-semibold">
+            ← Kembali ke Home
+          </Link>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            Multi-Source Knowledge
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Kelola materi pembelajaran dari berbagai sumber dalam satu tempat
+          </p>
+        </div>
+
+        {/* Material List Component */}
+        <MaterialList />
       </div>
     </div>
-  );
+  )
 }

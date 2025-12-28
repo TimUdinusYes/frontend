@@ -54,3 +54,57 @@ export interface UserProfileUpdate {
   avatar_url?: string | null
   badge_id?: number | null
 }
+
+// ============================================
+// TOPICS & MATERIALS TABLES
+// ============================================
+
+// Table: topics
+export interface Topic {
+  id: number // int8 - Primary Key
+  title: string // text
+  description: string | null // text
+  created_by: string // uuid - Foreign Key to auth.users.id
+  created_at: string // timestamptz
+  updated_at: string // timestamptz
+}
+
+export interface TopicInsert {
+  title: string
+  description?: string | null
+  created_by: string
+}
+
+export interface TopicUpdate {
+  title?: string
+  description?: string | null
+}
+
+// Table: materials
+export interface Material {
+  id: number // int8 - Primary Key
+  topic_id: number // int8 - Foreign Key to topics.id
+  title: string // text
+  content: string // text
+  material_type: string // text (pdf, video, article, etc)
+  url: string | null // text
+  created_by: string // uuid - Foreign Key to auth.users.id
+  created_at: string // timestamptz
+  updated_at: string // timestamptz
+}
+
+export interface MaterialInsert {
+  topic_id: number
+  title: string
+  content: string
+  material_type: string
+  url?: string | null
+  created_by: string
+}
+
+export interface MaterialUpdate {
+  title?: string
+  content?: string
+  material_type?: string
+  url?: string | null
+}
