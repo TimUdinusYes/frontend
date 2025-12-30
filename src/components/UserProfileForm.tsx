@@ -266,6 +266,7 @@ export default function UserProfileForm({ userId, onSuccess }: UserProfileFormPr
             <select
               id="gender"
               required
+              
               value={formData.gender}
               onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as Gender }))}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white"

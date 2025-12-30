@@ -1,0 +1,567 @@
+'use client';
+
+import { useState, useCallback, useRef, useEffect } from 'react';
+import ReactFlow, {
+    Node,
+    Edge,
+    addEdge,
+    Connection,
+    useNodesState,
+    useEdgesState,
+    Controls,
+    Background,
+    BackgroundVariant,
+    Panel,
+    ReactFlowProvider,
+    useReactFlow,
+    updateEdge,
+    EdgeChange,
+} from 'reactflow';
+import 'reactflow/dist/style.css';
+
+import LearningNode, { LearningNodeData } from './LearningNode';
+import ValidationEdge from './ValidationEdge';
+import ValidationResult from './ValidationResult';
+import NodeSidebar from './NodeSidebar';
+import AddNodeModal from './AddNodeModal';
+import ImplementModal from './ImplementModal';
+import { Topic } from '@/types/database';
+
+const nodeTypes = {
+    learningNode: LearningNode,
+};
+
+const edgeTypes = {
+    validation: ValidationEdge,
+};
+
+interface LearningPathCanvasProps {
+    topic: Topic;
+    workflowId?: string;
+    userId?: string;
+    onSave?: (data: { title: string; edges: Edge[]; positions: Record<string, { x: number; y: number }>; isDraft?: boolean }) => void;
+    initialData?: {
+        edges: Array<{ source_node: LearningNodeData & { id: string }; target_node: LearningNodeData & { id: string } }>;
+        node_positions: Record<string, { x: number; y: number }>;
+    };
+}
+
+interface ValidationState {
+    isOpen: boolean;
+    isLoading: boolean;
+    isValid: boolean;
+    fromNode: string;
+    toNode: string;
+    reason: string;
+    recommendation?: string;
+}
+
+function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialData }: LearningPathCanvasProps) {
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [validation, setValidation] = useState<ValidationState>({
+        isOpen: false,
+        isLoading: false,
+        isValid: false,
+        fromNode: '',
+        toNode: '',
+        reason: '',
+    });
+    const [showAddNode, setShowAddNode] = useState(false);
+    const [showImplement, setShowImplement] = useState(false);
+    const [title, setTitle] = useState('');
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const [sidebarRefreshKey, setSidebarRefreshKey] = useState(0);
+    const [isReadOnly, setIsReadOnly] = useState(!!initialData);  // Read-only if imported
+    const [isEditing, setIsEditing] = useState(false);
+
+    const pendingEdgeRef = useRef<Edge | null>(null);
+    const reactFlowInstance = useReactFlow();
+
+    // Load initial data if editing/forking
+    useEffect(() => {
+        if (initialData?.edges && initialData.edges.length > 0) {
+            console.log('Loading initial data:', initialData);
+            const loadedNodes: Node<LearningNodeData>[] = [];
+            const nodeIds = new Set<string>();
+
+            initialData.edges.forEach(edge => {
+                // Backend returns source_node/target_node with learning_nodes table structure
+                const sourceNode = edge.source_node as unknown as {
+                    id: string;
+                    title: string;
+                    description?: string;
+                    icon?: string;
+                    color?: string
+                };
+                const targetNode = edge.target_node as unknown as {
+                    id: string;
+                    title: string;
+                    description?: string;
+                    icon?: string;
+                    color?: string
+                };
+
+                if (sourceNode && !nodeIds.has(sourceNode.id)) {
+                    nodeIds.add(sourceNode.id);
+                    const pos = initialData.node_positions?.[sourceNode.id] || {
+                        x: 100 + loadedNodes.length * 200,
+                        y: 100 + (loadedNodes.length % 3) * 120
+                    };
+                    loadedNodes.push({
+                        id: sourceNode.id,
+                        type: 'learningNode',
+                        position: pos,
+                        data: {
+                            label: sourceNode.title,
+                            description: sourceNode.description,
+                            icon: sourceNode.icon || '📚',
+                            color: sourceNode.color || '#6366f1'
+                        }
+                    });
+                }
+                if (targetNode && !nodeIds.has(targetNode.id)) {
+                    nodeIds.add(targetNode.id);
+                    const pos = initialData.node_positions?.[targetNode.id] || {
+                        x: 100 + loadedNodes.length * 200,
+                        y: 100 + (loadedNodes.length % 3) * 120
+                    };
+                    loadedNodes.push({
+                        id: targetNode.id,
+                        type: 'learningNode',
+                        position: pos,
+                        data: {
+                            label: targetNode.title,
+                            description: targetNode.description,
+                            icon: targetNode.icon || '📚',
+                            color: targetNode.color || '#6366f1'
+                        }
+                    });
+                }
+            });
+
+            console.log('Loaded nodes:', loadedNodes);
+            setNodes(loadedNodes);
+
+            // Load edges after nodes with ValidationEdge type
+            setTimeout(async () => {
+                const loadedEdges: Edge[] = [];
+
+                for (const e of initialData.edges.filter(edge => edge.source_node && edge.target_node)) {
+                    const sourceNode = e.source_node as unknown as { id: string; title: string };
+                    const targetNode = e.target_node as unknown as { id: string; title: string };
+                    const edgeId = `e${sourceNode.id}-${targetNode.id}`;
+
+                    // Add edge with pending validation
+                    loadedEdges.push({
+                        id: edgeId,
+                        source: sourceNode.id,
+                        target: targetNode.id,
+                        type: 'validation',
+                        data: {
+                            isValid: true,  // Start as valid while validating
+                            reason: 'Validating...',
+                            fromNode: sourceNode.title,
+                            toNode: targetNode.title
+                        }
+                    });
+                }
+
+                setEdges(loadedEdges);
+
+                // Validate each edge asynchronously
+                for (let i = 0; i < loadedEdges.length; i++) {
+                    const edge = loadedEdges[i];
+                    const e = initialData.edges[i];
+                    const sourceNode = e.source_node as unknown as { id: string; title: string };
+                    const targetNode = e.target_node as unknown as { id: string; title: string };
+
+                    try {
+                        const response = await fetch('http://localhost:8080/api/validate-path', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                from_node: sourceNode.title,
+                                to_node: targetNode.title
+                            })
+                        });
+                        const validation = await response.json();
+
+                        if (validation.success && validation.data) {
+                            setEdges(prevEdges =>
+                                prevEdges.map(e =>
+                                    e.id === edge.id
+                                        ? {
+                                            ...e,
+                                            data: {
+                                                isValid: validation.data.is_valid,
+                                                reason: validation.data.reason,
+                                                recommendation: validation.data.recommendation,
+                                                fromNode: sourceNode.title,
+                                                toNode: targetNode.title
+                                            }
+                                        }
+                                        : e
+                                )
+                            );
+                        }
+                    } catch (error) {
+                        console.error('Edge validation failed:', error);
+                    }
+                }
+            }, 100);
+        }
+    }, [initialData, setNodes, setEdges]);
+
+    const getNodeLabel = useCallback((nodeId: string): string => {
+        const node = nodes.find(n => n.id === nodeId);
+        return node?.data?.label || nodeId;
+    }, [nodes]);
+
+    // Validate and update edge color after connection
+    const validateAndUpdateEdge = useCallback(async (
+        edgeId: string,
+        fromNodeId: string,
+        toNodeId: string
+    ) => {
+        const fromLabel = getNodeLabel(fromNodeId);
+        const toLabel = getNodeLabel(toNodeId);
+
+        try {
+            const response = await fetch('http://localhost:8080/api/validate-path', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    from_node: fromLabel,
+                    to_node: toLabel,
+                    user_id: userId,
+                }),
+            });
+
+            const data = await response.json();
+
+            // Update edge with validation data
+            setEdges(eds => eds.map(e => {
+                if (e.id === edgeId) {
+                    return {
+                        ...e,
+                        type: 'validation',
+                        data: {
+                            isValid: data.isValid,
+                            reason: data.reason,
+                            recommendation: data.recommendation,
+                        },
+                    };
+                }
+                return e;
+            }));
+        } catch (error) {
+            console.error('Validation error:', error);
+            // Mark as invalid on error
+            setEdges(eds => eds.map(e => {
+                if (e.id === edgeId) {
+                    return {
+                        ...e,
+                        type: 'validation',
+                        data: {
+                            isValid: false,
+                            reason: 'Gagal memvalidasi koneksi',
+                        },
+                    };
+                }
+                return e;
+            }));
+        }
+    }, [getNodeLabel, setEdges, userId]);
+
+    // Connect nodes - always add edge, then validate async
+    const onConnect = useCallback((connection: Connection) => {
+        if (!connection.source || !connection.target) return;
+
+        const existingEdge = edges.find(
+            e => e.source === connection.source && e.target === connection.target
+        );
+        if (existingEdge) return;
+
+        const newEdgeId = `e${connection.source}-${connection.target}`;
+
+        // Add edge immediately with pending state
+        const newEdge: Edge = {
+            id: newEdgeId,
+            source: connection.source,
+            target: connection.target,
+            type: 'validation',
+            data: {
+                isValid: true,
+                reason: 'Memvalidasi...',
+            },
+        };
+
+        setEdges(eds => addEdge(newEdge, eds));
+
+        // Validate async and update edge
+        validateAndUpdateEdge(newEdgeId, connection.source, connection.target);
+    }, [edges, setEdges, validateAndUpdateEdge]);
+
+    // Handle edge update (reconnection)
+    const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Connection) => {
+        if (!newConnection.source || !newConnection.target) return;
+
+        // Update the edge
+        setEdges(eds => updateEdge(oldEdge, newConnection, eds));
+
+        // Re-validate with new connection
+        const edgeId = oldEdge.id;
+        validateAndUpdateEdge(edgeId, newConnection.source, newConnection.target);
+    }, [setEdges, validateAndUpdateEdge]);
+
+    const closeValidation = useCallback(() => {
+        setValidation(prev => ({ ...prev, isOpen: false }));
+        pendingEdgeRef.current = null;
+    }, []);
+
+    const handleDrop = useCallback((event: React.DragEvent) => {
+        event.preventDefault();
+        const data = event.dataTransfer.getData('application/json');
+        if (!data) return;
+
+        const nodeData = JSON.parse(data);
+        const position = reactFlowInstance.screenToFlowPosition({
+            x: event.clientX,
+            y: event.clientY,
+        });
+
+        const newNode: Node<LearningNodeData> = {
+            id: nodeData.id,
+            type: 'learningNode',
+            position,
+            data: {
+                label: nodeData.title,
+                description: nodeData.description,
+                icon: nodeData.icon,
+                color: nodeData.color,
+            },
+        };
+
+        setNodes(nds => {
+            // Prevent duplicates
+            if (nds.some(n => n.id === nodeData.id)) return nds;
+            return [...nds, newNode];
+        });
+    }, [reactFlowInstance, setNodes]);
+
+    const handleDragOver = useCallback((event: React.DragEvent) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+    }, []);
+
+    const handleSave = useCallback((isDraft = false) => {
+        const positions: Record<string, { x: number; y: number }> = {};
+        nodes.forEach(n => {
+            positions[n.id] = n.position;
+        });
+
+        if (onSave) {
+            onSave({ title, edges, positions, isDraft });
+        }
+        setShowSaveDialog(false);
+    }, [nodes, edges, title, onSave]);
+
+    const handleNodeDragStart = useCallback(() => {
+        // Could add visual feedback here
+    }, []);
+
+    const refreshNodes = useCallback(() => {
+        // Trigger re-fetch of sidebar nodes by incrementing key
+        setSidebarRefreshKey(prev => prev + 1);
+        setShowAddNode(false);
+    }, []);
+
+    return (
+        <div
+            className="w-full h-full"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+        >
+            <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={isReadOnly && !isEditing ? undefined : onNodesChange}
+                onEdgesChange={isReadOnly && !isEditing ? undefined : onEdgesChange}
+                onConnect={isReadOnly && !isEditing ? undefined : onConnect}
+                onEdgeUpdate={isReadOnly && !isEditing ? undefined : onEdgeUpdate}
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                nodesDraggable={!isReadOnly || isEditing}
+                nodesConnectable={!isReadOnly || isEditing}
+                elementsSelectable={true}
+                edgeUpdaterRadius={10}
+                fitView
+                snapToGrid
+                snapGrid={[20, 20]}
+                connectionLineStyle={{ stroke: '#6366f1', strokeWidth: 2 }}
+                defaultEdgeOptions={{
+                    type: 'validation',
+                }}
+                deleteKeyCode={isReadOnly && !isEditing ? [] : ['Backspace', 'Delete']}
+                proOptions={{ hideAttribution: true }}
+            >
+                <Background
+                    variant={BackgroundVariant.Dots}
+                    gap={20}
+                    size={1}
+                    color="#334155"
+                />
+                <Controls
+                    className="!bg-slate-800 !border-slate-700 !rounded-lg !shadow-lg"
+                    showInteractive={false}
+                />
+
+                {/* Topic Info Panel */}
+                <Panel position="top-center">
+                    <div className="bg-slate-800/90 backdrop-blur-sm rounded-xl px-6 py-3 border border-slate-700 shadow-xl">
+                        <div className="text-center">
+                            <div className="text-xs text-indigo-400 mb-1">Topik</div>
+                            <div className="font-semibold text-white">{topic.title}</div>
+                        </div>
+                    </div>
+                </Panel>
+
+                {/* Action Buttons */}
+                <Panel position="top-right" className="flex gap-2">
+                    {isReadOnly && !isEditing && (
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg 
+                                font-medium transition-colors shadow-lg flex items-center gap-2"
+                        >
+                            ✏️ Edit
+                        </button>
+                    )}
+                    {isReadOnly && isEditing && (
+                        <button
+                            onClick={() => setIsEditing(false)}
+                            className="bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded-lg 
+                                font-medium transition-colors shadow-lg flex items-center gap-2"
+                        >
+                            🔒 View Mode
+                        </button>
+                    )}
+                    <button
+                        onClick={() => setShowImplement(true)}
+                        disabled={nodes.length === 0}
+                        className="bg-blue-600 hover:bg-blue-500 disabled:bg-slate-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg 
+              font-medium transition-colors shadow-lg flex items-center gap-2"
+                        title={nodes.length === 0 ? 'Tambahkan node terlebih dahulu' : 'Buat jadwal belajar'}
+                    >
+                        📅 Implement
+                    </button>
+                    <button
+                        onClick={() => handleSave(true)}
+                        className="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-lg 
+              font-medium transition-colors shadow-lg flex items-center gap-2"
+                        title="Simpan sebagai draft (tidak dipublikasi)"
+                    >
+                        💾 Save Draft
+                    </button>
+                    <button
+                        onClick={() => setShowSaveDialog(true)}
+                        className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg 
+              font-medium transition-colors shadow-lg flex items-center gap-2"
+                    >
+                        📤 Simpan
+                    </button>
+                </Panel>
+
+                {/* Instructions */}
+                <Panel position="bottom-center">
+                    <div className="bg-slate-800/90 backdrop-blur-sm rounded-xl px-4 py-2 border border-slate-700">
+                        <span className="text-xs text-slate-400">
+                            Drag node dari sidebar • Hubungkan untuk validasi AI •
+                            Nodes: <span className="text-white font-bold">{nodes.length}</span> •
+                            Edges: <span className="text-white font-bold">{edges.length}</span>
+                        </span>
+                    </div>
+                </Panel>
+            </ReactFlow>
+
+            {/* Node Sidebar */}
+            <NodeSidebar
+                topicId={topic.id}
+                onDragStart={handleNodeDragStart}
+                onAddNode={() => setShowAddNode(true)}
+                refreshKey={sidebarRefreshKey}
+            />
+
+            {/* Add Node Modal */}
+            <AddNodeModal
+                topicId={topic.id}
+                isOpen={showAddNode}
+                onClose={() => setShowAddNode(false)}
+                onNodeCreated={refreshNodes}
+                userId={userId}
+            />
+
+            {/* Validation Result */}
+            <ValidationResult
+                isOpen={validation.isOpen}
+                onClose={closeValidation}
+                isLoading={validation.isLoading}
+                isValid={validation.isValid}
+                fromNode={validation.fromNode}
+                toNode={validation.toNode}
+                reason={validation.reason}
+                recommendation={validation.recommendation}
+            />
+
+            {/* Save Dialog */}
+            {showSaveDialog && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+                    <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full border border-slate-700">
+                        <h3 className="text-lg font-bold text-white mb-4">💾 Simpan Workflow</h3>
+                        <input
+                            type="text"
+                            placeholder="Judul workflow..."
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg 
+                text-white mb-4 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        />
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowSaveDialog(false)}
+                                className="flex-1 py-2 bg-slate-700 text-white rounded-lg"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={() => handleSave(false)}
+                                disabled={!title}
+                                className="flex-1 py-2 bg-green-600 text-white rounded-lg disabled:bg-slate-600"
+                            >
+                                Simpan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Implement Modal */}
+            <ImplementModal
+                isOpen={showImplement}
+                onClose={() => setShowImplement(false)}
+                workflowId={workflowId}
+                workflowTitle={title || topic.title}
+                canvasNodes={nodes}
+            />
+        </div>
+    );
+}
+
+export default function LearningPathCanvas(props: LearningPathCanvasProps) {
+    return (
+        <ReactFlowProvider>
+            <LearningPathCanvasInner {...props} />
+        </ReactFlowProvider>
+    );
+}
