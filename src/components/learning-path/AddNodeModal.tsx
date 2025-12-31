@@ -13,13 +13,11 @@ interface AddNodeModalProps {
 export default function AddNodeModal({ topicId, isOpen, onClose, onNodeCreated, userId }: AddNodeModalProps) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [icon, setIcon] = useState('📚');
     const [color, setColor] = useState('#6366f1');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [suggestion, setSuggestion] = useState<{ title: string; id: string } | null>(null);
 
-    const icons = ['📚', '📖', '📝', '💡', '🎯', '🔬', '🧮', '📐', '🧬', '🌍', '💻', '🎨'];
     const colors = ['#6366f1', '#8b5cf6', '#a855f7', '#ec4899', '#f43f5e', '#10b981', '#14b8a6', '#06b6d4', '#f59e0b'];
 
     if (!isOpen) return null;
@@ -38,7 +36,6 @@ export default function AddNodeModal({ topicId, isOpen, onClose, onNodeCreated, 
                     topic_id: topicId,
                     title,
                     description,
-                    icon,
                     color,
                     user_id: userId
                 })
@@ -114,28 +111,6 @@ export default function AddNodeModal({ topicId, isOpen, onClose, onNodeCreated, 
                 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
                             placeholder="Deskripsi singkat tentang node ini"
                         />
-                    </div>
-
-                    {/* Icon */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">
-                            Icon
-                        </label>
-                        <div className="flex flex-wrap gap-2">
-                            {icons.map((i) => (
-                                <button
-                                    key={i}
-                                    type="button"
-                                    onClick={() => setIcon(i)}
-                                    className={`text-2xl p-2 rounded-lg transition-all ${icon === i
-                                        ? 'bg-green-600 ring-2 ring-green-400'
-                                        : 'bg-slate-700 hover:bg-slate-600'
-                                        }`}
-                                >
-                                    {i}
-                                </button>
-                            ))}
-                        </div>
                     </div>
 
                     {/* Color */}

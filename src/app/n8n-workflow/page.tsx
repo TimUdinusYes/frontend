@@ -66,24 +66,23 @@ export default function LearningPathPage() {
   };
 
   const handleWorkflowSelect = async (workflow: Workflow) => {
-    // Fork the workflow
+    // View workflow only (no fork yet - fork happens on save)
     if (!userId) {
       alert('Please login first');
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/api/workflows/${workflow.id}/fork`, {
-        method: 'POST',
+      // Just GET the workflow to view (not fork)
+      const response = await fetch(`http://localhost:8080/api/workflows/${workflow.id}`, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'x-user-id': userId
         }
       });
 
       const data = await response.json();
       if (data.success) {
-        // Use data directly from fork response (already includes edges with validation_reason)
         setSelectedTopic({
           id: workflow.topics?.id || 0,
           title: workflow.topics?.title || '',
@@ -92,7 +91,7 @@ export default function LearningPathPage() {
           created_at: '',
           updated_at: ''
         });
-        setForkedWorkflow(workflow);
+        setForkedWorkflow(workflow); // Store original workflow for fork on save
         setInitialData({
           edges: data.data.edges || [],
           node_positions: data.data.node_positions || {}
@@ -100,7 +99,7 @@ export default function LearningPathPage() {
         setMode('canvas');
       }
     } catch (error) {
-      console.error('Failed to fork workflow:', error);
+      console.error('Failed to load workflow:', error);
     }
   };
 
@@ -151,7 +150,7 @@ export default function LearningPathPage() {
 
   const handleSaveWorkflow = async (data: {
     title: string;
-    edges: Array<{ source: string; target: string; data?: { reason?: string } }>;
+    edges: Array<{ source: string; target: string; data?: { reason?: string; isValid?: boolean } }>;
     positions: Record<string, { x: number; y: number }>
   }) => {
     if (!userId || !selectedTopic) return;
@@ -160,7 +159,8 @@ export default function LearningPathPage() {
       const edgesData = data.edges.map(e => ({
         source_node_id: e.source,
         target_node_id: e.target,
-        validation_reason: e.data?.reason || null
+        validation_reason: e.data?.reason || null,
+        is_valid: e.data?.isValid ?? true
       }));
 
       const response = await fetch('http://localhost:8080/api/workflows', {

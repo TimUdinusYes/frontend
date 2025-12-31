@@ -6,7 +6,6 @@ interface LearningNode {
     id: string;
     title: string;
     description: string | null;
-    icon: string;
     color: string;
     usage_count: number;
 }
@@ -114,7 +113,10 @@ export default function NodeSidebar({ topicId, onDragStart, onAddNode, refreshKe
                             style={{ borderLeftColor: node.color, borderLeftWidth: 3 }}
                         >
                             <div className="flex items-center gap-2">
-                                <span>{node.icon}</span>
+                                <div
+                                    className="w-3 h-3 rounded-full"
+                                    style={{ backgroundColor: node.color }}
+                                />
                                 <span className="text-sm text-white font-medium">{node.title}</span>
                             </div>
                             <div className="text-xs text-slate-500 mt-1 flex justify-between">

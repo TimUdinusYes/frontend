@@ -114,7 +114,6 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
                         data: {
                             label: sourceNode.title,
                             description: sourceNode.description,
-                            icon: sourceNode.icon || '',
                             color: sourceNode.color || '#6366f1'
                         }
                     });
@@ -132,7 +131,6 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
                         data: {
                             label: targetNode.title,
                             description: targetNode.description,
-                            icon: targetNode.icon || '',
                             color: targetNode.color || '#6366f1'
                         }
                     });
@@ -149,64 +147,12 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
                 for (const e of initialData.edges.filter(edge => edge.source_node && edge.target_node)) {
                     const sourceNode = e.source_node as unknown as { id: string; title: string };
                     const targetNode = e.target_node as unknown as { id: string; title: string };
-                    const validationReason = (e as any).validation_reason;
                     const edgeId = `e${sourceNode.id}-${targetNode.id}`;
 
-                    console.log('Loading edge:', {
-                        from: sourceNode.title,
-                        to: targetNode.title,
-                        validation_reason: validationReason,
-                        hasReason: !!validationReason
-                    });
+                    console.log('Loading edge:', sourceNode.title, '->', targetNode.title);
 
-                    // If edge already has validation_reason, use it (no need to re-validate)
-                    if (validationReason) {
-                        console.log('✅ Using existing validation_reason from database:', validationReason);
-                        loadedEdges.push({
-                            id: edgeId,
-                            source: sourceNode.id,
-                            target: targetNode.id,
-                            type: 'validation',
-                            data: {
-                                isValid: true,
-                                reason: validationReason,
-                                fromNode: sourceNode.title,
-                                toNode: targetNode.title
-                            }
-                        });
-                    } else {
-                        // For imported/forked workflows, assume edges are valid (skip validation)
-                        // This prevents re-validating old workflows that don't have validation_reason
-                        console.log('⚠️ No validation_reason found, using default message');
-                        loadedEdges.push({
-                            id: edgeId,
-                            source: sourceNode.id,
-                            target: targetNode.id,
-                            type: 'validation',
-                            data: {
-                                isValid: true,
-                                reason: 'Pre-validated workflow connection',
-                                fromNode: sourceNode.title,
-                                toNode: targetNode.title
-                            }
-                        });
-                    }
-                }
-
-                setEdges(loadedEdges);
-
-        
-                for (let i = 0; i < loadedEdges.length; i++) {
-                    const edge = loadedEdges[i];
-                    const e = initialData.edges[i];
-                    const validationReason = (e as any).validation_reason;
-
-                    // Skip if already validated
-                    if (validationReason) continue;
-
-                    const sourceNode = e.source_node as unknown as { id: string; title: string };
-                    const targetNode = e.target_node as unknown as { id: string; title: string };
-
+                    // Always call API to lookup validation from database by NAME
+                    // API will check node_pair_validations table using source_name and target_name
                     try {
                         const response = await fetch('http://localhost:8080/api/validate-path', {
                             method: 'POST',
@@ -218,28 +164,57 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
                         });
                         const validation = await response.json();
 
-                        if (validation.success && validation.data) {
-                            setEdges(prevEdges =>
-                                prevEdges.map(e =>
-                                    e.id === edge.id
-                                        ? {
-                                            ...e,
-                                            data: {
-                                                isValid: validation.data.is_valid,
-                                                reason: validation.data.reason,
-                                                recommendation: validation.data.recommendation,
-                                                fromNode: sourceNode.title,
-                                                toNode: targetNode.title
-                                            }
-                                        }
-                                        : e
-                                )
-                            );
+                        if (validation.success) {
+                            console.log('✅ Got validation from API:', sourceNode.title, '->', targetNode.title,
+                                'isValid:', validation.isValid,
+                                validation.fromDatabase ? '(from DB cache)' : '(from AI)');
+
+                            loadedEdges.push({
+                                id: edgeId,
+                                source: sourceNode.id,
+                                target: targetNode.id,
+                                type: 'validation',
+                                data: {
+                                    isValid: validation.isValid,
+                                    reason: validation.reason,
+                                    recommendation: validation.recommendation,
+                                    fromNode: sourceNode.title,
+                                    toNode: targetNode.title
+                                }
+                            });
+                        } else {
+                            // Fallback if API fails
+                            loadedEdges.push({
+                                id: edgeId,
+                                source: sourceNode.id,
+                                target: targetNode.id,
+                                type: 'validation',
+                                data: {
+                                    isValid: true,
+                                    reason: 'Validation unavailable',
+                                    fromNode: sourceNode.title,
+                                    toNode: targetNode.title
+                                }
+                            });
                         }
                     } catch (error) {
                         console.error('Edge validation failed:', error);
+                        loadedEdges.push({
+                            id: edgeId,
+                            source: sourceNode.id,
+                            target: targetNode.id,
+                            type: 'validation',
+                            data: {
+                                isValid: true,
+                                reason: 'Validation unavailable',
+                                fromNode: sourceNode.title,
+                                toNode: targetNode.title
+                            }
+                        });
                     }
                 }
+
+                setEdges(loadedEdges);
             }, 100);
         }
     }, [initialData, setNodes, setEdges]);
@@ -264,11 +239,7 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     from_node: fromLabel,
-                    to_node: toLabel,
-                    user_id: userId,
-                    source_node_id: fromNodeId,
-                    target_node_id: toNodeId,
-                    workflow_id: workflowId
+                    to_node: toLabel
                 }),
             });
 
@@ -372,7 +343,6 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
             data: {
                 label: nodeData.title,
                 description: nodeData.description,
-                icon: nodeData.icon,
                 color: nodeData.color,
             },
         };
@@ -541,12 +511,15 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
                 </div>
             </div>
 
-            <NodeSidebar
-                topicId={topic.id}
-                onDragStart={handleNodeDragStart}
-                onAddNode={() => setShowAddNode(true)}
-                refreshKey={sidebarRefreshKey}
-            />
+            {/* Only show sidebar when creating new or in edit mode */}
+            {(!isReadOnly || isEditing) && (
+                <NodeSidebar
+                    topicId={topic.id}
+                    onDragStart={handleNodeDragStart}
+                    onAddNode={() => setShowAddNode(true)}
+                    refreshKey={sidebarRefreshKey}
+                />
+            )}
 
             {/* Add Node Modal */}
             <AddNodeModal

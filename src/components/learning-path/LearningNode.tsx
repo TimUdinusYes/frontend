@@ -6,7 +6,6 @@ import { Handle, Position, NodeProps } from 'reactflow';
 export interface LearningNodeData {
     label: string;
     description?: string;
-    icon?: string;
     color?: string;
 }
 
@@ -36,9 +35,6 @@ function LearningNode({ data, selected }: NodeProps<LearningNodeData>) {
 
             {/* Content */}
             <div className="flex items-center gap-3">
-                {data.icon && (
-                    <span className="text-2xl">{data.icon}</span>
-                )}
                 <div>
                     <div className="font-semibold text-white text-sm">
                         {data.label}

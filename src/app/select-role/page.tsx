@@ -21,7 +21,7 @@ export default function SelectRole() {
     interest: [] as string[],
   })
   const [newInterest, setNewInterest] = useState('')
-  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({})
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
 
   useEffect(() => {
     async function checkUser() {
@@ -31,7 +31,7 @@ export default function SelectRole() {
           router.push('/login')
           return
         }
-  
+
         if (profile.role !== 'user') {
           if (profile.role === 'pending_mentor') {
             router.push('/mentor-pending')
@@ -40,7 +40,7 @@ export default function SelectRole() {
           }
           return
         }
-  
+
         setUser(profile)
       } catch (error) {
         console.error('Error checking user:', error)
@@ -70,11 +70,11 @@ export default function SelectRole() {
   }
 
   const validateForm = () => {
-    const errors: {[key: string]: string} = {}
+    const errors: { [key: string]: string } = {}
     if (!formData.nama.trim()) errors.nama = 'Nama lengkap wajib diisi'
     if (!formData.gender) errors.gender = 'Jenis kelamin wajib diisi'
     if (!selectedRole) errors.role = 'Silakan pilih role Anda (Siswa atau Mentor)'
-    
+
     setFormErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -89,7 +89,7 @@ export default function SelectRole() {
   async function handleFinalSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!user || !selectedRole) return
-    
+
     // Pastikan semua field wajib terisi
     if (!validateForm()) {
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -104,7 +104,7 @@ export default function SelectRole() {
         nama: formData.nama,
         tanggal_lahir: formData.tanggal_lahir || null,
         gender: formData.gender,
-        interest: formData.interest,
+        interest: JSON.stringify(formData.interest),
         avatar_url: null
       })
 
@@ -112,9 +112,9 @@ export default function SelectRole() {
 
       // Step 2: Perbarui role di tabel user utama
       const { success: roleSuccess, error: roleError } = await updateProfile({ role: selectedRole })
-      
+
       if (!roleSuccess) throw new Error('Gagal memperbarui role: ' + roleError)
-      
+
       // Step 3: Redirect sesuai pilihan
       if (selectedRole === 'student') {
         router.push('/')
@@ -154,10 +154,10 @@ export default function SelectRole() {
 
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-8" onSubmit={handleFinalSubmit}>
-            
+
             <div className="space-y-6">
               <h3 className="text-xl font-bold border-b pb-2 text-gray-900">Data Diri</h3>
-              
+
               <div>
                 <label htmlFor="nama" className="block text-sm font-bold text-gray-900">
                   Nama Lengkap <span className="text-red-600">*</span>
@@ -168,7 +168,7 @@ export default function SelectRole() {
                     type="text"
                     required
                     value={formData.nama}
-                    onChange={(e) => setFormData({...formData, nama: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
                     className={`appearance-none block w-full px-3 py-2 border ${formErrors.nama ? 'border-red-300' : 'border-gray-400'} rounded-md shadow-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm font-medium`}
                   />
                   {formErrors.nama && <p className="mt-1 text-sm text-red-600 font-semibold">{formErrors.nama}</p>}
@@ -184,7 +184,7 @@ export default function SelectRole() {
                     id="gender"
                     required
                     value={formData.gender}
-                    onChange={(e) => setFormData({...formData, gender: e.target.value as Gender})}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value as Gender })}
                     className="block w-full pl-3 pr-10 py-2 text-base border-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md text-gray-900 font-medium"
                   >
                     <option value="Pria">Pria</option>
@@ -203,7 +203,7 @@ export default function SelectRole() {
                     id="tanggal_lahir"
                     type="date"
                     value={formData.tanggal_lahir}
-                    onChange={(e) => setFormData({...formData, tanggal_lahir: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, tanggal_lahir: e.target.value })}
                     className="appearance-none block w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm font-medium"
                   />
                 </div>
@@ -253,7 +253,7 @@ export default function SelectRole() {
             <div className="space-y-6 pt-4">
               <h3 className="text-lg font-medium border-b pb-2 text-gray-900">Pilih Role Anda</h3>
               {formErrors.role && <p className="text-sm text-red-600 font-medium">{formErrors.role}</p>}
-              
+
               <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
                 <button
                   type="button"
