@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import type { PrivateChat, PrivateMessage } from "@/types/database"
 import VideoCallModal from "@/components/VideoCallModal"
@@ -51,6 +52,7 @@ interface PrivateChatWithUser extends PrivateChat {
 type ChatMode = 'group' | 'private'
 
 export default function PeerConnectPage() {
+  const router = useRouter()
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null)
   const [selectedInterest, setSelectedInterest] = useState<Interest | null>(null)
   const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null)
@@ -58,7 +60,6 @@ export default function PeerConnectPage() {
   const [newMessage, setNewMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
-  const [authError, setAuthError] = useState<string | null>(null)
   const [categorizationStep, setCategorizationStep] = useState(0)
   const [detectedCategory, setDetectedCategory] = useState<string>("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -128,19 +129,39 @@ export default function PeerConnectPage() {
   const loadUserProfile = async () => {
     try {
       setInitialLoading(true)
+
+      // Check session first to avoid AuthSessionMissingError
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        console.log('No session found')
+        setInitialLoading(false)
+        // Redirect ke halaman login
+        setTimeout(() => {
+          router.push('/login?message=Silakan+login+terlebih+dahulu+untuk+menggunakan+PeerConnect')
+        }, 100)
+        return
+      }
+
       const { data: { user }, error: userError } = await supabase.auth.getUser()
 
       if (userError) {
         console.error('Auth error:', userError)
-        setAuthError('Tidak dapat memuat data user. Silakan login terlebih dahulu.')
         setInitialLoading(false)
+        // Redirect ke halaman login jika error auth
+        setTimeout(() => {
+          router.push('/login?message=Terjadi+kesalahan+autentikasi.+Silakan+login+kembali')
+        }, 100)
         return
       }
 
       if (!user) {
         console.log('No user logged in')
-        setAuthError('Anda belum login. Silakan login terlebih dahulu.')
         setInitialLoading(false)
+        // Redirect ke halaman login
+        setTimeout(() => {
+          router.push('/login?message=Silakan+login+terlebih+dahulu+untuk+menggunakan+PeerConnect')
+        }, 100)
         return
       }
 
@@ -150,29 +171,37 @@ export default function PeerConnectPage() {
         .from('user_profiles')
         .select('user_id, nama, interest, interest_id, avatar_url')
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle()
 
       if (error) {
         console.error('Profile query error:', error)
-        setAuthError('Tidak dapat memuat profil. Silakan coba lagi.')
         setInitialLoading(false)
+        // Redirect ke profile jika error load profile
+        setTimeout(() => {
+          router.push('/profile?message=Tidak+dapat+memuat+profil.+Silakan+lengkapi+profil+Anda')
+        }, 100)
         return
       }
 
       if (!profile) {
         console.log('No profile found for user')
-        setAuthError('Profil tidak ditemukan. Silakan lengkapi profil Anda terlebih dahulu.')
         setInitialLoading(false)
+        // Redirect ke halaman profile
+        setTimeout(() => {
+          router.push('/profile?message=Silakan+lengkapi+profil+dan+minat+Anda+terlebih+dahulu+untuk+menggunakan+PeerConnect')
+        }, 100)
         return
       }
 
       console.log('Profile loaded:', profile)
-      setAuthError(null)
 
       // Jika user belum punya interest di profile
       if (!profile.interest || !profile.interest.trim()) {
-        setAuthError('Anda belum mengisi interest di profil. Silakan lengkapi profil Anda terlebih dahulu di halaman Profile.')
         setInitialLoading(false)
+        // Redirect ke profile jika belum isi interest
+        setTimeout(() => {
+          router.push('/profile?message=Anda+belum+mengisi+minat+di+profil.+Silakan+lengkapi+terlebih+dahulu')
+        }, 100)
         return
       }
 
@@ -196,8 +225,11 @@ export default function PeerConnectPage() {
       }
     } catch (error) {
       console.error('Error loading user profile:', error)
-      setAuthError('Terjadi kesalahan. Silakan coba lagi.')
       setInitialLoading(false)
+      // Redirect ke profile jika terjadi error
+      setTimeout(() => {
+        router.push('/profile?message=Terjadi+kesalahan+memuat+data.+Silakan+coba+lagi')
+      }, 100)
     }
   }
 
@@ -339,21 +371,26 @@ export default function PeerConnectPage() {
     } catch (error: any) {
       console.error('Error categorizing interest:', error)
 
-      let errorMessage = 'Gagal memproses interest. '
+      let errorMessage = 'Gagal memproses minat. '
 
       if (error.name === 'AbortError') {
         errorMessage += 'Request timeout. Silakan coba lagi.'
       } else if (error.message?.includes('API returned')) {
-        errorMessage += 'API error. Cek console untuk detail.'
+        errorMessage += 'Terjadi kesalahan API.'
       } else if (error.message?.includes('not found')) {
         errorMessage += error.message
       } else {
-        errorMessage += 'Silakan refresh halaman atau hubungi admin.'
+        errorMessage += 'Silakan coba lagi.'
       }
 
-      setAuthError(errorMessage)
+      console.error('Categorization error:', errorMessage)
       setLoading(false)
       setCategorizationStep(0)
+
+      // Redirect ke profile dengan error message
+      setTimeout(() => {
+        router.push(`/profile?message=${encodeURIComponent(errorMessage)}`)
+      }, 100)
     }
   }
 
@@ -778,28 +815,6 @@ export default function PeerConnectPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400">Memuat...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (authError) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-md mx-auto text-center">
-          <div className="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Oops!</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">{authError}</p>
-          <Link
-            href="/"
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Kembali ke Home
-          </Link>
         </div>
       </div>
     )

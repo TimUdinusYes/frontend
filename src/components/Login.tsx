@@ -1,16 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 export default function Login() {
+  const searchParams = useSearchParams()
   const [emailOrUsername, setEmailOrUsername] = useState('')
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null)
+  const [message, setMessage] = useState<{ type: 'error' | 'success' | 'info', text: string } | null>(null)
   const [isSignUp, setIsSignUp] = useState(false)
+
+  useEffect(() => {
+    // Ambil message dari query parameter
+    const urlMessage = searchParams.get('message')
+    if (urlMessage) {
+      setMessage({
+        type: 'info',
+        text: decodeURIComponent(urlMessage)
+      })
+    }
+  }, [searchParams])
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -233,6 +246,8 @@ export default function Login() {
               className={`rounded-md p-4 ${
                 message.type === 'error'
                   ? 'bg-red-50 text-red-800 dark:bg-red-900 dark:text-red-200'
+                  : message.type === 'info'
+                  ? 'bg-blue-50 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                   : 'bg-green-50 text-green-800 dark:bg-green-900 dark:text-green-200'
               }`}
             >
