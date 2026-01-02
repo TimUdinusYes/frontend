@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, TouchEvent } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import type { Material, Topic, UserProfile } from '@/types/database'
+import type { Material, Topic, UserProfile, MaterialPage } from '@/types/database'
 import Navbar from '@/components/Navbar'
 import LoadingScreen from '@/components/LoadingScreen'
 import { useMaterialTracking } from '@/app/TaskIntegrator/hooks/useMaterialTracking'
@@ -24,6 +24,14 @@ export default function MaterialDetailPage() {
     const [author, setAuthor] = useState<UserProfile | null>(null)
     const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
+    // Multi-page state
+    const [pages, setPages] = useState<MaterialPage[]>([])
+    const [currentPageIndex, setCurrentPageIndex] = useState(0)
+
+    // Touch swipe state
+    const [touchStart, setTouchStart] = useState<number | null>(null)
+    const [touchEnd, setTouchEnd] = useState<number | null>(null)
+
     // Text-to-Speech state
     const [isSpeaking, setIsSpeaking] = useState(false)
     const [speechRate, setSpeechRate] = useState(1)
@@ -33,6 +41,9 @@ export default function MaterialDetailPage() {
     const [translatedText, setTranslatedText] = useState('')
     const [translating, setTranslating] = useState(false)
     const [targetLanguage, setTargetLanguage] = useState('')
+
+    // Get current page content
+    const currentPageContent = pages[currentPageIndex]?.content || material?.content || ''
 
     // Integrate material tracking
     const { markAsCompleted } = useMaterialTracking({
@@ -60,7 +71,6 @@ export default function MaterialDetailPage() {
 
     const loadMaterial = async () => {
         try {
-            // Load material
             const { data: materialData, error: materialError } = await supabase
                 .from('materials')
                 .select('*')
@@ -69,6 +79,23 @@ export default function MaterialDetailPage() {
 
             if (materialError) throw materialError
             setMaterial(materialData)
+
+            // Parse pages - use pages array if available, otherwise create from content
+            if (materialData.pages && materialData.pages.length > 0) {
+                setPages(materialData.pages)
+            } else if (materialData.content) {
+                // Legacy: split by page break marker or use as single page
+                const pageBreakMarker = '<!-- PAGE BREAK -->'
+                if (materialData.content.includes(pageBreakMarker)) {
+                    const contentParts = materialData.content.split(pageBreakMarker)
+                    setPages(contentParts.map((content: string, idx: number) => ({
+                        page_number: idx + 1,
+                        content: content.trim()
+                    })))
+                } else {
+                    setPages([{ page_number: 1, content: materialData.content }])
+                }
+            }
 
             // Load topic
             if (materialData.topic_id) {
@@ -96,13 +123,65 @@ export default function MaterialDetailPage() {
         }
     }
 
+    // Navigation functions
+    const goToPrev = useCallback(() => {
+        if (currentPageIndex > 0) {
+            setCurrentPageIndex(prev => prev - 1)
+            setShowTranslation(false)
+            setTranslatedText('')
+        }
+    }, [currentPageIndex])
+
+    const goToNext = useCallback(() => {
+        if (currentPageIndex < pages.length - 1) {
+            setCurrentPageIndex(prev => prev + 1)
+            setShowTranslation(false)
+            setTranslatedText('')
+        }
+    }, [currentPageIndex, pages.length])
+
+    const goToPage = (index: number) => {
+        setCurrentPageIndex(index)
+        setShowTranslation(false)
+        setTranslatedText('')
+    }
+
+    // Touch swipe handlers
+    const minSwipeDistance = 50
+
+    const onTouchStart = (e: TouchEvent) => {
+        setTouchEnd(null)
+        setTouchStart(e.targetTouches[0].clientX)
+    }
+
+    const onTouchMove = (e: TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX)
+    }
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return
+        const distance = touchStart - touchEnd
+        if (distance > minSwipeDistance) goToNext()
+        else if (distance < -minSwipeDistance) goToPrev()
+    }
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowLeft') goToPrev()
+            else if (e.key === 'ArrowRight') goToNext()
+        }
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [goToPrev, goToNext])
+
     // Text-to-Speech functions
     const stripHtmlForSpeech = (html: string) => {
         return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
     }
 
     const handleSpeak = () => {
-        if (!material) return
+        if (!currentPageContent) return
 
         if (isSpeaking) {
             window.speechSynthesis.cancel()
@@ -110,7 +189,7 @@ export default function MaterialDetailPage() {
             return
         }
 
-        const textToSpeak = showTranslation ? translatedText : stripHtmlForSpeech(material.content)
+        const textToSpeak = showTranslation ? translatedText : stripHtmlForSpeech(currentPageContent)
         const utterance = new SpeechSynthesisUtterance(textToSpeak)
         utterance.rate = speechRate
         utterance.lang = showTranslation ? 'en-US' : 'id-ID'
@@ -124,7 +203,7 @@ export default function MaterialDetailPage() {
 
     // Translation function
     const handleTranslate = async () => {
-        if (!material || !targetLanguage.trim()) return
+        if (!currentPageContent || !targetLanguage.trim()) return
 
         setTranslating(true)
         try {
@@ -132,7 +211,7 @@ export default function MaterialDetailPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    text: stripHtmlForSpeech(material.content),
+                    text: stripHtmlForSpeech(currentPageContent),
                     targetLanguage: targetLanguage
                 })
             })
@@ -169,6 +248,9 @@ export default function MaterialDetailPage() {
         )
     }
 
+    const isMultiPage = pages.length > 1
+    const totalPages = pages.length
+
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
             <Navbar />
@@ -187,7 +269,6 @@ export default function MaterialDetailPage() {
 
                 {/* Material Header */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8">
-                    {/* Header with gradient */}
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
                         <div className="flex items-center gap-3 mb-4">
                             <span className={`px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wide ${material.material_type === 'video' ? 'bg-red-500/20 text-red-100' :
@@ -199,6 +280,11 @@ export default function MaterialDetailPage() {
                             {material.status === 'draft' && (
                                 <span className="px-3 py-1 bg-yellow-500/20 text-yellow-100 rounded-full text-sm font-semibold">
                                     Draft
+                                </span>
+                            )}
+                            {isMultiPage && (
+                                <span className="px-3 py-1 bg-white/20 text-white rounded-full text-sm font-semibold">
+                                    📄 {totalPages} Halaman
                                 </span>
                             )}
                         </div>
@@ -214,7 +300,6 @@ export default function MaterialDetailPage() {
 
                     {/* Meta info */}
                     <div className="px-8 py-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center gap-6">
-                        {/* Author */}
                         <Link
                             href={currentUserId === material.created_by ? '/mentor/dashboard' : `/mentor/${material.created_by}`}
                             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
@@ -234,7 +319,6 @@ export default function MaterialDetailPage() {
                             </div>
                         </Link>
 
-                        {/* Date */}
                         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -257,12 +341,47 @@ export default function MaterialDetailPage() {
                     )}
                 </div>
 
-                {/* Content */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8">
+                {/* Content with Swipe Support */}
+                <div
+                    className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8"
+                    onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                >
+                    {/* Page Indicator (Top) */}
+                    {isMultiPage && (
+                        <div className="px-8 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-b border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center justify-between">
+                                <button
+                                    onClick={goToPrev}
+                                    disabled={currentPageIndex === 0}
+                                    className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                                <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                                    Halaman {currentPageIndex + 1} dari {totalPages}
+                                </span>
+                                <button
+                                    onClick={goToNext}
+                                    disabled={currentPageIndex === totalPages - 1}
+                                    className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Content */}
                     <div className="p-8">
                         <div
                             className="prose prose-lg dark:prose-invert max-w-none material-content"
-                            dangerouslySetInnerHTML={{ __html: showTranslation ? translatedText : material.content }}
+                            dangerouslySetInnerHTML={{ __html: showTranslation ? translatedText : currentPageContent }}
                         />
                         <style jsx global>{`
               .material-content h1 { font-size: 2rem; font-weight: 700; margin: 1.5rem 0 1rem; }
@@ -278,7 +397,6 @@ export default function MaterialDetailPage() {
               .material-content iframe { display: block !important; max-width: 100%; border-radius: 0.75rem; }
               .material-content .youtube-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin: 1.5rem 0; border-radius: 0.75rem; background: #000; }
               .material-content .youtube-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 0.75rem; }
-              .material-content div[style*="padding-bottom"] { margin: 1.5rem 0; }
               .material-content blockquote { border-left: 4px solid #6366f1; padding-left: 1.5rem; margin: 1.5rem 0; color: #6b7280; font-style: italic; }
               .material-content pre { background: #1f2937; color: #e5e7eb; padding: 1.5rem; border-radius: 0.75rem; overflow-x: auto; margin: 1.5rem 0; }
               .material-content code { background: #e5e7eb; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; }
@@ -287,6 +405,23 @@ export default function MaterialDetailPage() {
               .dark .material-content code { background: #374151; }
             `}</style>
                     </div>
+
+                    {/* Dots Indicator */}
+                    {isMultiPage && (
+                        <div className="px-8 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-center gap-2">
+                            {pages.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => goToPage(index)}
+                                    className={`w-3 h-3 rounded-full transition-all ${index === currentPageIndex
+                                        ? 'bg-indigo-600 scale-125'
+                                        : 'bg-gray-300 dark:bg-gray-600 hover:bg-indigo-400'
+                                        }`}
+                                    aria-label={`Go to page ${index + 1}`}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Tools Section */}
@@ -300,8 +435,8 @@ export default function MaterialDetailPage() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-gray-900 dark:text-white">Terjemahkan Materi</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Terjemahkan ke bahasa apapun menggunakan AI</p>
+                                <h3 className="font-semibold text-gray-900 dark:text-white">Terjemahkan</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Terjemahkan halaman ini</p>
                             </div>
                         </div>
                         <div className="flex gap-2">
@@ -309,30 +444,23 @@ export default function MaterialDetailPage() {
                                 type="text"
                                 value={targetLanguage}
                                 onChange={(e) => setTargetLanguage(e.target.value)}
-                                placeholder="Contoh: English, Jepang, Spanyol"
+                                placeholder="English, Jepang, dll"
                                 className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
                             />
                             <button
                                 onClick={handleTranslate}
                                 disabled={translating || !targetLanguage.trim()}
-                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
+                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
                             >
-                                {translating ? (
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                ) : (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                )}
-                                Terjemahkan
+                                {translating ? '...' : 'Go'}
                             </button>
                         </div>
                         {showTranslation && (
                             <button
                                 onClick={() => setShowTranslation(false)}
-                                className="mt-3 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                className="mt-2 text-sm text-gray-500 hover:text-gray-700"
                             >
-                                Tampilkan teks asli
+                                Teks asli
                             </button>
                         )}
                     </div>
@@ -346,20 +474,17 @@ export default function MaterialDetailPage() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-gray-900 dark:text-white">Dengarkan Materi</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{isSpeaking ? 'Sedang memutar...' : 'Siap diputar'}</p>
+                                <h3 className="font-semibold text-gray-900 dark:text-white">Dengarkan</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{isSpeaking ? 'Memutar...' : 'Siap'}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="flex gap-1">
-                                {[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => (
+                                {[0.75, 1, 1.5, 2].map((rate) => (
                                     <button
                                         key={rate}
                                         onClick={() => setSpeechRate(rate)}
-                                        className={`px-2 py-1 text-xs rounded ${speechRate === rate
-                                            ? 'bg-green-600 text-white'
-                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                            }`}
+                                        className={`px-2 py-1 text-xs rounded ${speechRate === rate ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
                                     >
                                         {rate}x
                                     </button>
@@ -367,63 +492,43 @@ export default function MaterialDetailPage() {
                             </div>
                             <button
                                 onClick={handleSpeak}
-                                className={`ml-auto px-4 py-2 rounded-lg flex items-center gap-2 ${isSpeaking
-                                    ? 'bg-red-600 text-white hover:bg-red-700'
-                                    : 'bg-green-600 text-white hover:bg-green-700'
-                                    }`}
+                                className={`ml-auto px-4 py-2 rounded-lg ${isSpeaking ? 'bg-red-600' : 'bg-green-600'} text-white`}
                             >
-                                {isSpeaking ? (
-                                    <>
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-                                        </svg>
-                                        Stop
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Putar
-                                    </>
-                                )}
+                                {isSpeaking ? 'Stop' : 'Putar'}
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Mark as Completed Button */}
-                <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                {/* Mark as Completed - Only show on last page */}
+                {(!isMultiPage || currentPageIndex === totalPages - 1) && (
+                    <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg">Selesai Belajar?</h3>
+                                    <p className="text-green-100 text-sm">Tandai materi ini selesai</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-semibold text-lg">Selesai Mempelajari Materi?</h3>
-                                <p className="text-green-100 text-sm">Tandai materi ini sebagai selesai untuk melacak progress Anda</p>
-                            </div>
+                            <button
+                                onClick={markAsCompleted}
+                                className="px-6 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors"
+                            >
+                                Tandai Selesai
+                            </button>
                         </div>
-                        <button
-                            onClick={markAsCompleted}
-                            className="px-6 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors flex items-center gap-2"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            Tandai Selesai
-                        </button>
                     </div>
-                </div>
+                )}
 
                 {/* Source URL */}
                 {material.url && (
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Sumber Referensi</h3>
+                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Sumber</h3>
                         <a
                             href={material.url}
                             target="_blank"

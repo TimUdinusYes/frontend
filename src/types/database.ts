@@ -83,12 +83,18 @@ export interface TopicUpdate {
   description?: string | null
 }
 
+// Material Page structure (stored in pages JSONB)
+export interface MaterialPage {
+  page_number: number
+  content: string
+}
+
 // Table: materials
 export interface Material {
   id: number // int8 - Primary Key
   topic_id: number // int8 - Foreign Key to topics.id
   title: string // text
-  content: string // text
+  content: string // text (legacy, for backward compatibility)
   material_type: string // text (pdf, video, article, etc)
   url: string | null // text
   created_by: string // uuid - Foreign Key to auth.users.id
@@ -96,27 +102,30 @@ export interface Material {
   updated_at: string // timestamptz
   status: 'published' | 'draft' // text - default: 'draft'
   tags: string[] | null // array of text
+  pages: MaterialPage[] // jsonb - multi-page content
 }
 
 export interface MaterialInsert {
   topic_id: number
   title: string
-  content: string
+  content?: string // legacy
   material_type: string
   url?: string | null
   created_by: string
   status?: 'published' | 'draft'
   tags?: string[] | null
+  pages?: MaterialPage[]
 }
 
 export interface MaterialUpdate {
   topic_id?: number
   title?: string
-  content?: string
+  content?: string // legacy
   material_type?: string
   url?: string | null
   status?: 'published' | 'draft'
   tags?: string[] | null
+  pages?: MaterialPage[]
 }
 
 // ============================================
