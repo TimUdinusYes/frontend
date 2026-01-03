@@ -7,11 +7,20 @@ import { supabase } from '@/lib/supabase'
 import type { Topic, Material, UserProfile } from '@/types/database'
 import { stripHtml } from '@/lib/htmlUtils'
 
+interface QuizScoreInfo {
+  material_id: number
+  total_correct: number
+  total_answered: number
+  total_pages: number
+  is_complete: boolean
+}
+
 export default function MaterialList() {
   const router = useRouter()
   const [topics, setTopics] = useState<Topic[]>([])
   const [materials, setMaterials] = useState<{ [topicId: number]: Material[] }>({})
   const [authors, setAuthors] = useState<{ [userId: string]: UserProfile }>({})
+  const [quizScores, setQuizScores] = useState<{ [materialId: number]: QuizScoreInfo }>({})
   const [loading, setLoading] = useState(true)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
@@ -24,6 +33,25 @@ export default function MaterialList() {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       setCurrentUserId(user.id)
+      // Load quiz scores for this user
+      loadQuizScores(user.id)
+    }
+  }
+
+  const loadQuizScores = async (userId: string) => {
+    try {
+      const res = await fetch(`/api/quiz/user-scores/${userId}`)
+      const data = await res.json()
+
+      if (data.success && data.scores) {
+        const scoresMap: { [materialId: number]: QuizScoreInfo } = {}
+        data.scores.forEach((score: QuizScoreInfo) => {
+          scoresMap[score.material_id] = score
+        })
+        setQuizScores(scoresMap)
+      }
+    } catch (error) {
+      console.error('Error loading quiz scores:', error)
     }
   }
 
@@ -183,9 +211,29 @@ export default function MaterialList() {
 
                         {/* Material Info */}
                         <div className="flex-1">
-                          <h4 className="text-base font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400">
-                            {material.title}
-                          </h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-base font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400">
+                              {material.title}
+                            </h4>
+                            {/* Quiz Score Badge */}
+                            {quizScores[material.id] && (
+                              <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${quizScores[material.id].is_complete
+                                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                  : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                }`}>
+                                {quizScores[material.id].is_complete ? (
+                                  <>
+                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>{quizScores[material.id].total_correct}/{quizScores[material.id].total_pages}</span>
+                                  </>
+                                ) : (
+                                  <span>{quizScores[material.id].total_answered}/{quizScores[material.id].total_pages}</span>
+                                )}
+                              </div>
+                            )}
+                          </div>
 
                           <div className="flex flex-wrap items-center gap-3">
                             <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">

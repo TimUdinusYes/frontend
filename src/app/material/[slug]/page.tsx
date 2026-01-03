@@ -8,6 +8,7 @@ import type { Material, Topic, UserProfile, MaterialPage } from '@/types/databas
 import Navbar from '@/components/Navbar'
 import LoadingScreen from '@/components/LoadingScreen'
 import { useMaterialTracking } from '@/app/TaskIntegrator/hooks/useMaterialTracking'
+import Quiz from '@/components/Quiz'
 
 export default function MaterialDetailPage() {
     const params = useParams()
@@ -23,6 +24,8 @@ export default function MaterialDetailPage() {
     const [topic, setTopic] = useState<Topic | null>(null)
     const [author, setAuthor] = useState<UserProfile | null>(null)
     const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+    const [userRole, setUserRole] = useState<string | null>(null)
+    const [roleLoaded, setRoleLoaded] = useState(false)
 
     // Multi-page state
     const [pages, setPages] = useState<MaterialPage[]>([])
@@ -42,8 +45,20 @@ export default function MaterialDetailPage() {
     const [translating, setTranslating] = useState(false)
     const [targetLanguage, setTargetLanguage] = useState('')
 
+    // Quiz completion state - track which pages have been completed
+    const [quizCompletedPages, setQuizCompletedPages] = useState<Set<number>>(new Set())
+    const [correctAnswersCount, setCorrectAnswersCount] = useState(0)
+
     // Get current page content
     const currentPageContent = pages[currentPageIndex]?.content || material?.content || ''
+
+    // Check if user is mentor (mentors can skip quizzes) - case insensitive
+    const isMentor = userRole?.toLowerCase() === 'mentor'
+
+    console.log('🎭 Role check:', { userRole, isMentor, roleLoaded })
+
+    // Check if current page quiz is completed (or mentor who can skip)
+    const isCurrentPageQuizCompleted = isMentor || quizCompletedPages.has(currentPageIndex)
 
     // Integrate material tracking
     const { markAsCompleted } = useMaterialTracking({
@@ -66,7 +81,21 @@ export default function MaterialDetailPage() {
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
             setCurrentUserId(user.id)
+            // Load role from user table (not user_profiles)
+            const { data: userData, error } = await supabase
+                .from('user')
+                .select('role')
+                .eq('id', user.id)
+                .single()
+
+            console.log('🔍 User role loaded:', { userId: user.id, userData, error })
+
+            if (userData && userData.role) {
+                setUserRole(userData.role)
+                console.log('✅ Set userRole to:', userData.role)
+            }
         }
+        setRoleLoaded(true)
     }
 
     const loadMaterial = async () => {
@@ -116,6 +145,29 @@ export default function MaterialDetailPage() {
                     .single()
                 setAuthor(authorData)
             }
+
+            // Load existing quiz scores for this material
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+                try {
+                    const res = await fetch(`/api/quiz/user-scores/${user.id}`)
+                    const data = await res.json()
+                    if (data.success && data.scores) {
+                        const materialScore = data.scores.find((s: any) => s.material_id === Number(materialId))
+                        if (materialScore) {
+                            // Set the number of pages answered and correct count
+                            const answeredPages = new Set<number>()
+                            for (let i = 1; i <= materialScore.total_answered; i++) {
+                                answeredPages.add(i - 1) // 0-indexed
+                            }
+                            setQuizCompletedPages(answeredPages)
+                            setCorrectAnswersCount(materialScore.total_correct)
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading quiz scores:', err)
+                }
+            }
         } catch (error) {
             console.error('Error loading material:', error)
         } finally {
@@ -133,12 +185,28 @@ export default function MaterialDetailPage() {
     }, [currentPageIndex])
 
     const goToNext = useCallback(() => {
-        if (currentPageIndex < pages.length - 1) {
+        // Mentors can navigate freely, students need quiz completion
+        const canNavigate = isMentor || quizCompletedPages.has(currentPageIndex)
+        if (currentPageIndex < pages.length - 1 && canNavigate) {
             setCurrentPageIndex(prev => prev + 1)
             setShowTranslation(false)
             setTranslatedText('')
         }
-    }, [currentPageIndex, pages.length])
+    }, [currentPageIndex, pages.length, quizCompletedPages, isMentor])
+
+    // Handler for when quiz is completed
+    const handleQuizCompleted = useCallback((isCorrect: boolean) => {
+        setQuizCompletedPages(prev => {
+            // Only update if not already completed
+            if (!prev.has(currentPageIndex)) {
+                if (isCorrect) {
+                    setCorrectAnswersCount(c => c + 1)
+                }
+                return new Set([...prev, currentPageIndex])
+            }
+            return prev
+        })
+    }, [currentPageIndex])
 
     const goToPage = (index: number) => {
         setCurrentPageIndex(index)
@@ -161,7 +229,8 @@ export default function MaterialDetailPage() {
     const onTouchEnd = () => {
         if (!touchStart || !touchEnd) return
         const distance = touchStart - touchEnd
-        if (distance > minSwipeDistance) goToNext()
+        // Only allow swipe to next page if quiz is completed
+        if (distance > minSwipeDistance && quizCompletedPages.has(currentPageIndex)) goToNext()
         else if (distance < -minSwipeDistance) goToPrev()
     }
 
@@ -366,8 +435,9 @@ export default function MaterialDetailPage() {
                                 </span>
                                 <button
                                     onClick={goToNext}
-                                    disabled={currentPageIndex === totalPages - 1}
+                                    disabled={currentPageIndex === totalPages - 1 || !isCurrentPageQuizCompleted}
                                     className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    title={!isCurrentPageQuizCompleted ? 'Jawab quiz terlebih dahulu' : ''}
                                 >
                                     <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -406,20 +476,63 @@ export default function MaterialDetailPage() {
             `}</style>
                     </div>
 
-                    {/* Dots Indicator */}
+                    {/* Quiz Section - Only show for students (wait for role to load) */}
+                    {material && currentUserId && roleLoaded && !isMentor && (
+                        <div className="px-8 py-6 border-t border-gray-200 dark:border-gray-700">
+                            <Quiz
+                                materialId={material.id}
+                                pageNumber={currentPageIndex + 1}
+                                userId={currentUserId}
+                                onQuizCompleted={handleQuizCompleted}
+                            />
+                        </div>
+                    )}
+
+                    {/* Navigation Section */}
                     {isMultiPage && (
-                        <div className="px-8 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-center gap-2">
-                            {pages.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => goToPage(index)}
-                                    className={`w-3 h-3 rounded-full transition-all ${index === currentPageIndex
-                                        ? 'bg-indigo-600 scale-125'
-                                        : 'bg-gray-300 dark:bg-gray-600 hover:bg-indigo-400'
-                                        }`}
-                                    aria-label={`Go to page ${index + 1}`}
-                                />
-                            ))}
+                        <div className="px-8 py-4 border-t border-gray-200 dark:border-gray-700">
+                            {/* Next Page Button - Only show when quiz is completed and not on last page */}
+                            {currentPageIndex < totalPages - 1 && (
+                                <div className="mb-4">
+                                    {isCurrentPageQuizCompleted ? (
+                                        <button
+                                            onClick={goToNext}
+                                            className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            Halaman Selanjutnya
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
+                                    ) : (
+                                        <div className="text-center text-gray-500 dark:text-gray-400 text-sm">
+                                            Jawab quiz di atas untuk lanjut ke halaman berikutnya
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Dots Indicator */}
+                            <div className="flex justify-center gap-2">
+                                {pages.map((_, index) => {
+                                    // Mentors can navigate to any page, students need quiz completion
+                                    const canNavigate = isMentor || index <= currentPageIndex || quizCompletedPages.has(index - 1)
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => canNavigate && goToPage(index)}
+                                            disabled={!canNavigate}
+                                            className={`w-3 h-3 rounded-full transition-all ${index === currentPageIndex
+                                                ? 'bg-indigo-600 scale-125'
+                                                : canNavigate
+                                                    ? 'bg-gray-300 dark:bg-gray-600 hover:bg-indigo-400'
+                                                    : 'bg-gray-200 dark:bg-gray-700 cursor-not-allowed'
+                                                }`}
+                                            aria-label={`Go to page ${index + 1}`}
+                                        />
+                                    )
+                                })}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -500,29 +613,91 @@ export default function MaterialDetailPage() {
                     </div>
                 </div>
 
-                {/* Mark as Completed - Only show on last page */}
+                {/* Completion Status - Only show on last page */}
                 {(!isMultiPage || currentPageIndex === totalPages - 1) && (
-                    <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-lg">Selesai Belajar?</h3>
-                                    <p className="text-green-100 text-sm">Tandai materi ini selesai</p>
+                    <>
+                        {/* For mentors - show simple completion */}
+                        {isMentor ? (
+                            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-lg">Selesai Mengajar?</h3>
+                                            <p className="text-green-100 text-sm">Tandai materi ini selesai</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            markAsCompleted()
+                                            router.push('/Multi-Source-Knowledge')
+                                        }}
+                                        className="px-6 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors flex items-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Tandai Selesai
+                                    </button>
                                 </div>
                             </div>
-                            <button
-                                onClick={markAsCompleted}
-                                className="px-6 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors"
-                            >
-                                Tandai Selesai
-                            </button>
-                        </div>
-                    </div>
+                        ) : (
+                            /* For students - quiz-gated completion */
+                            quizCompletedPages.size >= totalPages ? (
+                                // All quizzes done - Show completion message and Kembali button
+                                <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold text-lg">Materi Selesai! 🎉</h3>
+                                                <p className="text-green-100 text-sm">
+                                                    Anda telah menyelesaikan semua quiz ({correctAnswersCount}/{totalPages} benar)
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                markAsCompleted()
+                                                router.push('/Multi-Source-Knowledge')
+                                            }}
+                                            className="px-6 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors flex items-center gap-2"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                            </svg>
+                                            Kembali
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                // Not all quizzes done - Show remaining count
+                                <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-lg">Selesaikan Semua Quiz</h3>
+                                            <p className="text-yellow-100 text-sm">
+                                                Jawab quiz di setiap halaman untuk menandai materi selesai ({quizCompletedPages.size}/{totalPages} selesai)
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        )}
+                    </>
                 )}
 
                 {/* Source URL */}

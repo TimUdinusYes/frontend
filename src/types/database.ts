@@ -35,6 +35,7 @@ export interface UserProfile {
   avatar_url: string | null // text
   user_id: string // uuid - Foreign Key to auth.users.id
   badge_id: number | null // int8
+  quiz_scores?: Record<string, { score: number; answered_at: string; selected_answer: number; is_correct: boolean }> | null // jsonb
 }
 
 export interface UserProfileInsert {
@@ -185,4 +186,31 @@ export interface PrivateMessage {
     material_type: string
     topic?: string
   } | null
+}
+
+// ============================================
+// QUIZ TABLES
+// ============================================
+
+// Table: material_page_quizzes
+export interface MaterialPageQuiz {
+  id: number
+  material_id: number
+  page_number: number
+  question: string
+  options: string[] // ["Opsi A", "Opsi B", "Opsi C", "Opsi D"]
+  correct_answer: number // Index 0-3
+  created_at: string
+}
+
+// Table: user_material_quiz_scores (many-to-many)
+export interface UserMaterialQuizScore {
+  id: number
+  user_id: string
+  material_id: number
+  page_scores: Record<string, 'benar' | 'salah'> // {"1": "benar", "2": "salah"}
+  total_correct: number
+  total_answered: number
+  created_at: string
+  updated_at: string
 }
