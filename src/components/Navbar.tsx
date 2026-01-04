@@ -62,11 +62,6 @@ export default function Navbar() {
 
   const features = [
     {
-      path: "/AdaptiveMaterial",
-      title: "Adaptive Material",
-      description: "Adaptive Material Learning System"
-    },
-    {
       path: "/games",
       title: "Games",
       description: "Educational Games Platform"

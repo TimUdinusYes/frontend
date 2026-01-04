@@ -5,8 +5,6 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import type { Material, Topic, UserProfile, MaterialPage } from '@/types/database'
-import Navbar from '@/components/Navbar'
-import LoadingScreen from '@/components/LoadingScreen'
 import { useMaterialTracking } from '@/app/TaskIntegrator/hooks/useMaterialTracking'
 import Quiz from '@/components/Quiz'
 
@@ -298,13 +296,16 @@ export default function MaterialDetailPage() {
     }
 
     if (loading) {
-        return <LoadingScreen loading={true} />
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            </div>
+        )
     }
 
     if (!material) {
         return (
             <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-                <Navbar />
                 <div className="flex-1 flex items-center justify-center">
                     <div className="text-center">
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Materi Tidak Ditemukan</h2>
@@ -322,8 +323,6 @@ export default function MaterialDetailPage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-            <Navbar />
-
             <div className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
                 {/* Back Button */}
                 <button

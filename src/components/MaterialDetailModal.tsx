@@ -59,6 +59,20 @@ export default function MaterialDetailModal({ material, onClose }: MaterialDetai
   }
 
   useEffect(() => {
+    // Hide navbar and prevent body scroll when modal is open
+    document.body.classList.add('modal-open')
+    const style = document.createElement('style')
+    style.id = 'modal-style'
+    style.innerHTML = `
+      body.modal-open nav {
+        display: none !important;
+      }
+      body.modal-open {
+        overflow: hidden !important;
+      }
+    `
+    document.head.appendChild(style)
+
     if ('speechSynthesis' in window) {
       setIsTTSSupported(true)
 
@@ -119,6 +133,12 @@ export default function MaterialDetailModal({ material, onClose }: MaterialDetai
       stopProgressTracking()
       if (window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel()
+      }
+      // Restore navbar and body scroll when modal is closed
+      document.body.classList.remove('modal-open')
+      const styleElement = document.getElementById('modal-style')
+      if (styleElement) {
+        styleElement.remove()
       }
     }
   }, [material.content, playbackRate, duration])
@@ -242,7 +262,7 @@ export default function MaterialDetailModal({ material, onClose }: MaterialDetai
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex justify-between items-start">
           <div className="flex-1 pr-4">
