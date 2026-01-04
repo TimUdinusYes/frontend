@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from "next/link"
 import MaterialList from "@/components/MaterialList"
@@ -12,11 +12,7 @@ export default function MultiSourceKnowledgePage() {
   const [loading, setLoading] = useState(true)
   const [hasProfile, setHasProfile] = useState(false)
 
-  useEffect(() => {
-    checkUserProfile()
-  }, [])
-
-  const checkUserProfile = async () => {
+  const checkUserProfile = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
@@ -43,7 +39,11 @@ export default function MultiSourceKnowledgePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    checkUserProfile()
+  }, [checkUserProfile])
 
   if (loading) {
     return <LoadingScreen loading={true} />

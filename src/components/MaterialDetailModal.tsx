@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Material } from '@/types/database'
 
 interface MaterialDetailModalProps {
@@ -33,7 +33,7 @@ export default function MaterialDetailModal({ material, onClose }: MaterialDetai
     return (words / wordsPerMinute) * 60
   }
 
-  const startProgressTracking = () => {
+  const startProgressTracking = useCallback(() => {
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current)
     }
@@ -49,14 +49,14 @@ export default function MaterialDetailModal({ material, onClose }: MaterialDetai
         progressIntervalRef.current = null
       }
     }, 100)
-  }
+  }, [duration])
 
-  const stopProgressTracking = () => {
+  const stopProgressTracking = useCallback(() => {
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current)
       progressIntervalRef.current = null
     }
-  }
+  }, [])
 
   useEffect(() => {
     // Hide navbar and prevent body scroll when modal is open
@@ -141,7 +141,7 @@ export default function MaterialDetailModal({ material, onClose }: MaterialDetai
         styleElement.remove()
       }
     }
-  }, [material.content, playbackRate, duration])
+  }, [material.content, playbackRate, duration, startProgressTracking, stopProgressTracking])
 
   const handlePlayPause = () => {
     if (!utteranceRef.current) return
@@ -386,7 +386,7 @@ export default function MaterialDetailModal({ material, onClose }: MaterialDetai
                   ) : (
                     <>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                       </svg>
                       Terjemahkan
                     </>
@@ -441,9 +441,10 @@ export default function MaterialDetailModal({ material, onClose }: MaterialDetai
                       <button
                         key={rate}
                         onClick={() => handleRateChange(rate)}
-                        className={`px-2 py-1 text-xs rounded transition-colors ${playbackRate === rate
-                          ? 'bg-indigo-600 text-white font-semibold'
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        className={`px-2 py-1 text-xs rounded transition-colors ${
+                          playbackRate === rate
+                            ? 'bg-indigo-600 text-white font-semibold'
+                            : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                           }`}
                       >
                         {rate}x

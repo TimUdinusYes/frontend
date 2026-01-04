@@ -175,16 +175,27 @@ Jawab hanya dengan JSON yang valid, tanpa markdown atau penjelasan tambahan.
 
     const analysis = JSON.parse(responseContent)
 
+    // Add recommendedMaterials based on learningConcepts
+    const recommendedMaterials = analysis.knowledgeMap?.learningConcepts?.map(
+      (lc: any) => lc.concept
+    ) || []
+
+    const analysisWithRecommendations = {
+      ...analysis,
+      recommendedMaterials
+    }
+
     console.log('✅ AI Analysis completed:', {
       masteredCount: analysis.knowledgeMap?.masteredConcepts?.length || 0,
       learningCount: analysis.knowledgeMap?.learningConcepts?.length || 0,
       notStartedCount: analysis.knowledgeMap?.notStartedConcepts?.length || 0,
       totalConcepts: (analysis.knowledgeMap?.masteredConcepts?.length || 0) +
                      (analysis.knowledgeMap?.learningConcepts?.length || 0),
-      expectedMin: stats.materialSummary.length
+      expectedMin: stats.materialSummary.length,
+      recommendedMaterialsCount: recommendedMaterials.length
     })
 
-    return NextResponse.json(analysis)
+    return NextResponse.json(analysisWithRecommendations)
   } catch (error: any) {
     console.error('Error in AI analysis:', error)
     return NextResponse.json(

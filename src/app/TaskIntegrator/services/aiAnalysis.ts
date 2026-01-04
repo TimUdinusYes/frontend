@@ -61,6 +61,7 @@ export interface LearningAnalysis {
   insights: AIInsight[]
   studyPattern: string
   motivationalMessage: string
+  recommendedMaterials: string[]
 }
 
 class AIAnalysisService {

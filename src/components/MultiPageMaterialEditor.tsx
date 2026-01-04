@@ -73,6 +73,52 @@ export default function MultiPageMaterialEditor({
     const [showCacheRestored, setShowCacheRestored] = useState(false)
     const [showMediaUploader, setShowMediaUploader] = useState(false)
 
+    const handleContentChange = useCallback((content: string) => {
+        setPages(prev => prev.map((page, idx) =>
+            idx === currentPageIndex ? { ...page, content } : page
+        ))
+    }, [currentPageIndex])
+
+    const insertMediaToCurrentPage = useCallback((html: string) => {
+        setPages(prev => prev.map((page, idx) => {
+            if (idx === currentPageIndex) {
+                return { ...page, content: page.content + '\n' + html }
+            }
+            return page
+        }))
+    }, [currentPageIndex])
+
+    const addPage = useCallback(() => {
+        const newPageNumber = pages.length + 1
+        setPages(prev => [...prev, { page_number: newPageNumber, content: '' }])
+        setCurrentPageIndex(pages.length) // Go to new page
+    }, [pages])
+
+    const deletePage = useCallback(() => {
+        if (pages.length <= 1) return
+        setPages(prev => {
+            const newPages = prev.filter((_, idx) => idx !== currentPageIndex)
+            return newPages.map((page, idx) => ({ ...page, page_number: idx + 1 }))
+        })
+        setCurrentPageIndex(Math.max(0, currentPageIndex - 1))
+    }, [pages, currentPageIndex])
+
+    const goToPrev = useCallback(() => {
+        if (currentPageIndex > 0) setCurrentPageIndex(prev => prev - 1)
+    }, [currentPageIndex])
+
+    const goToNext = useCallback(() => {
+        if (currentPageIndex < pages.length - 1) setCurrentPageIndex(prev => prev + 1)
+    }, [currentPageIndex, pages.length])
+
+    const goToPage = useCallback((index: number) => {
+        setCurrentPageIndex(index)
+    }, [])
+
+    const clearCache = useCallback(() => {
+        clearCachedPages(cacheKey)
+    }, [cacheKey])
+
     // Check if cache was restored on mount
     useEffect(() => {
         if (initialPages.length === 0) {
@@ -97,25 +143,7 @@ export default function MultiPageMaterialEditor({
         onChange(pages)
     }, [pages, cacheKey, onChange])
 
-    // Update current page content
-    const handleContentChange = useCallback((content: string) => {
-        setPages(prev => prev.map((page, idx) =>
-            idx === currentPageIndex ? { ...page, content } : page
-        ))
-    }, [currentPageIndex])
-
-    // Insert media HTML into current page
-    const insertMediaToCurrentPage = (html: string) => {
-        setPages(prev => prev.map((page, idx) => {
-            if (idx === currentPageIndex) {
-                return { ...page, content: page.content + '\n' + html }
-            }
-            return page
-        }))
-    }
-
-    // Handle media upload
-    const handleMediaUpload = (result: UploadResult) => {
+    const handleMediaUpload = useCallback((result: UploadResult) => {
         if (result.fileType === 'image') {
             const imageHtml = `<img src="${result.url}" alt="${result.fileName}" style="max-width: 100%; height: auto; border-radius: 8px; margin: 16px 0;" />`
             insertMediaToCurrentPage(imageHtml)
@@ -126,49 +154,7 @@ export default function MultiPageMaterialEditor({
             const audioHtml = `<audio src="${result.url}" controls style="width: 100%; margin: 16px 0;"></audio>`
             insertMediaToCurrentPage(audioHtml)
         }
-    }
-
-    // Add new page
-    const addPage = () => {
-        const newPageNumber = pages.length + 1
-        setPages(prev => [...prev, { page_number: newPageNumber, content: '' }])
-        setCurrentPageIndex(pages.length) // Go to new page
-    }
-
-    // Delete current page (if more than 1 page)
-    const deletePage = () => {
-        if (pages.length <= 1) return
-        setPages(prev => {
-            const newPages = prev.filter((_, idx) => idx !== currentPageIndex)
-            return newPages.map((page, idx) => ({ ...page, page_number: idx + 1 }))
-        })
-        setCurrentPageIndex(Math.max(0, currentPageIndex - 1))
-    }
-
-    // Navigation
-    const goToPrev = () => {
-        if (currentPageIndex > 0) setCurrentPageIndex(prev => prev - 1)
-    }
-
-    const goToNext = () => {
-        if (currentPageIndex < pages.length - 1) setCurrentPageIndex(prev => prev + 1)
-    }
-
-    const goToPage = (index: number) => {
-        setCurrentPageIndex(index)
-    }
-
-    // Clear cache
-    const clearCache = () => {
-        clearCachedPages(cacheKey)
-    }
-
-    useEffect(() => {
-        (window as any).clearMaterialDraftCache = clearCache
-        return () => {
-            delete (window as any).clearMaterialDraftCache
-        }
-    }, [cacheKey])
+    }, [insertMediaToCurrentPage])
 
     const currentPage = pages[currentPageIndex]
     const totalPages = pages.length
@@ -199,7 +185,7 @@ export default function MultiPageMaterialEditor({
                             className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         >
                             <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7" />
                             </svg>
                         </button>
 
@@ -216,7 +202,7 @@ export default function MultiPageMaterialEditor({
                             className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         >
                             <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7" />
                             </svg>
                         </button>
                     </div>
@@ -231,7 +217,7 @@ export default function MultiPageMaterialEditor({
                                 className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors flex items-center gap-1"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 011.995 1.858L5 7m5 4v6m0-6L5 7m5 4v6" />
                                 </svg>
                                 Hapus
                             </button>
@@ -240,12 +226,12 @@ export default function MultiPageMaterialEditor({
                             type="button"
                             onClick={addPage}
                             disabled={disabled}
-                            className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1"
+                            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4m0 0l4 4m0 0116.138 21H7.862a2 2 0 011.995 1.858L5 7m5 4v6m0-6L5 7m5 4v6" />
+                                Tambah Halaman
                             </svg>
-                            Tambah Halaman
                         </button>
                     </div>
                 </div>
@@ -313,7 +299,7 @@ export default function MultiPageMaterialEditor({
 
             {/* Page indicator bottom */}
             <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-                💡 Konten disimpan otomatis. Anda bisa menutup halaman dan melanjutkan nanti.
+                💡 Konten disimpan otomatis. Anda bisa menambah halaman dan melanjutkan nanti.
             </div>
         </div>
     )

@@ -66,16 +66,7 @@ export default function MaterialDetailPage() {
         enabled: !!materialId && !!material && !!topic
     })
 
-    useEffect(() => {
-        if (materialId) {
-            loadMaterial()
-            loadCurrentUser()
-        } else {
-            setLoading(false)
-        }
-    }, [materialId])
-
-    const loadCurrentUser = async () => {
+    const loadCurrentUser = useCallback(async () => {
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
             setCurrentUserId(user.id)
@@ -94,9 +85,9 @@ export default function MaterialDetailPage() {
             }
         }
         setRoleLoaded(true)
-    }
+    }, [])
 
-    const loadMaterial = async () => {
+    const loadMaterial = useCallback(async () => {
         try {
             const { data: materialData, error: materialError } = await supabase
                 .from('materials')
@@ -171,7 +162,16 @@ export default function MaterialDetailPage() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [materialId])
+
+    useEffect(() => {
+        if (materialId) {
+            loadMaterial()
+            loadCurrentUser()
+        } else {
+            setLoading(false)
+        }
+    }, [materialId, loadMaterial, loadCurrentUser])
 
     // Navigation functions
     const goToPrev = useCallback(() => {

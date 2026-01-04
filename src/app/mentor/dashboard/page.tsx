@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -27,11 +27,7 @@ export default function MentorDashboardPage() {
   const [editingMaterial, setEditingMaterial] = useState<Material | undefined>(undefined)
   const [previewMaterial, setPreviewMaterial] = useState<Material | null>(null)
 
-  useEffect(() => {
-    checkAuthAndLoadData()
-  }, [])
-
-  const checkAuthAndLoadData = async () => {
+  const checkAuthAndLoadData = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
@@ -56,7 +52,11 @@ export default function MentorDashboardPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    checkAuthAndLoadData()
+  }, [checkAuthAndLoadData])
 
   const loadMaterials = async (uid: string) => {
     try {

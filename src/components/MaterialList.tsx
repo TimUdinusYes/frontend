@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -24,62 +24,32 @@ export default function MaterialList() {
   const [loading, setLoading] = useState(true)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadCurrentUser()
-    loadTopics()
-  }, [])
-
-  const loadCurrentUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      setCurrentUserId(user.id)
-      // Load quiz scores for this user
-      loadQuizScores(user.id)
-    }
-  }
-
-  const loadQuizScores = async (userId: string) => {
-    try {
-      const res = await fetch(`/api/quiz/user-scores/${userId}`)
-      const data = await res.json()
-
-      if (data.success && data.scores) {
-        const scoresMap: { [materialId: number]: QuizScoreInfo } = {}
-        data.scores.forEach((score: QuizScoreInfo) => {
-          scoresMap[score.material_id] = score
-        })
-        setQuizScores(scoresMap)
-      }
-    } catch (error) {
-      console.error('Error loading quiz scores:', error)
-    }
-  }
-
-  const loadTopics = async () => {
+  const loadMaterialsForTopic = useCallback(async (topicId: number) => {
     try {
       const { data, error } = await supabase
-        .from('topics')
+        .from('materials')
         .select('*')
+        .eq('topic_id', topicId)
+        .eq('status', 'published')
         .order('created_at', { ascending: false })
 
       if (error) throw error
 
-      setTopics(data || [])
-
-      // Load materials for each topic
       if (data) {
-        for (const topic of data) {
-          await loadMaterialsForTopic(topic.id)
-        }
+        setMaterials(prev => ({
+          ...prev,
+          [topicId]: data
+        }))
+
+        const authorIds = Array.from(new Set(data.map(m => m.created_by)))
+        await fetchAuthors(authorIds)
       }
     } catch (error) {
-      console.error('Error loading topics:', error)
-    } finally {
-      setLoading(false)
+      console.error('Error loading materials:', error)
     }
-  }
+  }, [authors, setAuthors])
 
-  const fetchAuthors = async (userIds: string[]) => {
+  const fetchAuthors = useCallback(async (userIds: string[]) => {
     if (userIds.length === 0) return
 
     // Filter out IDs we already have
@@ -104,34 +74,9 @@ export default function MaterialList() {
     } catch (error) {
       console.error('Error fetching authors:', error)
     }
-  }
+  }, [authors, setAuthors])
 
-  const loadMaterialsForTopic = async (topicId: number) => {
-    try {
-      const { data, error } = await supabase
-        .from('materials')
-        .select('*')
-        .eq('topic_id', topicId)
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-
-      if (data) {
-        setMaterials(prev => ({
-          ...prev,
-          [topicId]: data
-        }))
-
-        const authorIds = Array.from(new Set(data.map(m => m.created_by)))
-        await fetchAuthors(authorIds)
-      }
-    } catch (error) {
-      console.error('Error loading materials:', error)
-    }
-  }
-
-  const handleMaterialClick = (material: Material) => {
+  const handleMaterialClick = useCallback((material: Material) => {
     // Create slug from title and encode ID
     const slug = material.title
       .toLowerCase()
@@ -140,7 +85,62 @@ export default function MaterialList() {
     // Encode ID as base64
     const encodedId = btoa(material.id.toString())
     router.push(`/material/${slug}?ref=${encodedId}`)
-  }
+  }, [router])
+
+  const loadCurrentUser = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      setCurrentUserId(user.id)
+      // Load quiz scores for this user
+      loadQuizScores(user.id)
+    }
+  }, [])
+
+  const loadQuizScores = useCallback(async (userId: string) => {
+    try {
+      const res = await fetch(`/api/quiz/user-scores/${userId}`)
+      const data = await res.json()
+
+      if (data.success && data.scores) {
+        const scoresMap: { [materialId: number]: QuizScoreInfo } = {}
+        data.scores.forEach((score: QuizScoreInfo) => {
+          scoresMap[score.material_id] = score
+        })
+        setQuizScores(scoresMap)
+      }
+    } catch (error) {
+      console.error('Error loading quiz scores:', error)
+    }
+  }, [])
+
+  const loadTopics = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('topics')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      setTopics(data || [])
+
+      // Load materials for each topic
+      if (data) {
+        for (const topic of data) {
+          await loadMaterialsForTopic(topic.id)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading topics:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [loadMaterialsForTopic])
+
+  useEffect(() => {
+    loadCurrentUser()
+    loadTopics()
+  }, [loadCurrentUser, loadTopics])
 
   if (loading) {
     return (
@@ -163,7 +163,7 @@ export default function MaterialList() {
       {topics.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
           <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 00-2-2v-4m0 0l4 4m-4 4m0 0l4 4m0 0 0118 0z" />
           </svg>
           <p className="text-gray-500 dark:text-gray-400">
             Belum ada topik pembelajaran.

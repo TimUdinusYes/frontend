@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -17,11 +17,7 @@ function CreateMaterialContent() {
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
 
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       
@@ -42,7 +38,11 @@ function CreateMaterialContent() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
 
   const handleSuccess = () => {
     // Redirect to dashboard after successful creation

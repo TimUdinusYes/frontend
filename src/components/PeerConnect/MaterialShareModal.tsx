@@ -10,7 +10,7 @@ interface Material {
   topic_id: number
   topics?: {
     title: string
-  }
+  }[]
 }
 
 interface MaterialShareModalProps {
@@ -80,7 +80,7 @@ export default function MaterialShareModal({
       title: selectedMaterial.title,
       slug: selectedMaterial.url,
       material_type: selectedMaterial.material_type,
-      topic: selectedMaterial.topics?.title
+      topic: selectedMaterial.topics?.[0]?.title
     }
 
     onSelectMaterial(materialData, message.trim() || undefined)
@@ -94,7 +94,7 @@ export default function MaterialShareModal({
 
   const filteredMaterials = materials.filter(m =>
     m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    m.topics?.title.toLowerCase().includes(searchQuery.toLowerCase())
+    m.topics?.[0]?.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   if (!isOpen) return null
@@ -170,9 +170,9 @@ export default function MaterialShareModal({
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900 dark:text-white">{material.title}</h3>
-                      {material.topics && (
+                      {material.topics && material.topics.length > 0 && (
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          📚 {material.topics.title}
+                          📚 {material.topics[0].title}
                         </p>
                       )}
                     </div>

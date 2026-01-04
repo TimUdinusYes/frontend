@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -22,13 +22,7 @@ export default function MentorProfilePage() {
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null)
   const [isMaterialDetailOpen, setIsMaterialDetailOpen] = useState(false)
 
-  useEffect(() => {
-    if (mentorId) {
-      loadMentorData()
-    }
-  }, [mentorId])
-
-  const loadMentorData = async () => {
+  const loadMentorData = useCallback(async () => {
     try {
       // 1. Load Mentor Profile (auth info)
       const { data: profile, error: profileError } = await supabase
@@ -73,7 +67,13 @@ export default function MentorProfilePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [mentorId])
+
+  useEffect(() => {
+    if (mentorId) {
+      loadMentorData()
+    }
+  }, [mentorId, loadMentorData])
 
   const handleMaterialClick = (material: Material) => {
     setSelectedMaterial(material)

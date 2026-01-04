@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 interface GoogleTTSPlayerProps {
   text: string
@@ -20,21 +20,7 @@ export default function GoogleTTSPlayer({ text }: GoogleTTSPlayerProps) {
 
   const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_TTS_API_KEY
 
-  useEffect(() => {
-    return () => {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current)
-      }
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl)
-      }
-    }
-  }, [audioUrl])
-
-  const generateAudio = async () => {
+  const generateAudio = useCallback(async () => {
     if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
       setError('API Key belum diset. Tambahkan NEXT_PUBLIC_GOOGLE_TTS_API_KEY di .env.local')
       return
@@ -102,11 +88,26 @@ export default function GoogleTTSPlayer({ text }: GoogleTTSPlayerProps) {
       setError(err instanceof Error ? err.message : 'Gagal membuat audio')
       setIsLoadingTTS(false)
     }
-  }
+  }, [playbackRate, text])
 
   useEffect(() => {
     generateAudio()
-  }, [text, playbackRate])
+  }, [generateAudio])
+
+  useEffect(() => {
+    const currentAudio = audioRef.current
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current)
+      }
+      if (currentAudio) {
+        currentAudio.pause()
+      }
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl)
+      }
+    }
+  }, [audioUrl])
 
   const startProgressTracking = () => {
     if (progressIntervalRef.current) {

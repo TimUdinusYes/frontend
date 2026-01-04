@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import { activityTracker, type ActivityStats } from '../services/activityTracker'
@@ -15,18 +15,7 @@ export default function TaskIntegratorUnified() {
   const [analysis, setAnalysis] = useState<LearningAnalysis | null>(null)
   const [lastAnalyzedTime, setLastAnalyzedTime] = useState<Date | null>(null)
 
-  useEffect(() => {
-    loadData()
-
-    // Auto-refresh setiap 5 menit untuk detect aktivitas baru
-    const interval = setInterval(() => {
-      refreshData()
-    }, 5 * 60 * 1000) // 5 minutes
-
-    return () => clearInterval(interval)
-  }, [])
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true)
     const activityStats = await activityTracker.getActivityStats()
     setStats(activityStats)
@@ -36,9 +25,9 @@ export default function TaskIntegratorUnified() {
     if (activityStats && activityStats.totalMaterialsOpened > 0) {
       loadAIAnalysis(activityStats)
     }
-  }
+  }, [])
 
-  const refreshData = async () => {
+  const refreshData = useCallback(async () => {
     // Refresh stats tanpa loading overlay
     const activityStats = await activityTracker.getActivityStats()
 
@@ -55,7 +44,18 @@ export default function TaskIntegratorUnified() {
         loadAIAnalysis(activityStats)
       }
     }
-  }
+  }, [stats])
+
+  useEffect(() => {
+    loadData()
+
+    // Auto-refresh setiap 5 menit untuk detect aktivitas baru
+    const interval = setInterval(() => {
+      refreshData()
+    }, 5 * 60 * 1000) // 5 minutes
+
+    return () => clearInterval(interval)
+  }, [loadData, refreshData])
 
   const handleManualRefresh = async () => {
     await loadData()
