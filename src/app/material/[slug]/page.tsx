@@ -12,7 +12,7 @@ export default function MaterialDetailPage() {
     const params = useParams()
     const router = useRouter()
     const searchParams = useSearchParams()
-
+    
     // Decode material ID from base64 encoded 'ref' parameter
     const encodedRef = searchParams.get('ref')
     const materialId = encodedRef ? atob(encodedRef) : null
@@ -323,7 +323,7 @@ export default function MaterialDetailPage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-            <div className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex-1 w-[95vw] max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Back Button */}
                 <button
                     onClick={() => router.back()}
@@ -367,31 +367,95 @@ export default function MaterialDetailPage() {
                     </div>
 
                     {/* Meta info */}
-                    <div className="px-8 py-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center gap-6">
-                        <Link
-                            href={currentUserId === material.created_by ? '/mentor/dashboard' : `/mentor/${material.created_by}`}
-                            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-                        >
-                            {author?.avatar_url ? (
-                                <img src={author.avatar_url} alt={author.nama || 'Author'} className="w-10 h-10 rounded-full object-cover" />
-                            ) : (
-                                <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
-                                    {(author?.nama || 'M').charAt(0).toUpperCase()}
+                    <div className="px-8 py-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-wrap items-center gap-6 mb-4">
+                            <Link
+                                href={currentUserId === material.created_by ? '/mentor/dashboard' : `/mentor/${material.created_by}`}
+                                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                            >
+                                {author?.avatar_url ? (
+                                    <img src={author.avatar_url} alt={author.nama || 'Author'} className="w-10 h-10 rounded-full object-cover" />
+                                ) : (
+                                    <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
+                                        {(author?.nama || 'M').charAt(0).toUpperCase()}
+                                    </div>
+                                )}
+                                <div>
+                                    <p className="font-semibold text-gray-900 dark:text-white">
+                                        {currentUserId === material.created_by ? 'Anda' : (author?.nama || 'Mentor')}
+                                    </p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">Penulis</p>
                                 </div>
-                            )}
-                            <div>
-                                <p className="font-semibold text-gray-900 dark:text-white">
-                                    {currentUserId === material.created_by ? 'Anda' : (author?.nama || 'Mentor')}
-                                </p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Penulis</p>
-                            </div>
-                        </Link>
+                            </Link>
 
-                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span>{new Date(material.created_at).toLocaleDateString('id-ID', { dateStyle: 'long' })}</span>
+                            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span>{new Date(material.created_at).toLocaleDateString('id-ID', { dateStyle: 'long' })}</span>
+                            </div>
+                        </div>
+
+                        {/* Translation and Audio Controls */}
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {/* Translation */}
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                                    </svg>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Terjemahkan</span>
+                                </div>
+                                <input
+                                    type="text"
+                                    value={targetLanguage}
+                                    onChange={(e) => setTargetLanguage(e.target.value)}
+                                    placeholder="English, Jepang, dll"
+                                    className="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                />
+                                <button
+                                    onClick={handleTranslate}
+                                    disabled={translating || !targetLanguage.trim()}
+                                    className="px-4 py-1.5 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 disabled:opacity-50 font-medium"
+                                >
+                                    {translating ? '...' : 'Go'}
+                                </button>
+                                {showTranslation && (
+                                    <button
+                                        onClick={() => setShowTranslation(false)}
+                                        className="text-xs text-gray-500 hover:text-gray-700 underline"
+                                    >
+                                        Reset
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Audio */}
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                                    </svg>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Dengarkan</span>
+                                </div>
+                                <div className="flex gap-1">
+                                    {[0.75, 1, 1.5, 2].map((rate) => (
+                                        <button
+                                            key={rate}
+                                            onClick={() => setSpeechRate(rate)}
+                                            className={`px-2 py-1 text-xs rounded font-medium ${speechRate === rate ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+                                        >
+                                            {rate}x
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    onClick={handleSpeak}
+                                    className={`px-4 py-1.5 rounded-lg text-sm font-medium text-white ${isSpeaking ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+                                >
+                                    {isSpeaking ? 'Stop' : 'Putar'}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -409,205 +473,130 @@ export default function MaterialDetailPage() {
                     )}
                 </div>
 
-                {/* Content with Swipe Support */}
-                <div
-                    className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8"
-                    onTouchStart={onTouchStart}
-                    onTouchMove={onTouchMove}
-                    onTouchEnd={onTouchEnd}
-                >
-                    {/* Page Indicator (Top) */}
-                    {isMultiPage && (
-                        <div className="px-8 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-b border-gray-200 dark:border-gray-700">
-                            <div className="flex items-center justify-between">
-                                <button
-                                    onClick={goToPrev}
-                                    disabled={currentPageIndex === 0}
-                                    className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                    </svg>
-                                </button>
-                                <span className="font-semibold text-indigo-600 dark:text-indigo-400">
-                                    Halaman {currentPageIndex + 1} dari {totalPages}
-                                </span>
-                                <button
-                                    onClick={goToNext}
-                                    disabled={currentPageIndex === totalPages - 1 || !isCurrentPageQuizCompleted}
-                                    className="p-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                    title={!isCurrentPageQuizCompleted ? 'Jawab quiz terlebih dahulu' : ''}
-                                >
-                                    <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                {/* Two Column Layout: Content (Left) + Quiz (Right) */}
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8 relative">
+                    {/* Vertical Divider Line - Only visible on large screens */}
+                    <div className="hidden lg:block absolute left-[60%] top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-700"></div>
 
-                    {/* Content */}
-                    <div className="p-8">
+                    {/* Left Column - Material Content (3/5 width) */}
+                    <div className="lg:col-span-3">
                         <div
-                            className="prose prose-lg dark:prose-invert max-w-none material-content"
-                            dangerouslySetInnerHTML={{ __html: showTranslation ? translatedText : currentPageContent }}
-                        />
-                        <style jsx global>{`
-              .material-content h1 { font-size: 2rem; font-weight: 700; margin: 1.5rem 0 1rem; }
-              .material-content h2 { font-size: 1.5rem; font-weight: 600; margin: 1.25rem 0 0.75rem; }
-              .material-content h3 { font-size: 1.25rem; font-weight: 600; margin: 1rem 0 0.5rem; }
-              .material-content p { margin: 1rem 0; line-height: 1.75; }
-              .material-content ul { list-style-type: disc; padding-left: 1.5rem; margin: 1rem 0; }
-              .material-content ol { list-style-type: decimal; padding-left: 1.5rem; margin: 1rem 0; }
-              .material-content li { margin: 0.5rem 0; display: list-item; }
-              .material-content img { display: block; max-width: 100%; height: auto; border-radius: 0.75rem; margin: 1.5rem 0; }
-              .material-content video { display: block !important; max-width: 100% !important; width: 100%; min-height: 200px; border-radius: 0.75rem; margin: 1.5rem 0; background: #000; }
-              .material-content audio { display: block !important; width: 100% !important; margin: 1.5rem 0; }
-              .material-content iframe { display: block !important; max-width: 100%; border-radius: 0.75rem; }
-              .material-content .youtube-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin: 1.5rem 0; border-radius: 0.75rem; background: #000; }
-              .material-content .youtube-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 0.75rem; }
-              .material-content blockquote { border-left: 4px solid #6366f1; padding-left: 1.5rem; margin: 1.5rem 0; color: #6b7280; font-style: italic; }
-              .material-content pre { background: #1f2937; color: #e5e7eb; padding: 1.5rem; border-radius: 0.75rem; overflow-x: auto; margin: 1.5rem 0; }
-              .material-content code { background: #e5e7eb; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; }
-              .material-content pre code { background: transparent; padding: 0; }
-              .material-content a { color: #6366f1; text-decoration: underline; }
-              .dark .material-content code { background: #374151; }
-            `}</style>
-                    </div>
-
-                    {/* Quiz Section - Only show for students (wait for role to load) */}
-                    {material && currentUserId && roleLoaded && !isMentor && (
-                        <div className="px-8 py-6 border-t border-gray-200 dark:border-gray-700">
-                            <Quiz
-                                materialId={material.id}
-                                pageNumber={currentPageIndex + 1}
-                                userId={currentUserId}
-                                onQuizCompleted={handleQuizCompleted}
-                            />
-                        </div>
-                    )}
-
-                    {/* Navigation Section */}
-                    {isMultiPage && (
-                        <div className="px-8 py-4 border-t border-gray-200 dark:border-gray-700">
-                            {/* Next Page Button - Only show when quiz is completed and not on last page */}
-                            {currentPageIndex < totalPages - 1 && (
-                                <div className="mb-4">
-                                    {isCurrentPageQuizCompleted ? (
-                                        <button
-                                            onClick={goToNext}
-                                            className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2"
-                                        >
-                                            Halaman Selanjutnya
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </button>
-                                    ) : (
-                                        <div className="text-center text-gray-500 dark:text-gray-400 text-sm">
-                                            Jawab quiz di atas untuk lanjut ke halaman berikutnya
-                                        </div>
-                                    )}
+                            className="sticky top-8 space-y-4"
+                            onTouchStart={onTouchStart}
+                            onTouchMove={onTouchMove}
+                            onTouchEnd={onTouchEnd}
+                        >
+                            {/* Page Indicator (Top) */}
+                            {isMultiPage && (
+                                <div className="flex items-center justify-between py-3">
+                                    <button
+                                        onClick={goToPrev}
+                                        disabled={currentPageIndex === 0}
+                                        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                        Halaman {currentPageIndex + 1} dari {totalPages}
+                                    </span>
+                                    <button
+                                        onClick={goToNext}
+                                        disabled={currentPageIndex === totalPages - 1 || !isCurrentPageQuizCompleted}
+                                        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                        title={!isCurrentPageQuizCompleted ? 'Jawab quiz terlebih dahulu' : ''}
+                                    >
+                                        <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
                                 </div>
                             )}
 
-                            {/* Dots Indicator */}
-                            <div className="flex justify-center gap-2">
-                                {pages.map((_, index) => {
-                                    // Mentors can navigate to any page, students need quiz completion
-                                    const canNavigate = isMentor || index <= currentPageIndex || quizCompletedPages.has(index - 1)
-                                    return (
-                                        <button
-                                            key={index}
-                                            onClick={() => canNavigate && goToPage(index)}
-                                            disabled={!canNavigate}
-                                            className={`w-3 h-3 rounded-full transition-all ${index === currentPageIndex
-                                                ? 'bg-indigo-600 scale-125'
-                                                : canNavigate
-                                                    ? 'bg-gray-300 dark:bg-gray-600 hover:bg-indigo-400'
-                                                    : 'bg-gray-200 dark:bg-gray-700 cursor-not-allowed'
-                                                }`}
-                                            aria-label={`Go to page ${index + 1}`}
-                                        />
-                                    )
-                                })}
+                            {/* Content */}
+                            <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
+                                <div
+                                    className="prose prose-lg dark:prose-invert max-w-none material-content"
+                                    dangerouslySetInnerHTML={{ __html: showTranslation ? translatedText : currentPageContent }}
+                                />
                             </div>
-                        </div>
-                    )}
-                </div>
 
-                {/* Tools Section */}
-                <div className="grid md:grid-cols-2 gap-6 mb-8">
-                    {/* Translation */}
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-gray-900 dark:text-white">Terjemahkan</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Terjemahkan halaman ini</p>
-                            </div>
+                            {/* Navigation Section */}
+                            {isMultiPage && (
+                                <div className="py-4">
+                                    {/* Dots Indicator */}
+                                    <div className="flex justify-center gap-2">
+                                        {pages.map((_, index) => {
+                                            // Mentors can navigate to any page, students need quiz completion
+                                            const canNavigate = isMentor || index <= currentPageIndex || quizCompletedPages.has(index - 1)
+                                            return (
+                                                <button
+                                                    key={index}
+                                                    onClick={() => canNavigate && goToPage(index)}
+                                                    disabled={!canNavigate}
+                                                    className={`w-3 h-3 rounded-full transition-all ${index === currentPageIndex
+                                                        ? 'bg-indigo-600 scale-125'
+                                                        : canNavigate
+                                                            ? 'bg-gray-300 dark:bg-gray-600 hover:bg-indigo-400'
+                                                            : 'bg-gray-200 dark:bg-gray-700 cursor-not-allowed'
+                                                        }`}
+                                                    aria-label={`Go to page ${index + 1}`}
+                                                />
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                value={targetLanguage}
-                                onChange={(e) => setTargetLanguage(e.target.value)}
-                                placeholder="English, Jepang, dll"
-                                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                            <button
-                                onClick={handleTranslate}
-                                disabled={translating || !targetLanguage.trim()}
-                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
-                            >
-                                {translating ? '...' : 'Go'}
-                            </button>
-                        </div>
-                        {showTranslation && (
-                            <button
-                                onClick={() => setShowTranslation(false)}
-                                className="mt-2 text-sm text-gray-500 hover:text-gray-700"
-                            >
-                                Teks asli
-                            </button>
-                        )}
                     </div>
 
-                    {/* Text-to-Speech */}
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-gray-900 dark:text-white">Dengarkan</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{isSpeaking ? 'Memutar...' : 'Siap'}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="flex gap-1">
-                                {[0.75, 1, 1.5, 2].map((rate) => (
-                                    <button
-                                        key={rate}
-                                        onClick={() => setSpeechRate(rate)}
-                                        className={`px-2 py-1 text-xs rounded ${speechRate === rate ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
-                                    >
-                                        {rate}x
-                                    </button>
-                                ))}
-                            </div>
-                            <button
-                                onClick={handleSpeak}
-                                className={`ml-auto px-4 py-2 rounded-lg ${isSpeaking ? 'bg-red-600' : 'bg-green-600'} text-white`}
-                            >
-                                {isSpeaking ? 'Stop' : 'Putar'}
-                            </button>
+                    {/* Right Column - Quiz Section (2/5 width) */}
+                    <div className="lg:col-span-2">
+                        <div className="sticky top-8">
+                            {/* Quiz Section - Only show for students (wait for role to load) */}
+                            {material && currentUserId && roleLoaded && !isMentor ? (
+                                <div className="space-y-6">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Quiz</h3>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">Jawab pertanyaan di bawah untuk melanjutkan</p>
+                                    </div>
+                                    <Quiz
+                                        materialId={material.id}
+                                        pageNumber={currentPageIndex + 1}
+                                        userId={currentUserId}
+                                        onQuizCompleted={handleQuizCompleted}
+                                    />
+
+                                    {/* Next Page Button - Only show when quiz is completed and not on last page */}
+                                    {isMultiPage && currentPageIndex < totalPages - 1 && (
+                                        <div>
+                                            {isCurrentPageQuizCompleted ? (
+                                                <button
+                                                    onClick={goToNext}
+                                                    className="w-full py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    Halaman Selanjutnya
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </button>
+                                            ) : (
+                                                <div className="text-center text-gray-500 dark:text-gray-400 text-sm py-3 px-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-l-4 border-yellow-500">
+                                                    Jawab quiz untuk lanjut ke halaman berikutnya
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="text-center py-8">
+                                    <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <p className="text-gray-500 dark:text-gray-400">Mentor tidak perlu mengerjakan quiz</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

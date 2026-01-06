@@ -104,8 +104,10 @@ export default function Navbar() {
         }`}>
           {/* Logo/Brand */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-black transition-colors text-white">
-              FASTLERN
+            <Link href="/" className={`text-2xl font-black transition-colors ${
+              isScrolled ? 'text-white' : 'text-black'
+            }`}>
+              SINAUIN
             </Link>
           </div>
 
@@ -114,7 +116,7 @@ export default function Navbar() {
             <Link href="/" className={`font-semibold transition-colors ${
               isScrolled
                 ? 'text-gray-300 hover:text-white'
-                : 'text-white hover:text-gray-200'
+                : 'text-black hover:text-gray-700'
             }`}>
               Home
             </Link>
@@ -126,7 +128,7 @@ export default function Navbar() {
                 className={`flex items-center gap-1 font-semibold transition-colors ${
                   isScrolled
                     ? 'text-gray-300 hover:text-white'
-                    : 'text-white hover:text-gray-200'
+                    : 'text-black hover:text-gray-700'
                 }`}
               >
                 Features
@@ -178,10 +180,14 @@ export default function Navbar() {
                   </div>
                 )}
                 <div className="text-right hidden sm:block">
-                  <p className="text-sm font-semibold text-white">
+                  <p className={`text-sm font-semibold ${
+                    isScrolled ? 'text-white' : 'text-black'
+                  }`}>
                     {user.username}
                   </p>
-                  <p className="text-xs text-gray-300">
+                  <p className={`text-xs ${
+                    isScrolled ? 'text-gray-300' : 'text-gray-600'
+                  }`}>
                     {user.role}
                   </p>
                 </div>

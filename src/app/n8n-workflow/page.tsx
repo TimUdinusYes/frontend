@@ -189,8 +189,8 @@ export default function LearningPathPage() {
   // Entry Page
   if (mode === 'entry') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center p-6">
-        <div className="max-w-4xl w-full">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center px-16 py-6">
+        <div className="w-full">
           <Link
             href="/"
             className="text-slate-400 hover:text-white mb-8 flex items-center gap-2 transition-colors"
@@ -207,21 +207,24 @@ export default function LearningPathPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-8 mx-auto items-start">
             {/* Create New */}
             <button
               onClick={() => setMode('select-topic')}
-              className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-8
-                text-left hover:scale-[1.02] transition-all shadow-2xl group border border-indigo-500/30"
+              className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-10
+                text-left hover:scale-[1.02] transition-all shadow-2xl group border border-indigo-500/30
+                w-full aspect-square flex flex-col justify-between"
             >
-              <div className="text-5xl mb-4">🆕</div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Buat Workflow Baru
-              </h2>
-              <p className="text-indigo-200">
-                Pilih topik dan mulai membuat learning path dari awal
-              </p>
-              <div className="mt-6 text-indigo-300 group-hover:text-white transition-colors flex items-center gap-2">
+              <div>
+                <div className="text-6xl mb-5">🆕</div>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Buat Workflow Baru
+                </h2>
+                <p className="text-indigo-200 text-base">
+                  Pilih topik dan mulai membuat learning path dari awal
+                </p>
+              </div>
+              <div className="text-indigo-300 group-hover:text-white transition-colors flex items-center gap-2 text-base">
                 Mulai →
               </div>
             </button>
@@ -229,17 +232,20 @@ export default function LearningPathPage() {
             {/* Import from Community */}
             <button
               onClick={() => setMode('gallery')}
-              className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-8
-                text-left hover:scale-[1.02] transition-all shadow-2xl group border border-emerald-500/30"
+              className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-3xl p-10
+                text-left hover:scale-[1.02] transition-all shadow-2xl group border border-emerald-500/30
+                w-full aspect-square flex flex-col justify-between"
             >
-              <div className="text-5xl mb-4">📥</div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Import dari Komunitas
-              </h2>
-              <p className="text-emerald-200">
-                Jelajahi workflow public dan fork untuk dimodifikasi
-              </p>
-              <div className="mt-6 text-emerald-300 group-hover:text-white transition-colors flex items-center gap-2">
+              <div>
+                <div className="text-6xl mb-5">📥</div>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Import dari Komunitas
+                </h2>
+                <p className="text-emerald-200 text-base">
+                  Jelajahi workflow public dan fork untuk dimodifikasi
+                </p>
+              </div>
+              <div className="text-emerald-300 group-hover:text-white transition-colors flex items-center gap-2 text-base">
                 Jelajahi →
               </div>
             </button>
@@ -247,37 +253,25 @@ export default function LearningPathPage() {
             {/* Import from Knowledge Base */}
             <button
               onClick={() => setMode('topic-import')}
-              className="bg-gradient-to-br from-amber-600 to-orange-700 rounded-2xl p-8
-                text-left hover:scale-[1.02] transition-all shadow-2xl group border border-amber-500/30"
+              className="bg-gradient-to-br from-amber-600 to-orange-700 rounded-3xl p-10
+                text-left hover:scale-[1.02] transition-all shadow-2xl group border border-amber-500/30
+                w-full aspect-square flex flex-col justify-between"
             >
-              <div className="text-5xl mb-4">🤖</div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Import dari Materi
-              </h2>
-              <p className="text-amber-200">
-                AI otomatis membuat workflow dari topik di knowledge base
-              </p>
-              <div className="mt-6 text-amber-300 group-hover:text-white transition-colors flex items-center gap-2">
+              <div>
+                <div className="text-6xl mb-5">🤖</div>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Import dari Materi
+                </h2>
+                <p className="text-amber-200 text-base">
+                  AI otomatis membuat workflow dari topik di knowledge base
+                </p>
+              </div>
+              <div className="text-amber-300 group-hover:text-white transition-colors flex items-center gap-2 text-base">
                 Import →
               </div>
             </button>
           </div>
 
-          {/* Stats */}
-          <div className="mt-12 grid grid-cols-3 gap-4 text-center">
-            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
-              <div className="text-2xl font-bold text-indigo-400">AI</div>
-              <div className="text-sm text-slate-400">Validasi Pedagogi</div>
-            </div>
-            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
-              <div className="text-2xl font-bold text-emerald-400">🔗</div>
-              <div className="text-sm text-slate-400">Drag & Drop</div>
-            </div>
-            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
-              <div className="text-2xl font-bold text-amber-400">⭐</div>
-              <div className="text-sm text-slate-400">Komunitas</div>
-            </div>
-          </div>
         </div>
       </div>
     );

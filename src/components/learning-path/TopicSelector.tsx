@@ -74,7 +74,7 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-            <div className="bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full border border-slate-700 overflow-hidden">
+            <div className="bg-slate-800 rounded-2xl shadow-2xl max-w-5xl w-full border border-slate-700 overflow-hidden">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4">
                     <h2 className="text-xl font-bold text-white">
@@ -166,7 +166,7 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                         </div>
 
                         {/* Topic List */}
-                        <div className="max-h-64 overflow-y-auto p-4 space-y-2">
+                        <div className="max-h-96 overflow-y-auto p-6">
                             {loading ? (
                                 <div className="flex justify-center py-8">
                                     <div className="animate-spin h-8 w-8 border-4 border-indigo-500 border-t-transparent rounded-full" />
@@ -176,24 +176,26 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                                     Tidak ada topik ditemukan
                                 </p>
                             ) : (
-                                filteredTopics.map((topic) => (
-                                    <button
-                                        key={topic.id}
-                                        onClick={() => onSelect(topic)}
-                                        className="w-full text-left px-4 py-3 rounded-lg bg-slate-700/50 
-                                            hover:bg-indigo-600/30 border border-transparent hover:border-indigo-500
-                                            transition-all group"
-                                    >
-                                        <div className="font-medium text-white group-hover:text-indigo-300">
-                                            {topic.title}
-                                        </div>
-                                        {topic.description && (
-                                            <div className="text-sm text-slate-400 mt-1 line-clamp-1">
-                                                {topic.description}
+                                <div className="grid grid-cols-3 gap-4 auto-rows-fr">
+                                    {filteredTopics.map((topic) => (
+                                        <button
+                                            key={topic.id}
+                                            onClick={() => onSelect(topic)}
+                                            className="text-left px-4 py-3 rounded-lg bg-slate-700/50
+                                                hover:bg-indigo-600/30 border border-transparent hover:border-indigo-500
+                                                transition-all group h-full"
+                                        >
+                                            <div className="font-medium text-white group-hover:text-indigo-300 line-clamp-4">
+                                                {topic.title}
                                             </div>
-                                        )}
-                                    </button>
-                                ))
+                                            {topic.description && (
+                                                <div className="text-sm text-slate-400 mt-1 line-clamp-2">
+                                                    {topic.description}
+                                                </div>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
                             )}
                         </div>
 

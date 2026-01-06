@@ -127,7 +127,7 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
 
     if (loading) {
         return (
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 animate-pulse">
+            <div className="animate-pulse space-y-4">
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-4"></div>
                 <div className="space-y-3">
@@ -141,15 +141,12 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
 
     if (error || !quiz) {
         return (
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl p-6 border border-red-100 dark:border-red-800">
+            <div className="space-y-4">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
+                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
                     <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">Quiz Halaman {pageNumber}</h3>
                         <p className="text-sm text-red-600 dark:text-red-400">
                             {error || 'Quiz tidak tersedia'}
                         </p>
@@ -157,7 +154,7 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
                 </div>
                 <button
                     onClick={loadQuizAndScore}
-                    className="w-full py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all"
+                    className="w-full py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-all"
                 >
                     Coba Lagi
                 </button>
@@ -166,21 +163,7 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
     }
 
     return (
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-800">
-            <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Quiz Halaman {pageNumber}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {submitted ? 'Quiz telah dijawab' : 'Jawab quiz untuk lanjut ke halaman berikutnya'}
-                    </p>
-                </div>
-            </div>
-
+        <div className="space-y-4">
             <p className="text-gray-800 dark:text-gray-200 font-medium mb-4">{quiz.question}</p>
 
             <div className="space-y-3 mb-6">
@@ -193,15 +176,15 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
                     return (
                         <label
                             key={index}
-                            className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all ${submitted
+                            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${submitted
                                 ? showAsCorrect
-                                    ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-500'
+                                    ? 'bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500'
                                     : showAsWrong
-                                        ? 'bg-red-100 dark:bg-red-900/30 border-2 border-red-500'
-                                        : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 opacity-60'
+                                        ? 'bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500'
+                                        : 'bg-gray-50 dark:bg-gray-800/50 opacity-60'
                                 : isSelected
-                                    ? 'bg-indigo-100 dark:bg-indigo-900/30 border-2 border-indigo-500'
-                                    : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600'
+                                    ? 'bg-indigo-50 dark:bg-indigo-900/20 border-l-4 border-indigo-500'
+                                    : 'bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800'
                                 }`}
                         >
                             <input
@@ -238,7 +221,7 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
                 <button
                     onClick={handleSubmit}
                     disabled={selectedAnswer === null || submitting}
-                    className={`w-full py-3 rounded-xl font-semibold transition-all ${selectedAnswer === null
+                    className={`w-full py-3 rounded-lg font-semibold transition-all ${selectedAnswer === null
                         ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                         : 'bg-indigo-600 text-white hover:bg-indigo-700'
                         }`}
@@ -256,9 +239,9 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
                     )}
                 </button>
             ) : (
-                <div className={`p-4 rounded-xl ${result?.is_correct
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
-                    : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'
+                <div className={`p-3 rounded-lg border-l-4 ${result?.is_correct
+                    ? 'bg-green-50 dark:bg-green-900/20 border-green-500 text-green-800 dark:text-green-200'
+                    : 'bg-red-50 dark:bg-red-900/20 border-red-500 text-red-800 dark:text-red-200'
                     }`}>
                     <div className="flex items-center gap-2">
                         {result?.is_correct ? (

@@ -381,33 +381,6 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
         setShowAddNode(false);
     }, []);
 
-    const topicPanelStyle = {
-        position: 'absolute' as const,
-        top: '1rem',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 10,
-        pointerEvents: 'none' as const
-    };
-
-    const actionButtonsStyle = {
-        position: 'absolute' as const,
-        top: '1rem',
-        right: '1rem',
-        zIndex: 10,
-        display: 'flex',
-        gap: '0.5rem',
-        pointerEvents: 'auto' as const
-    };
-
-    const instructionsStyle = {
-        position: 'absolute' as const,
-        bottom: '1rem',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 10,
-        pointerEvents: 'none' as const
-    };
 
     return (
         <div
@@ -450,7 +423,7 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
                 />
             </ReactFlow>
 
-            <div style={topicPanelStyle}>
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
                 <div className="bg-slate-800/90 backdrop-blur-sm rounded-xl px-6 py-3 border border-slate-700 shadow-xl">
                     <div className="text-center">
                         <div className="text-xs text-indigo-400 mb-1">Topik</div>
@@ -459,7 +432,7 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
                 </div>
             </div>
 
-            <div style={actionButtonsStyle}>
+            <div className="absolute top-4 right-4 z-10 flex gap-2 pointer-events-auto">
                 {isReadOnly && !isEditing && (
                     <button
                         onClick={() => setIsEditing(true)}
@@ -503,7 +476,7 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
                 </button>
             </div>
 
-            <div style={instructionsStyle}>
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
                 <div className="bg-slate-800/90 backdrop-blur-sm rounded-xl px-4 py-2 border border-slate-700">
                     <span className="text-xs text-slate-400">
                         Drag node dari sidebar - Hubungkan untuk validasi AI - Nodes: <span className="text-white font-bold">{nodes.length}</span> - Edges: <span className="text-white font-bold">{edges.length}</span>

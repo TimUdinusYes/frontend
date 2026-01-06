@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import { activityTracker, type ActivityStats } from '../services/activityTracker'
 import { aiAnalysis, type LearningAnalysis } from '../services/aiAnalysis'
-import './scrollbar.css'
 
 export default function TaskIntegratorUnified() {
   const router = useRouter()
