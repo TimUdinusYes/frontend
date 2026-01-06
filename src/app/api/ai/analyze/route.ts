@@ -1,29 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server'
-import Groq from 'groq-sdk'
+import { NextRequest, NextResponse } from "next/server";
+import Groq from "groq-sdk";
 
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY || ''
-})
+  apiKey: process.env.GROQ_API_KEY || "",
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { stats } = body
+    const body = await request.json();
+    const { stats } = body;
 
     if (!stats) {
       return NextResponse.json(
-        { error: 'Stats are required' },
+        { error: "Stats are required" },
         { status: 400 }
-      )
+      );
     }
 
     // Debug: Log received data
-    console.log('📊 Stats received:', {
+    console.log("📊 Stats received:", {
       totalMaterials: stats.totalMaterialsOpened,
       materialsCompleted: stats.materialsCompleted,
       materialSummaryCount: stats.materialSummary?.length || 0,
-      materialSummary: stats.materialSummary
-    })
+      materialSummary: stats.materialSummary,
+    });
 
     const prompt = `
 Anda adalah seorang AI learning assistant yang menganalisis pola belajar siswa dan membangun peta pengetahuan (knowledge map).
@@ -35,9 +35,16 @@ Data Aktivitas Belajar:
 - Rata-rata waktu per sesi: ${stats.averageSessionTime} menit
 
 DETAIL SEMUA MATERI (WAJIB ANALISIS SEMUA):
-${stats.materialSummary.map((m: any) =>
-  `- ${m.material_title} (${m.topic_title}): dibuka ${m.total_opens}x, durasi ${m.total_duration}s, completed: ${m.is_completed ? 'YA' : 'TIDAK'}`
-).join('\n')}
+${stats.materialSummary
+  .map(
+    (m: any) =>
+      `- ${m.material_title} (${m.topic_title}): dibuka ${
+        m.total_opens
+      }x, durasi ${m.total_duration}s, completed: ${
+        m.is_completed ? "YA" : "TIDAK"
+      }`
+  )
+  .join("\n")}
 
 Tugas Anda:
 1. Analisis SETIAP materi yang tercantum di atas (WAJIB SEMUA!)
@@ -128,14 +135,18 @@ ATURAN KATEGORISASI YANG WAJIB DIIKUTI:
       - Minimal 2-3 topik yang relevan dengan bidang studi mereka
 
 3. WAJIB LENGKAP:
-   - Minimal ${stats.materialSummary.length} konsep total di masteredConcepts + learningConcepts
+   - Minimal ${
+     stats.materialSummary.length
+   } konsep total di masteredConcepts + learningConcepts
    - Minimal 3-5 predictedChallenges
    - Minimal 5-8 optimalLearningPath steps
    - Minimal 5 insights
 
 4. VALIDASI AKHIR:
    Sebelum return JSON, pastikan:
-   ✓ Jumlah masteredConcepts + learningConcepts >= ${stats.materialSummary.length}
+   ✓ Jumlah masteredConcepts + learningConcepts >= ${
+     stats.materialSummary.length
+   }
    ✓ Setiap materi di data ada di salah satu kategori
    ✓ Tidak ada duplikasi
 
@@ -151,56 +162,73 @@ Jika data menunjukkan:
   → Masuk masteredConcepts dengan confidence: 80%
 
 Jawab hanya dengan JSON yang valid, tanpa markdown atau penjelasan tambahan.
-`
+`;
 
-    console.log('📝 Prompt preview (first 500 chars):', prompt.substring(0, 500))
+    console.log(
+      "📝 Prompt preview (first 500 chars):",
+      prompt.substring(0, 500)
+    );
 
     const completion = await groq.chat.completions.create({
       messages: [
         {
-          role: 'user',
-          content: prompt
-        }
+          role: "user",
+          content: prompt,
+        },
       ],
-      model: 'llama-3.3-70b-versatile',
+      model: "llama-3.3-70b-versatile",
       temperature: 0.7,
       max_tokens: 4000,
-      response_format: { type: 'json_object' }
-    })
+      response_format: { type: "json_object" },
+    });
 
-    const responseContent = completion.choices[0]?.message?.content
+    const responseContent = completion.choices[0]?.message?.content;
     if (!responseContent) {
-      throw new Error('No response from AI')
+      throw new Error("No response from AI");
     }
 
-    const analysis = JSON.parse(responseContent)
+    const analysis = JSON.parse(responseContent);
 
     // Add recommendedMaterials based on learningConcepts
-    const recommendedMaterials = analysis.knowledgeMap?.learningConcepts?.map(
-      (lc: any) => lc.concept
-    ) || []
+    const recommendedMaterials =
+      analysis.knowledgeMap?.learningConcepts?.map((lc: any) => lc.concept) ||
+      [];
 
     const analysisWithRecommendations = {
       ...analysis,
-      recommendedMaterials
-    }
+      recommendedMaterials,
+    };
 
-    console.log('✅ AI Analysis completed:', {
+    console.log("✅ AI Analysis completed:", {
       masteredCount: analysis.knowledgeMap?.masteredConcepts?.length || 0,
       learningCount: analysis.knowledgeMap?.learningConcepts?.length || 0,
       notStartedCount: analysis.knowledgeMap?.notStartedConcepts?.length || 0,
-      totalConcepts: (analysis.knowledgeMap?.masteredConcepts?.length || 0) +
-                     (analysis.knowledgeMap?.learningConcepts?.length || 0),
+      totalConcepts:
+        (analysis.knowledgeMap?.masteredConcepts?.length || 0) +
+        (analysis.knowledgeMap?.learningConcepts?.length || 0),
       expectedMin: stats.materialSummary.length,
-      recommendedMaterialsCount: recommendedMaterials.length
-    })
+      recommendedMaterialsCount: recommendedMaterials.length,
+    });
 
-    return NextResponse.json(analysisWithRecommendations)
+    return NextResponse.json(analysisWithRecommendations);
   } catch (error: any) {
-    console.error('Error in AI analysis:', error)
+    console.error("Error in AI analysis:", error);
+
+    // Handle rate limit errors specifically
+    if (error?.status === 429 || error?.error?.code === "rate_limit_exceeded") {
+      return NextResponse.json(
+        {
+          error:
+            "AI sedang sibuk. Silakan tunggu beberapa detik dan refresh halaman.",
+          retryAfter: 10,
+        },
+        { status: 503 } // Service temporarily unavailable
+      );
+    }
+
     return NextResponse.json(
-      { error: error.message || 'Failed to analyze learning pattern' },
+      { error: error.message || "Failed to analyze learning pattern" },
       { status: 500 }
-    )
+    );
   }
 }
