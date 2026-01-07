@@ -19,6 +19,7 @@ export interface LearningConcept {
   progress: number;
   needsReview: boolean;
   estimatedTimeToMaster: string;
+  status: string; // Status detail: "Belum mengerjakan quiz", "Quiz belum sempurna", dll
 }
 
 export interface NotStartedConcept {
@@ -26,6 +27,7 @@ export interface NotStartedConcept {
   prerequisite: string[];
   difficulty: "easy" | "medium" | "hard";
   estimatedLearningTime: string;
+  reason: string; // Alasan kenapa belum dimulai
 }
 
 export interface KnowledgeMap {

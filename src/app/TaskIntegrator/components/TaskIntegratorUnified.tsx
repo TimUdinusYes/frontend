@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -22,7 +21,7 @@ export default function TaskIntegratorUnified() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const activityStats = await activityTracker.getActivityStats();
+    const activityStats = await activityTracker.getCombinedStats();
     setStats(activityStats);
     setLoading(false);
 
@@ -39,7 +38,7 @@ export default function TaskIntegratorUnified() {
 
   const refreshData = useCallback(async () => {
     // Refresh stats tanpa loading overlay
-    const activityStats = await activityTracker.getActivityStats();
+    const activityStats = await activityTracker.getCombinedStats();
     const currentStats = stats;
 
     // Cek apakah ada perubahan signifikan
@@ -258,117 +257,6 @@ export default function TaskIntegratorUnified() {
               <span>AI sedang menganalisis pola belajar Anda...</span>
             </div>
           )}
-
-          {/* Learning Velocity inside Analytics Box */}
-          {analysis?.learningVelocity && (
-            <div className="mt-6 bg-gray-800/90 rounded-xl p-6 shadow-lg border border-white/10">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                  <svg
-                    className="w-5 h-5 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white">
-                    Kecepatan Belajar
-                  </h3>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${getSpeedBadge(
-                      analysis.learningVelocity.overallSpeed
-                    )}`}
-                  >
-                    {analysis.learningVelocity.overallSpeed}
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-4">
-                {analysis.learningVelocity.fastTopics.length > 0 && (
-                  <div>
-                    <p className="text-sm font-medium text-white mb-2">
-                      ⚡ Cepat
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {analysis.learningVelocity.fastTopics.map(
-                        (topic, idx) => (
-                          <span
-                            key={idx}
-                            className="px-3 py-1 bg-indigo-600/80 text-white text-xs rounded-full"
-                          >
-                            {topic}
-                          </span>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
-                {analysis.learningVelocity.slowTopics.length > 0 && (
-                  <div>
-                    <p className="text-sm font-medium text-white mb-2">
-                      🐢 Perlu Lebih Banyak Waktu
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {analysis.learningVelocity.slowTopics.map(
-                        (topic, idx) => (
-                          <span
-                            key={idx}
-                            className="px-3 py-1 bg-orange-600/80 text-white text-xs rounded-full"
-                          >
-                            {topic}
-                          </span>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
-                <div className="pt-3 border-t border-white/20">
-                  <p className="text-sm text-white">
-                    💡 {analysis.learningVelocity.recommendation}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Motivational Message inside Analytics Box */}
-          {analysis?.motivationalMessage && (
-            <div className="mt-6 bg-green-600/90 rounded-xl p-6 shadow-lg border border-white/10">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-white text-lg mb-2">
-                    Pesan untuk Anda
-                  </h3>
-                  <p className="text-white">
-                    {analysis.motivationalMessage}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {!stats || stats.totalMaterialsOpened === 0 ? (
@@ -397,6 +285,37 @@ export default function TaskIntegratorUnified() {
           </div>
         ) : (
           <>
+            {/* Motivational Message */}
+            {analysis?.motivationalMessage && (
+              <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg mb-2">
+                      Pesan untuk Anda
+                    </h3>
+                    <p className="text-green-50">
+                      {analysis.motivationalMessage}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Knowledge Map */}
             {analysis?.knowledgeMap && (
               <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -504,9 +423,14 @@ export default function TaskIntegratorUnified() {
                               {concept.progress}% progress
                             </p>
                           </div>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                             ⏱️ {concept.estimatedTimeToMaster}
                           </p>
+                          {concept.status && (
+                            <p className="text-xs text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded">
+                              📌 {concept.status}
+                            </p>
+                          )}
                         </div>
                       )
                     )}
@@ -559,6 +483,11 @@ export default function TaskIntegratorUnified() {
                               {concept.difficulty}
                             </span>
                           </div>
+                          {concept.reason && (
+                            <p className="text-xs text-gray-700 dark:text-gray-300 mb-2 italic">
+                              💡 {concept.reason}
+                            </p>
+                          )}
                           {concept.prerequisite.length > 0 && (
                             <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                               📚 Butuh: {concept.prerequisite.join(", ")}
@@ -575,8 +504,89 @@ export default function TaskIntegratorUnified() {
               </div>
             )}
 
-            {/* Predicted Challenges */}
-            <div className="mb-8">
+            {/* Learning Velocity & Predicted Challenges */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Learning Velocity */}
+              {analysis?.learningVelocity && (
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center">
+                      <svg
+                        className="w-5 h-5 text-indigo-600 dark:text-indigo-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        Kecepatan Belajar
+                      </h3>
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full ${getSpeedBadge(
+                          analysis.learningVelocity.overallSpeed
+                        )}`}
+                      >
+                        {analysis.learningVelocity.overallSpeed}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    {analysis.learningVelocity.fastTopics.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          ⚡ Cepat
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {analysis.learningVelocity.fastTopics.map(
+                            (topic, idx) => (
+                              <span
+                                key={idx}
+                                className="px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 text-xs rounded-full"
+                              >
+                                {topic}
+                              </span>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {analysis.learningVelocity.slowTopics.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          🐢 Perlu Lebih Banyak Waktu
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {analysis.learningVelocity.slowTopics.map(
+                            (topic, idx) => (
+                              <span
+                                key={idx}
+                                className="px-3 py-1 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 text-xs rounded-full"
+                              >
+                                {topic}
+                              </span>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        💡 {analysis.learningVelocity.recommendation}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Predicted Challenges */}
               {analysis?.predictedChallenges &&
                 analysis.predictedChallenges.length > 0 && (
                   <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
