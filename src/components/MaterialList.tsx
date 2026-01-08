@@ -152,7 +152,7 @@ export default function MaterialList() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-black"></div>
       </div>
     )
   }
@@ -161,18 +161,16 @@ export default function MaterialList() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-3xl font-black text-black">
           Daftar Topik & Materi
         </h2>
       </div>
 
       {/* Topics List */}
       {topics.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
-          <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 00-2-2v-4m0 0l4 4m-4 4m0 0l4 4m0 0 0118 0z" />
-          </svg>
-          <p className="text-gray-500 dark:text-gray-400">
+        <div className="text-center py-12 bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+          <div className="text-6xl mb-4">📚</div>
+          <p className="text-gray-700 font-bold">
             Belum ada topik pembelajaran.
           </p>
         </div>
@@ -185,25 +183,23 @@ export default function MaterialList() {
             return (
               <div
                 key={topic.id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl"
+                className="bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden transition-all duration-500 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:scale-102"
               >
                 {/* Topic Header - Clickable */}
                 <div
                   onClick={() => handleTopicClick(topic)}
-                  className="p-6 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-200 dark:border-gray-700"
+                  className="p-6 cursor-pointer hover:bg-blue-50 transition-colors border-b-2 border-black"
                 >
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    {topic.title}
+                  <h3 className="text-xl font-black text-black mb-3 truncate" title={topic.title}>
+                    {topic.title.length > 25 ? topic.title.substring(0, 25) + '...' : topic.title}
                   </h3>
                   {topic.description && (
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                    <p className="text-gray-600 text-sm mb-3">
                       {topic.description}
                     </p>
                   )}
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-5a2 2 0 01-2-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2h2" />
-                    </svg>
+                  <div className="flex items-center gap-2 text-sm font-bold text-gray-700">
+                    <span className="text-lg">📄</span>
                     <span>{topicMaterials.length} materi</span>
                   </div>
                 </div>
@@ -212,19 +208,23 @@ export default function MaterialList() {
                 <div className="p-6">
                   {recentMaterials.length > 0 ? (
                     <div className="space-y-3">
-                      {recentMaterials.map((material) => (
+                      {recentMaterials.map((material, index) => (
                         <div
                           key={material.id}
                           onClick={(e) => {
                             e.stopPropagation()
                             handleMaterialClick(material)
                           }}
-                          className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer"
+                          className="flex items-center gap-3 p-4 bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:scale-102 cursor-pointer"
                         >
                           {/* Material Type Icon */}
                           <div className="flex-shrink-0">
-                            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
-                              <span className="text-indigo-600 dark:text-indigo-400 text-xs font-semibold">
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 border-black ${
+                              index % 4 === 0 ? 'bg-pink-400' :
+                              index % 4 === 1 ? 'bg-teal-400' :
+                              index % 4 === 2 ? 'bg-yellow-400' : 'bg-green-400'
+                            }`}>
+                              <span className="text-sm font-bold text-black">
                                 {material.material_type.substring(0, 3).toUpperCase()}
                               </span>
                             </div>
@@ -232,25 +232,23 @@ export default function MaterialList() {
 
                           {/* Material Title Only */}
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                            <h4 className="text-sm font-black text-black truncate">
                               {material.title}
                             </h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            <p className="text-xs text-gray-600 mt-0.5 font-semibold">
                               {material.material_type}
                             </p>
                           </div>
 
                           {/* Quiz Score Badge (if exists) */}
                           {quizScores[material.id] && (
-                            <div className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${quizScores[material.id].is_complete
-                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                            <div className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold border-2 border-black ${quizScores[material.id].is_complete
+                                ? 'bg-green-400 text-black'
+                                : 'bg-yellow-400 text-black'
                               }`}>
                               {quizScores[material.id].is_complete ? (
                                 <>
-                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                  </svg>
+                                  <span>✓</span>
                                   <span>{quizScores[material.id].total_correct}/{quizScores[material.id].total_pages}</span>
                                 </>
                               ) : (
@@ -262,7 +260,7 @@ export default function MaterialList() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-center text-gray-500 dark:text-gray-400 py-4 text-sm">
+                    <p className="text-center text-gray-600 py-4 text-sm font-semibold">
                       Belum ada materi
                     </p>
                   )}
@@ -280,31 +278,27 @@ export default function MaterialList() {
           onClick={closeModal}
         >
           <div
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-[95vw] max-w-[1600px] max-h-[90vh] overflow-hidden"
+            className="bg-white rounded-2xl border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-[95vw] max-w-[1600px] max-h-[90vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
+            <div className="bg-gradient-to-r from-blue-400 to-blue-500 p-6 text-white border-b-2 border-black">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h2 className="text-3xl font-bold mb-2">{selectedTopic.title}</h2>
+                  <h2 className="text-3xl font-black text-black mb-2 break-words">{selectedTopic.title}</h2>
                   {selectedTopic.description && (
-                    <p className="text-indigo-100">{selectedTopic.description}</p>
+                    <p className="text-black font-semibold">{selectedTopic.description}</p>
                   )}
-                  <div className="mt-3 flex items-center gap-2 text-sm">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-5a2 2 0 01-2-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2h2" />
-                    </svg>
+                  <div className="mt-3 flex items-center gap-2 text-sm font-bold text-black">
+                    <span className="text-lg">📄</span>
                     <span>{materials[selectedTopic.id]?.length || 0} materi tersedia</span>
                   </div>
                 </div>
                 <button
                   onClick={closeModal}
-                  className="ml-4 p-2 hover:bg-white/20 rounded-lg transition-colors"
+                  className="ml-4 p-2 hover:bg-yellow-400 rounded-lg transition-colors border-2 border-black bg-white"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <span className="text-2xl font-black text-black">✕</span>
                 </button>
               </div>
             </div>
@@ -313,16 +307,20 @@ export default function MaterialList() {
             <div className="overflow-y-auto max-h-[calc(90vh-180px)] p-6">
               {materials[selectedTopic.id] && materials[selectedTopic.id].length > 0 ? (
                 <div className="space-y-4">
-                  {materials[selectedTopic.id].map((material) => (
+                  {materials[selectedTopic.id].map((material, index) => (
                     <div
                       key={material.id}
                       onClick={() => handleMaterialClick(material)}
-                      className="flex items-start p-5 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all cursor-pointer border-2 border-transparent hover:border-indigo-500"
+                      className="flex items-start p-5 bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:scale-[1.02] cursor-pointer"
                     >
                       {/* Material Type Icon */}
                       <div className="flex-shrink-0 mr-4">
-                        <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
-                          <span className="text-indigo-600 dark:text-indigo-400 text-sm font-bold">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 border-black ${
+                          index % 4 === 0 ? 'bg-pink-400' :
+                          index % 4 === 1 ? 'bg-teal-400' :
+                          index % 4 === 2 ? 'bg-yellow-400' : 'bg-green-400'
+                        }`}>
+                          <span className="text-sm font-bold text-black">
                             {material.material_type.substring(0, 3).toUpperCase()}
                           </span>
                         </div>
@@ -331,20 +329,18 @@ export default function MaterialList() {
                       {/* Material Info */}
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          <h4 className="text-lg font-black text-black">
                             {material.title}
                           </h4>
                           {/* Quiz Score Badge */}
                           {quizScores[material.id] && (
-                            <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${quizScores[material.id].is_complete
-                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                            <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border-2 border-black ${quizScores[material.id].is_complete
+                                ? 'bg-green-400 text-black'
+                                : 'bg-yellow-400 text-black'
                               }`}>
                               {quizScores[material.id].is_complete ? (
                                 <>
-                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                  </svg>
+                                  <span>✓</span>
                                   <span>{quizScores[material.id].total_correct}/{quizScores[material.id].total_pages}</span>
                                 </>
                               ) : (
@@ -355,35 +351,39 @@ export default function MaterialList() {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-3 mb-2">
-                          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                          <div className="flex items-center gap-1 text-sm text-gray-700 font-semibold">
                             <span>Oleh:</span>
                             <Link
                               href={currentUserId === material.created_by ? '/mentor/dashboard' : `/mentor/${material.created_by}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="font-medium text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                              className="font-black text-blue-600 hover:underline flex items-center gap-1"
                             >
                               {authors[material.created_by]?.avatar_url && (
                                 <img
                                   src={authors[material.created_by].avatar_url!}
                                   alt="avatar"
-                                  className="w-5 h-5 rounded-full"
+                                  className="w-5 h-5 rounded-full border border-black"
                                 />
                               )}
                               {currentUserId === material.created_by ? 'Anda' : (authors[material.created_by]?.nama || 'Mentor')}
                             </Link>
                           </div>
 
-                          <span className="text-gray-300 dark:text-gray-600">|</span>
+                          <span className="text-gray-400">|</span>
 
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                          <span className="text-sm text-gray-700 font-semibold">
                             {material.material_type}
                           </span>
                         </div>
 
                         {material.tags && material.tags.length > 0 && (
                           <div className="flex flex-wrap gap-2">
-                            {material.tags.map((tag, index) => (
-                              <span key={index} className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs rounded-full font-medium">
+                            {material.tags.map((tag, tagIndex) => (
+                              <span key={tagIndex} className={`px-2 py-1 text-black text-xs rounded-full font-bold border-2 border-black ${
+                                tagIndex % 4 === 0 ? 'bg-pink-400' :
+                                tagIndex % 4 === 1 ? 'bg-teal-400' :
+                                tagIndex % 4 === 2 ? 'bg-yellow-400' : 'bg-green-400'
+                              }`}>
                                 #{tag}
                               </span>
                             ))}
@@ -394,11 +394,9 @@ export default function MaterialList() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-5a2 2 0 01-2-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2h2" />
-                  </svg>
-                  <p className="text-gray-500 dark:text-gray-400">
+                <div className="text-center py-12 bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="text-6xl mb-4">📚</div>
+                  <p className="text-gray-700 font-bold">
                     Belum ada materi untuk topik ini
                   </p>
                 </div>
@@ -410,3 +408,4 @@ export default function MaterialList() {
     </div>
   )
 }
+

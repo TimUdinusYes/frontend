@@ -16,11 +16,9 @@ export default function HomePage() {
 
   // Animation styles
   const getCardAnimation = (delay: number, isVisible: boolean) => ({
-    animation: isVisible
-      ? `fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s forwards`
-      : 'none',
-    opacity: isVisible ? 1 : 0,
-    transform: isVisible ? 'translateY(0) rotateX(0deg)' : 'translateY(30px) rotateX(0deg)',
+    animation: `fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s forwards`,
+    opacity: 1,
+    transform: 'translateY(0) rotateX(0deg)',
   })
 
   // Intersection Observer for scroll animations
@@ -37,12 +35,18 @@ export default function HomePage() {
       { threshold: 0.1 }
     )
 
-    // Observe all feature cards
-    document.querySelectorAll('[id^="feature-card-"]').forEach((card) => {
-      observer.observe(card)
-    })
+    // Use setTimeout to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      // Observe all feature cards
+      document.querySelectorAll('[id^="feature-card-"]').forEach((card) => {
+        observer.observe(card)
+      })
+    }, 100)
 
-    return () => observer.disconnect()
+    return () => {
+      clearTimeout(timeoutId)
+      observer.disconnect()
+    }
   }, [])
 
   useEffect(() => {
@@ -173,6 +177,14 @@ export default function HomePage() {
                 transform: translateY(0) rotateX(0deg);
               }
             }
+            @keyframes spring-bounce {
+              0%, 100% {
+                transform: scale(1) translateY(0);
+              }
+              50% {
+                transform: scale(1.05) translateY(-8px);
+              }
+            }
           `}</style>
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Epic Features Section */}
@@ -188,97 +200,103 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Features Grid - 4 columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+            {/* Features Grid - Bento Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-20 max-w-5xl mx-auto">
               {/* Feature 1 - AI Task Integrator */}
-              <div
-                id="feature-card-0"
-                className="relative bg-white rounded-2xl p-6 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-3 hover:scale-110 hover:rotate-2"
-                style={getCardAnimation(0.1, visibleCards.has(0))}
-                onMouseEnter={() => setHoveredCard(0)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div className="flex flex-col items-center text-center">
-                  <div className={`flex-shrink-0 w-16 h-16 bg-pink-400 rounded-full flex items-center justify-center border-2 border-black mb-4 transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) ${hoveredCard === 0 ? 'scale-125 rotate-12' : 'scale-100 rotate-0'}`}>
-                    <span className="text-3xl">🤖</span>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-black mb-2">
-                      AI Task Integrator & Timekeeper
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Let our friendly AI plan your day! It organizes homework, study time, and play into a fun schedule so you never miss a beat.
-                    </p>
-                  </div>
+              <div className="relative group" style={{ paddingBottom: '12px', paddingRight: '12px' }}>
+                {/* Stacked layers effect - positioned behind */}
+                <div className="absolute top-[4px] left-[4px] right-[-4px] bottom-[-4px] bg-pink-200 border-2 border-black -z-10 transition-all duration-300 group-hover:translate-x-2 group-hover:translate-y-2"></div>
+                <div className="absolute top-[8px] left-[8px] right-[-8px] bottom-[-8px] bg-pink-100 border-2 border-black -z-20 transition-all duration-300 group-hover:translate-x-4 group-hover:translate-y-4"></div>
+
+                <div
+                  id="feature-card-0"
+                  className="relative bg-pink-300 border-2 border-black p-8 transition-all duration-300 hover:shadow-[12px_12px_0_0_rgba(0,0,0,1)] hover:-translate-y-2 z-10"
+                  style={getCardAnimation(0.1, visibleCards.has(0))}
+                  onMouseEnter={() => setHoveredCard(0)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                <div className="font-bold tracking-wide mb-4 flex items-center gap-2">
+                  <span className="text-2xl">🤖</span>
+                  <span>AI TASK INTEGRATOR</span>
+                </div>
+                <p className="text-sm leading-relaxed mb-12">
+                  Let our friendly AI plan your day! It organizes homework, study time, and play into a fun schedule so you never miss a beat.
+                </p>
+                <button className="absolute bottom-4 left-4 right-4 border-2 border-black py-2 text-sm font-bold hover:bg-black hover:text-white transition-colors bg-white">
+                  LET'S GO
+                </button>
                 </div>
               </div>
 
               {/* Feature 2 - AI Adaptive Material */}
-              <div
-                id="feature-card-1"
-                className="relative bg-white rounded-2xl p-6 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-3 hover:scale-110 hover:rotate-[-2deg]"
-                style={getCardAnimation(0.2, visibleCards.has(1))}
-                onMouseEnter={() => setHoveredCard(1)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div className="flex flex-col items-center text-center">
-                  <div className={`flex-shrink-0 w-16 h-16 bg-teal-400 rounded-full flex items-center justify-center border-2 border-black mb-4 transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) ${hoveredCard === 1 ? 'scale-125 rotate-[-12deg]' : 'scale-100 rotate-0'}`}>
-                    <span className="text-3xl">📖</span>
+              <div className="relative group" style={{ paddingBottom: '12px', paddingRight: '12px' }}>
+                {/* Stacked layers effect */}
+                <div className="absolute top-[4px] left-[4px] right-[-4px] bottom-[-4px] bg-teal-200 border-2 border-black -z-10 transition-all duration-300 group-hover:translate-x-2 group-hover:translate-y-2"></div>
+                <div className="absolute top-[8px] left-[8px] right-[-8px] bottom-[-8px] bg-teal-100 border-2 border-black -z-20 transition-all duration-300 group-hover:translate-x-4 group-hover:translate-y-4"></div>
+
+                <div
+                  id="feature-card-1"
+                  className="relative bg-teal-300 border-2 border-black p-8 transition-all duration-300 hover:shadow-[12px_12px_0_0_rgba(0,0,0,1)] hover:-translate-y-2 z-10"
+                  style={getCardAnimation(0.2, visibleCards.has(1))}
+                  onMouseEnter={() => setHoveredCard(1)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  <div className="font-bold tracking-wide mb-4 flex items-center gap-2">
+                    <span className="text-2xl">📖</span>
+                    <span>AI ADAPTIVE MATERIAL</span>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-black text-black mb-2">
-                      AI Adaptive Material Generator
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Lessons that magically change just for you! If it's too hard, we make it simpler; if it's too easy, get ready for a challenge.
-                    </p>
-                  </div>
+                  <p className="text-sm leading-relaxed mb-12">
+                    Lessons that magically change just for you! If it's too hard, we make it simpler; if it's too easy, get ready for a challenge.
+                  </p>
+                  <button className="absolute bottom-4 left-4 right-4 border-2 border-black py-2 text-sm font-bold hover:bg-black hover:text-white transition-colors bg-white">
+                    LET'S GO
+                  </button>
                 </div>
               </div>
 
               {/* Feature 3 - AI Multi-Source */}
-              <div
-                id="feature-card-2"
-                className="relative bg-white rounded-2xl p-6 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-3 hover:scale-110 hover:rotate-2"
-                style={getCardAnimation(0.3, visibleCards.has(2))}
-                onMouseEnter={() => setHoveredCard(2)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div className="flex flex-col items-center text-center">
-                  <div className={`flex-shrink-0 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center border-2 border-black mb-4 transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) ${hoveredCard === 2 ? 'scale-125 rotate-12' : 'scale-100 rotate-0'}`}>
-                    <span className="text-3xl">🔗</span>
+              <div className="relative group" style={{ paddingBottom: '12px', paddingRight: '12px' }}>
+                {/* Stacked layers effect */}
+                <div className="absolute top-[4px] left-[4px] right-[-4px] bottom-[-4px] bg-yellow-200 border-2 border-black -z-10 transition-all duration-300 group-hover:translate-x-2 group-hover:translate-y-2"></div>
+                <div className="absolute top-[8px] left-[8px] right-[-8px] bottom-[-8px] bg-yellow-100 border-2 border-black -z-20 transition-all duration-300 group-hover:translate-x-4 group-hover:translate-y-4"></div>
+
+                <div
+                  id="feature-card-2"
+                  className="relative bg-yellow-300 border-2 border-black p-8 transition-all duration-300 hover:shadow-[12px_12px_0_0_rgba(0,0,0,1)] hover:-translate-y-2 z-10"
+                  style={getCardAnimation(0.3, visibleCards.has(2))}
+                  onMouseEnter={() => setHoveredCard(2)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  <div className="font-bold tracking-wide mb-4 flex items-center gap-2">
+                    <span className="text-2xl">🔗</span>
+                    <span>MULTI-SOURCE KNOWLEDGE</span>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-black text-black mb-2">
-                      AI Multi-Source Knowledge Graph
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Connect the dots! See how math links to music and science links to stories in a giant, interactive web of fun facts.
-                    </p>
-                  </div>
+                  <p className="text-sm leading-relaxed">
+                    Connect the dots! See how math links to music and science links to stories in a giant, interactive web of fun facts.
+                  </p>
                 </div>
               </div>
 
               {/* Feature 4 - Peer Connect */}
-              <div
-                id="feature-card-3"
-                className="relative bg-white rounded-2xl p-6 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-3 hover:scale-110 hover:rotate-[-2deg]"
-                style={getCardAnimation(0.4, visibleCards.has(3))}
-                onMouseEnter={() => setHoveredCard(3)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div className="flex flex-col items-center text-center">
-                  <div className={`flex-shrink-0 w-16 h-16 bg-green-400 rounded-full flex items-center justify-center border-2 border-black mb-4 transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) ${hoveredCard === 3 ? 'scale-125 rotate-[-12deg]' : 'scale-100 rotate-0'}`}>
-                    <span className="text-3xl">👥</span>
+              <div className="relative group" style={{ paddingBottom: '12px', paddingRight: '12px' }}>
+                {/* Stacked layers effect */}
+                <div className="absolute top-[4px] left-[4px] right-[-4px] bottom-[-4px] bg-green-200 border-2 border-black -z-10 transition-all duration-300 group-hover:translate-x-2 group-hover:translate-y-2"></div>
+                <div className="absolute top-[8px] left-[8px] right-[-8px] bottom-[-8px] bg-green-100 border-2 border-black -z-20 transition-all duration-300 group-hover:translate-x-4 group-hover:translate-y-4"></div>
+
+                <div
+                  id="feature-card-3"
+                  className="relative bg-green-300 border-2 border-black p-8 transition-all duration-300 hover:shadow-[12px_12px_0_0_rgba(0,0,0,1)] hover:-translate-y-2 z-10"
+                  style={getCardAnimation(0.4, visibleCards.has(3))}
+                  onMouseEnter={() => setHoveredCard(3)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  <div className="font-bold tracking-wide mb-4 flex items-center gap-2">
+                    <span className="text-2xl">👥</span>
+                    <span>PEER CONNECT & GROUPS</span>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-black text-black mb-2">
-                      PEER CONNECT & Groups
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Join clubs, video call friends to study together, and make new buddies who love what you love in a safe space!
-                    </p>
-                  </div>
+                  <p className="text-sm leading-relaxed">
+                    Join clubs, video call friends to study together, and make new buddies who love what you love in a safe space!
+                  </p>
                 </div>
               </div>
             </div>

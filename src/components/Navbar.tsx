@@ -245,7 +245,7 @@ export default function Navbar() {
                   <p className={`text-sm font-black ${
                     isScrolled ? 'text-black' : 'text-black'
                   }`}>
-                    {user.username}
+                    {userProfile?.nama || user.username}
                   </p>
                   <p className="text-xs font-bold text-gray-600">{user.role}</p>
                   {badge ? (
@@ -380,7 +380,7 @@ export default function Navbar() {
                       </div>
                     )}
                     <div>
-                      <p className="font-black text-black">{user.username}</p>
+                      <p className="font-black text-black">{userProfile?.nama || user.username}</p>
                       <p className="text-sm font-bold text-gray-600">{user.role}</p>
                     </div>
                   </div>

@@ -59,7 +59,7 @@ export default function WorkflowGallery({ onSelect, onBack, userId }: WorkflowGa
             return;
         }
 
-        // Check if user owns the workflow
+        // Check if user owns workflow
         if (workflow.user_id === userId) {
             setToast('Tidak bisa star workflow milik sendiri');
             return;
@@ -96,19 +96,19 @@ export default function WorkflowGallery({ onSelect, onBack, userId }: WorkflowGa
     }, {} as Record<string, Workflow[]>);
 
     return (
-        <div className="min-h-screen bg-slate-900 p-6">
+        <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 p-6">
             {/* Header */}
             <div className="max-w-6xl mx-auto mb-8">
                 <button
                     onClick={onBack}
-                    className="text-slate-400 hover:text-white mb-4 flex items-center gap-2"
+                    className="text-gray-800 hover:text-black font-bold mb-4 flex items-center gap-2 transition-all duration-300 hover:scale-105"
                 >
                     ← Kembali
                 </button>
-                <h1 className="text-3xl font-bold text-white mb-2">
+                <h1 className="text-3xl md:text-4xl font-black text-black mb-2">
                     📚 Workflow Gallery
                 </h1>
-                <p className="text-slate-400">
+                <p className="text-gray-700 font-semibold">
                     Jelajahi dan import workflow dari komunitas
                 </p>
 
@@ -119,8 +119,8 @@ export default function WorkflowGallery({ onSelect, onBack, userId }: WorkflowGa
                         placeholder="Cari workflow..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full max-w-md px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl 
-              text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full max-w-md px-4 py-3 bg-white border-2 border-black rounded-xl 
+              text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400"
                     />
                 </div>
             </div>
@@ -129,17 +129,17 @@ export default function WorkflowGallery({ onSelect, onBack, userId }: WorkflowGa
             <div className="max-w-6xl mx-auto">
                 {loading ? (
                     <div className="flex justify-center py-16">
-                        <div className="animate-spin h-12 w-12 border-4 border-indigo-500 border-t-transparent rounded-full" />
+                        <div className="animate-spin h-12 w-12 border-4 border-pink-400 border-t-transparent rounded-full" />
                     </div>
                 ) : Object.keys(filteredGrouped).length === 0 ? (
                     <div className="text-center py-16">
                         <div className="text-6xl mb-4">📭</div>
-                        <p className="text-slate-400 text-lg">Belum ada workflow public</p>
+                        <p className="text-gray-700 text-lg font-semibold">Belum ada workflow public</p>
                     </div>
                 ) : (
                     Object.entries(filteredGrouped).map(([topic, wfs]) => (
                         <div key={topic} className="mb-10">
-                            <h2 className="text-xl font-semibold text-indigo-400 mb-4 flex items-center gap-2">
+                            <h2 className="text-xl md:text-2xl font-black text-black mb-4 flex items-center gap-2">
                                 📁 {topic}
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -147,27 +147,27 @@ export default function WorkflowGallery({ onSelect, onBack, userId }: WorkflowGa
                                     <div
                                         key={workflow.id}
                                         onClick={() => onSelect(workflow)}
-                                        className="bg-slate-800 rounded-xl p-5 border border-slate-700 
-                      hover:border-indigo-500 cursor-pointer transition-all hover:shadow-lg
-                      hover:shadow-indigo-500/10"
+                                        className="bg-white rounded-xl p-5 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] 
+                      hover:border-pink-400 cursor-pointer transition-all hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]
+                      hover:-translate-y-1 hover:scale-102"
                                     >
                                         <div className="flex justify-between items-start mb-3">
-                                            <h3 className="font-semibold text-white text-lg">
+                                            <h3 className="font-bold text-black text-lg">
                                                 {workflow.title}
                                             </h3>
                                             <button
                                                 onClick={(e) => handleStar(e, workflow)}
-                                                className="flex items-center gap-1 text-amber-400 hover:text-amber-300"
+                                                className="flex items-center gap-1 text-yellow-500 hover:text-yellow-600"
                                             >
                                                 ⭐ {workflow.star_count}
                                             </button>
                                         </div>
                                         {workflow.description && (
-                                            <p className="text-slate-400 text-sm mb-3 line-clamp-2">
+                                            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                                                 {workflow.description}
                                             </p>
                                         )}
-                                        <div className="text-xs text-slate-500">
+                                        <div className="text-xs text-gray-500 font-semibold">
                                             {workflow.topics?.title || 'Topik tidak diketahui'}
                                         </div>
                                     </div>
@@ -180,7 +180,7 @@ export default function WorkflowGallery({ onSelect, onBack, userId }: WorkflowGa
 
             {/* Toast Notification */}
             {toast && (
-                <div className="fixed bottom-6 right-6 bg-amber-600 text-white px-4 py-3 rounded-lg shadow-lg z-50 animate-pulse">
+                <div className="fixed bottom-6 right-6 bg-yellow-400 text-black font-bold px-4 py-3 rounded-lg border-2 border-black shadow-lg z-50">
                     ⚠️ {toast}
                 </div>
             )}

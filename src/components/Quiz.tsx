@@ -164,7 +164,7 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
 
     return (
         <div className="space-y-4">
-            <p className="text-gray-800 dark:text-gray-200 font-medium mb-4">{quiz.question}</p>
+            <p className="text-black font-bold mb-4">{quiz.question}</p>
 
             <div className="space-y-3 mb-6">
                 {quiz.options.map((option, index) => {
@@ -176,15 +176,15 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
                     return (
                         <label
                             key={index}
-                            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${submitted
+                            className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all border-2 border-black ${submitted
                                 ? showAsCorrect
-                                    ? 'bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500'
+                                    ? 'bg-green-200 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
                                     : showAsWrong
-                                        ? 'bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500'
-                                        : 'bg-gray-50 dark:bg-gray-800/50 opacity-60'
+                                        ? 'bg-red-200 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                                        : 'bg-gray-100 opacity-60'
                                 : isSelected
-                                    ? 'bg-indigo-50 dark:bg-indigo-900/20 border-l-4 border-indigo-500'
-                                    : 'bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                    ? 'bg-yellow-300 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                                    : 'bg-white hover:bg-gray-50 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
                                 }`}
                         >
                             <input
@@ -196,9 +196,9 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
                                 disabled={submitted}
                                 className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
                             />
-                            <span className={`flex-1 ${showAsCorrect ? 'text-green-700 dark:text-green-300 font-medium' :
-                                showAsWrong ? 'text-red-700 dark:text-red-300' :
-                                    'text-gray-700 dark:text-gray-300'
+                            <span className={`flex-1 ${showAsCorrect ? 'text-black font-bold' :
+                                showAsWrong ? 'text-black font-bold' :
+                                    'text-black font-semibold'
                                 }`}>
                                 {String.fromCharCode(65 + index)}. {option}
                             </span>
@@ -221,9 +221,9 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
                 <button
                     onClick={handleSubmit}
                     disabled={selectedAnswer === null || submitting}
-                    className={`w-full py-3 rounded-lg font-semibold transition-all ${selectedAnswer === null
-                        ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    className={`w-full py-3 rounded-xl font-black transition-all border-2 border-black ${selectedAnswer === null
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-blue-500 text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5'
                         }`}
                 >
                     {submitting ? (
@@ -239,9 +239,9 @@ export default function Quiz({ materialId, pageNumber, userId, onQuizCompleted }
                     )}
                 </button>
             ) : (
-                <div className={`p-3 rounded-lg border-l-4 ${result?.is_correct
-                    ? 'bg-green-50 dark:bg-green-900/20 border-green-500 text-green-800 dark:text-green-200'
-                    : 'bg-red-50 dark:bg-red-900/20 border-red-500 text-red-800 dark:text-red-200'
+                <div className={`p-4 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${result?.is_correct
+                    ? 'bg-green-200 text-black'
+                    : 'bg-red-200 text-black'
                     }`}>
                     <div className="flex items-center gap-2">
                         {result?.is_correct ? (

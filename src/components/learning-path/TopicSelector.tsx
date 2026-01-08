@@ -73,14 +73,14 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
     );
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-            <div className="bg-slate-800 rounded-2xl shadow-2xl max-w-5xl w-full border border-slate-700 overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-5xl w-full border-2 border-black overflow-hidden">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4">
-                    <h2 className="text-xl font-bold text-white">
+                <div className="bg-gradient-to-r from-pink-400 to-purple-400 px-6 py-4 border-b-2 border-black">
+                    <h2 className="text-xl font-black text-black">
                         {showRequestForm ? '📝 Request Topik Baru' : 'Pilih Topik'}
                     </h2>
-                    <p className="text-sm text-white/80">
+                    <p className="text-sm text-black font-semibold">
                         {showRequestForm
                             ? 'Request akan dikirim ke admin untuk persetujuan'
                             : 'Pilih topik untuk workflow baru Anda'}
@@ -93,10 +93,10 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                         {requestSent ? (
                             <div className="text-center py-8">
                                 <div className="text-5xl mb-4">✅</div>
-                                <h3 className="text-lg font-bold text-white mb-2">
+                                <h3 className="text-lg font-black text-black mb-2">
                                     Request Terkirim!
                                 </h3>
-                                <p className="text-slate-400 mb-6">
+                                <p className="text-gray-600 mb-6">
                                     Admin akan meninjau request Anda segera
                                 </p>
                                 <button
@@ -104,7 +104,7 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                                         setShowRequestForm(false);
                                         setRequestSent(false);
                                     }}
-                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
+                                    className="px-4 py-2 bg-yellow-400 text-black font-bold rounded-lg border-2 border-black"
                                 >
                                     Kembali ke Daftar Topik
                                 </button>
@@ -112,38 +112,38 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                         ) : (
                             <>
                                 <div className="mb-4">
-                                    <label className="text-sm text-slate-400 block mb-1">Nama Topik *</label>
+                                    <label className="text-sm text-gray-700 font-bold block mb-1">Nama Topik *</label>
                                     <input
                                         type="text"
                                         value={newTopicTitle}
                                         onChange={(e) => setNewTopicTitle(e.target.value)}
                                         placeholder="Contoh: Machine Learning, Web Development..."
-                                        className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg 
-                                            text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        className="w-full px-4 py-2 bg-white border-2 border-black rounded-lg 
+                                            text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
                                     />
                                 </div>
                                 <div className="mb-6">
-                                    <label className="text-sm text-slate-400 block mb-1">Deskripsi (opsional)</label>
+                                    <label className="text-sm text-gray-700 font-bold block mb-1">Deskripsi (opsional)</label>
                                     <textarea
                                         value={newTopicDesc}
                                         onChange={(e) => setNewTopicDesc(e.target.value)}
                                         placeholder="Jelaskan tentang topik ini..."
                                         rows={3}
-                                        className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg 
-                                            text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                                        className="w-full px-4 py-2 bg-white border-2 border-black rounded-lg 
+                                            text-black focus:outline-none focus:ring-2 focus:ring-pink-400 resize-none"
                                     />
                                 </div>
                                 <div className="flex gap-3">
                                     <button
                                         onClick={() => setShowRequestForm(false)}
-                                        className="flex-1 py-2 bg-slate-700 text-white rounded-lg"
+                                        className="flex-1 py-2 bg-gray-200 text-black font-bold rounded-lg border-2 border-black"
                                     >
                                         Batal
                                     </button>
                                     <button
                                         onClick={handleRequestTopic}
                                         disabled={!newTopicTitle.trim() || submitting}
-                                        className="flex-1 py-2 bg-indigo-600 text-white rounded-lg disabled:bg-slate-600"
+                                        className="flex-1 py-2 bg-pink-400 text-black font-bold rounded-lg border-2 border-black disabled:bg-gray-300"
                                     >
                                         {submitting ? 'Mengirim...' : '📤 Kirim Request'}
                                     </button>
@@ -154,14 +154,14 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                 ) : (
                     <>
                         {/* Search */}
-                        <div className="px-6 py-4 border-b border-slate-700">
+                        <div className="px-6 py-4 border-b-2 border-black">
                             <input
                                 type="text"
                                 placeholder="Cari topik..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg 
-                                    text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                className="w-full px-4 py-2 bg-white border-2 border-black rounded-lg 
+                                    text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400"
                             />
                         </div>
 
@@ -169,10 +169,10 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                         <div className="max-h-96 overflow-y-auto p-6">
                             {loading ? (
                                 <div className="flex justify-center py-8">
-                                    <div className="animate-spin h-8 w-8 border-4 border-indigo-500 border-t-transparent rounded-full" />
+                                    <div className="animate-spin h-8 w-8 border-4 border-pink-400 border-t-transparent rounded-full" />
                                 </div>
                             ) : filteredTopics.length === 0 ? (
-                                <p className="text-center text-slate-400 py-8">
+                                <p className="text-center text-gray-600 py-8 font-semibold">
                                     Tidak ada topik ditemukan
                                 </p>
                             ) : (
@@ -181,15 +181,16 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                                         <button
                                             key={topic.id}
                                             onClick={() => onSelect(topic)}
-                                            className="text-left px-4 py-3 rounded-lg bg-slate-700/50
-                                                hover:bg-indigo-600/30 border border-transparent hover:border-indigo-500
+                                            className="text-left px-4 py-3 rounded-lg bg-white
+                                                hover:bg-pink-50 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                                                hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5
                                                 transition-all group h-full"
                                         >
-                                            <div className="font-medium text-white group-hover:text-indigo-300 line-clamp-4">
+                                            <div className="font-bold text-black group-hover:text-pink-600 line-clamp-2 break-words overflow-hidden">
                                                 {topic.title}
                                             </div>
                                             {topic.description && (
-                                                <div className="text-sm text-slate-400 mt-1 line-clamp-2">
+                                                <div className="text-sm text-gray-600 mt-1 line-clamp-2">
                                                     {topic.description}
                                                 </div>
                                             )}
@@ -200,16 +201,16 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                         </div>
 
                         {/* Footer with Request Button */}
-                        <div className="px-6 py-4 bg-slate-900/50 flex justify-between items-center">
+                        <div className="px-6 py-4 bg-blue-50 flex justify-between items-center border-t-2 border-black">
                             <button
                                 onClick={() => setShowRequestForm(true)}
-                                className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                                className="text-sm text-pink-600 hover:text-pink-700 font-bold flex items-center gap-1"
                             >
                                 ➕ Topik tidak ada? Request topik baru
                             </button>
                             <button
                                 onClick={onCancel}
-                                className="px-4 py-2 text-slate-400 hover:text-white transition-colors"
+                                className="px-4 py-2 text-gray-700 hover:text-black font-bold transition-colors"
                             >
                                 Batal
                             </button>

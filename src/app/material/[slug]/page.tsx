@@ -297,19 +297,19 @@ export default function MaterialDetailPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-blue-200">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-black"></div>
             </div>
         )
     }
 
     if (!material) {
         return (
-            <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+            <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-100 to-blue-200">
                 <div className="flex-1 flex items-center justify-center">
                     <div className="text-center">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Materi Tidak Ditemukan</h2>
-                        <button onClick={() => router.back()} className="text-indigo-600 hover:underline">
+                        <h2 className="text-2xl font-black text-black mb-2">Materi Tidak Ditemukan</h2>
+                        <button onClick={() => router.back()} className="text-indigo-600 hover:underline font-bold">
                             Kembali
                         </button>
                     </div>
@@ -322,12 +322,12 @@ export default function MaterialDetailPage() {
     const totalPages = pages.length
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-100 to-blue-200">
             <div className="flex-1 w-[95vw] max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Back Button */}
                 <button
                     onClick={() => router.back()}
-                    className="mb-6 flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                    className="mb-6 flex items-center gap-2 text-gray-800 hover:text-black font-bold transition-colors"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -336,59 +336,59 @@ export default function MaterialDetailPage() {
                 </button>
 
                 {/* Material Header */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-8">
-                    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+                <div className="bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden mb-8">
+                    <div className="bg-gradient-to-r from-blue-400 to-blue-500 px-8 py-6 border-b-2 border-black">
                         <div className="flex items-center gap-3 mb-4">
-                            <span className={`px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wide ${material.material_type === 'video' ? 'bg-red-500/20 text-red-100' :
-                                material.material_type === 'article' ? 'bg-blue-500/20 text-blue-100' :
-                                    'bg-white/20 text-white'
+                            <span className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide border-2 border-black ${material.material_type === 'video' ? 'bg-red-400 text-black' :
+                                material.material_type === 'article' ? 'bg-blue-400 text-black' :
+                                    'bg-yellow-400 text-black'
                                 }`}>
                                 {material.material_type}
                             </span>
                             {material.status === 'draft' && (
-                                <span className="px-3 py-1 bg-yellow-500/20 text-yellow-100 rounded-full text-sm font-semibold">
+                                <span className="px-3 py-1 bg-yellow-400 text-black rounded-full text-sm font-bold border-2 border-black">
                                     Draft
                                 </span>
                             )}
                             {isMultiPage && (
-                                <span className="px-3 py-1 bg-white/20 text-white rounded-full text-sm font-semibold">
+                                <span className="px-3 py-1 bg-white text-black rounded-full text-sm font-bold border-2 border-black">
                                     📄 {totalPages} Halaman
                                 </span>
                             )}
                         </div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                        <h1 className="text-3xl md:text-4xl font-black text-black mb-2">
                             {material.title}
                         </h1>
                         {topic && (
-                            <p className="text-indigo-100">
+                            <p className="text-black font-semibold">
                                 Topik: {topic.title}
                             </p>
                         )}
                     </div>
 
                     {/* Meta info */}
-                    <div className="px-8 py-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+                    <div className="px-8 py-4 bg-gray-50 border-b border-gray-200">
                         <div className="flex flex-wrap items-center gap-6 mb-4">
                             <Link
                                 href={currentUserId === material.created_by ? '/mentor/dashboard' : `/mentor/${material.created_by}`}
                                 className="flex items-center gap-3 hover:opacity-80 transition-opacity"
                             >
                                 {author?.avatar_url ? (
-                                    <img src={author.avatar_url} alt={author.nama || 'Author'} className="w-10 h-10 rounded-full object-cover" />
+                                    <img src={author.avatar_url} alt={author.nama || 'Author'} className="w-10 h-10 rounded-full object-cover border-2 border-black" />
                                 ) : (
-                                    <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
+                                    <div className="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-black font-bold border-2 border-black">
                                         {(author?.nama || 'M').charAt(0).toUpperCase()}
                                     </div>
                                 )}
                                 <div>
-                                    <p className="font-semibold text-gray-900 dark:text-white">
+                                    <p className="font-bold text-black">
                                         {currentUserId === material.created_by ? 'Anda' : (author?.nama || 'Mentor')}
                                     </p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">Penulis</p>
+                                    <p className="text-sm text-black font-semibold">Penulis</p>
                                 </div>
                             </Link>
 
-                            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center gap-2 text-gray-700 font-semibold">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
@@ -461,10 +461,14 @@ export default function MaterialDetailPage() {
 
                     {/* Tags */}
                     {material.tags && material.tags.length > 0 && (
-                        <div className="px-8 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <div className="px-8 py-4 border-b border-gray-200">
                             <div className="flex flex-wrap gap-2">
                                 {material.tags.map((tag, index) => (
-                                    <span key={index} className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-full">
+                                    <span key={index} className={`px-3 py-1 text-black text-sm font-bold rounded-full border-2 border-black ${
+                                        index % 4 === 0 ? 'bg-pink-400' :
+                                        index % 4 === 1 ? 'bg-teal-400' :
+                                        index % 4 === 2 ? 'bg-yellow-400' : 'bg-green-400'
+                                    }`}>
                                         #{tag}
                                     </span>
                                 ))}
@@ -498,7 +502,7 @@ export default function MaterialDetailPage() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                         </svg>
                                     </button>
-                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                    <span className="font-bold text-black dark:text-white">
                                         Halaman {currentPageIndex + 1} dari {totalPages}
                                     </span>
                                     <button
@@ -517,7 +521,7 @@ export default function MaterialDetailPage() {
                             {/* Content */}
                             <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
                                 <div
-                                    className="prose prose-lg dark:prose-invert max-w-none material-content"
+                                    className="prose prose-lg max-w-none text-zinc-800 leading-relaxed material-content"
                                     dangerouslySetInnerHTML={{ __html: showTranslation ? translatedText : currentPageContent }}
                                 />
                             </div>
@@ -557,9 +561,9 @@ export default function MaterialDetailPage() {
                             {/* Quiz Section - Only show for students (wait for role to load) */}
                             {material && currentUserId && roleLoaded && !isMentor ? (
                                 <div className="space-y-6">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Quiz</h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">Jawab pertanyaan di bawah untuk melanjutkan</p>
+                                    <div className="bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] p-6">
+                                        <h3 className="text-xl font-black text-black mb-2">Quiz</h3>
+                                        <p className="text-sm text-gray-600 font-semibold">Jawab pertanyaan di bawah untuk melanjutkan</p>
                                     </div>
                                     <Quiz
                                         materialId={material.id}
@@ -574,7 +578,7 @@ export default function MaterialDetailPage() {
                                             {isCurrentPageQuizCompleted ? (
                                                 <button
                                                     onClick={goToNext}
-                                                    className="w-full py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+                                                    className="w-full py-3 bg-yellow-400 text-black rounded-lg font-black border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all flex items-center justify-center gap-2"
                                                 >
                                                     Halaman Selanjutnya
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -582,7 +586,7 @@ export default function MaterialDetailPage() {
                                                     </svg>
                                                 </button>
                                             ) : (
-                                                <div className="text-center text-gray-500 dark:text-gray-400 text-sm py-3 px-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-l-4 border-yellow-500">
+                                                <div className="text-center text-gray-700 text-sm py-3 px-4 bg-yellow-50 rounded-lg border-2 border-black font-semibold">
                                                     Jawab quiz untuk lanjut ke halaman berikutnya
                                                 </div>
                                             )}
@@ -590,11 +594,9 @@ export default function MaterialDetailPage() {
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-8">
-                                    <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <p className="text-gray-500 dark:text-gray-400">Mentor tidak perlu mengerjakan quiz</p>
+                                <div className="text-center py-8 bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] p-6">
+                                    <div className="text-4xl mb-3">👨‍🏫</div>
+                                    <p className="text-gray-700 font-bold">Mentor tidak perlu mengerjakan quiz</p>
                                 </div>
                             )}
                         </div>
@@ -606,17 +608,15 @@ export default function MaterialDetailPage() {
                     <>
                         {/* For mentors - show simple completion */}
                         {isMentor ? (
-                            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                            <div className="bg-green-400 rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] p-6 mb-8 text-black">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center border-2 border-black">
+                                            <span className="text-2xl">✓</span>
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold text-lg">Selesai Mengajar?</h3>
-                                            <p className="text-green-100 text-sm">Tandai materi ini selesai</p>
+                                            <h3 className="font-black text-lg">Selesai Mengajar?</h3>
+                                            <p className="text-black font-semibold text-sm">Tandai materi ini selesai</p>
                                         </div>
                                     </div>
                                     <button
@@ -624,7 +624,7 @@ export default function MaterialDetailPage() {
                                             markAsCompleted()
                                             router.push('/Multi-Source-Knowledge')
                                         }}
-                                        className="px-6 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors flex items-center gap-2"
+                                        className="px-6 py-3 bg-white text-black rounded-lg font-black border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all flex items-center gap-2"
                                     >
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -637,17 +637,15 @@ export default function MaterialDetailPage() {
                             /* For students - quiz-gated completion */
                             quizCompletedPages.size >= totalPages ? (
                                 // All quizzes done - Show completion message and Kembali button
-                                <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                                <div className="bg-green-400 rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] p-6 mb-8 text-black">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
+                                            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center border-2 border-black">
+                                                <span className="text-2xl">🎉</span>
                                             </div>
                                             <div>
-                                                <h3 className="font-semibold text-lg">Materi Selesai! 🎉</h3>
-                                                <p className="text-green-100 text-sm">
+                                                <h3 className="font-black text-lg">Materi Selesai!</h3>
+                                                <p className="text-black font-semibold text-sm">
                                                     Anda telah menyelesaikan semua quiz ({correctAnswersCount}/{totalPages} benar)
                                                 </p>
                                             </div>
@@ -657,7 +655,7 @@ export default function MaterialDetailPage() {
                                                 markAsCompleted()
                                                 router.push('/Multi-Source-Knowledge')
                                             }}
-                                            className="px-6 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors flex items-center gap-2"
+                                            className="px-6 py-3 bg-white text-black rounded-lg font-black border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all flex items-center gap-2"
                                         >
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -668,16 +666,14 @@ export default function MaterialDetailPage() {
                                 </div>
                             ) : (
                                 // Not all quizzes done - Show remaining count
-                                <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                                <div className="bg-yellow-400 rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] p-6 mb-8 text-black">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center border-2 border-black">
+                                            <span className="text-2xl">⏱️</span>
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold text-lg">Selesaikan Semua Quiz</h3>
-                                            <p className="text-yellow-100 text-sm">
+                                            <h3 className="font-black text-lg">Selesaikan Semua Quiz</h3>
+                                            <p className="text-black font-semibold text-sm">
                                                 Jawab quiz di setiap halaman untuk menandai materi selesai ({quizCompletedPages.size}/{totalPages} selesai)
                                             </p>
                                         </div>
@@ -690,13 +686,13 @@ export default function MaterialDetailPage() {
 
                 {/* Source URL */}
                 {material.url && (
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Sumber</h3>
+                    <div className="bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
+                        <h3 className="font-black text-black mb-3">Sumber</h3>
                         <a
                             href={material.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:underline"
+                            className="flex items-center gap-2 text-indigo-600 hover:underline font-bold"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

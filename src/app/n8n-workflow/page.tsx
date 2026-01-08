@@ -13,10 +13,10 @@ const LearningPathCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-full flex items-center justify-center bg-slate-900">
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-blue-100 to-blue-200">
         <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent" />
-          <p className="text-slate-400">Loading canvas...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-pink-400 border-t-transparent" />
+          <p className="text-gray-700 font-bold">Loading canvas...</p>
         </div>
       </div>
     )
@@ -189,17 +189,20 @@ export default function LearningPathPage() {
   // Entry Page
   if (mode === 'entry') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        {/* Decorative clouds */}
+        <div className="absolute top-10 left-5 w-16 h-8 bg-white rounded-full opacity-70 blur-sm"></div>
+        <div className="absolute top-16 left-16 w-10 h-5 bg-white rounded-full opacity-60 blur-sm"></div>
+        <div className="absolute top-12 right-10 w-20 h-10 bg-white rounded-full opacity-70 blur-sm"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           {/* Back Button */}
           <Link
             href="/home"
-            className="text-slate-400 hover:text-white mb-8 inline-flex items-center gap-2 transition-colors group"
+            className="inline-flex items-center gap-2 text-gray-800 hover:text-black font-bold mb-8 transition-all duration-300 hover:scale-105"
           >
-            <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Kembali ke Home
+            <span className="text-2xl">←</span>
+            <span>Kembali ke Home</span>
           </Link>
 
           {/* Hero Section */}
@@ -207,52 +210,46 @@ export default function LearningPathPage() {
             <div className="inline-block mb-4">
               <span className="text-7xl lg:text-8xl">🎓</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 lg:mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-black mb-4 lg:mb-6">
               Learning Path Builder
             </h1>
-            <p className="text-slate-300 text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed">
+            <p className="text-gray-700 text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed">
               Buat jalur pembelajaran visual dengan validasi AI atau import dari komunitas
             </p>
           </div>
 
           {/* Main Options - Vertical Stack */}
-          <div className="max-w-4xl mx-auto space-y-5">
+          <div className="max-w-4xl mx-auto space-y-6">
             {/* Option 1 - Buat Workflow Baru */}
             <button
               onClick={() => setMode('select-topic')}
-              className="group relative w-full bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-6 lg:p-8
-                text-left hover:scale-[1.01] transition-all duration-300 shadow-xl hover:shadow-indigo-500/40
-                border border-indigo-400/30 hover:border-indigo-300/50
+              className="group relative w-full bg-white rounded-2xl p-6 lg:p-8
+                text-left transition-all duration-300 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+                border-2 border-black hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:scale-102
                 overflow-hidden"
             >
-              {/* Decorative Elements */}
-              <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-24 -mt-24 group-hover:scale-125 transition-transform duration-500" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/20 rounded-full -ml-16 -mb-16 group-hover:scale-110 transition-transform duration-500" />
-
               <div className="relative z-10 flex items-center justify-between gap-6">
                 <div className="flex items-center gap-5">
-                  <div className="flex-shrink-0 inline-flex items-center justify-center w-16 h-16 lg:w-20 lg:h-20 bg-white/20 backdrop-blur-sm rounded-2xl">
+                  <div className="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-pink-400 rounded-full flex items-center justify-center border-2 border-black">
                     <span className="text-4xl lg:text-5xl">🆕</span>
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h2 className="text-2xl lg:text-3xl font-bold text-white">
+                      <h2 className="text-2xl lg:text-3xl font-black text-black">
                         Buat Workflow Baru
                       </h2>
-                      <span className="px-3 py-0.5 bg-white/20 backdrop-blur-sm text-white text-xs font-bold rounded-full">
+                      <span className="px-3 py-0.5 bg-yellow-400 text-black text-xs font-bold rounded-full border-2 border-black">
                         RECOMMENDED
                       </span>
                     </div>
-                    <p className="text-indigo-100/90 text-sm lg:text-base leading-relaxed">
+                    <p className="text-gray-600 text-sm lg:text-base leading-relaxed">
                       Pilih topik dan mulai membuat learning path dari awal dengan drag-and-drop editor
                     </p>
                   </div>
                 </div>
 
-                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-sm rounded-full group-hover:bg-white/30 transition-colors">
-                  <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-yellow-400 rounded-full border-2 border-black group-hover:bg-yellow-300 transition-colors">
+                  <span className="text-2xl">→</span>
                 </div>
               </div>
             </button>
@@ -260,32 +257,28 @@ export default function LearningPathPage() {
             {/* Option 2 - Import from Community */}
             <button
               onClick={() => setMode('gallery')}
-              className="group relative w-full bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-6 lg:p-8
-                text-left hover:scale-[1.01] transition-all duration-300 shadow-xl hover:shadow-emerald-500/40
-                border border-emerald-400/30 hover:border-emerald-300/50
+              className="group relative w-full bg-white rounded-2xl p-6 lg:p-8
+                text-left transition-all duration-300 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+                border-2 border-black hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:scale-102
                 overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-24 -mt-24 group-hover:scale-125 transition-transform duration-500" />
-
               <div className="relative z-10 flex items-center justify-between gap-6">
                 <div className="flex items-center gap-5">
-                  <div className="flex-shrink-0 inline-flex items-center justify-center w-16 h-16 lg:w-20 lg:h-20 bg-white/20 backdrop-blur-sm rounded-2xl">
+                  <div className="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-teal-400 rounded-full flex items-center justify-center border-2 border-black">
                     <span className="text-4xl lg:text-5xl">📥</span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl lg:text-3xl font-bold text-white mb-2">
+                    <h3 className="text-2xl lg:text-3xl font-black text-black mb-2">
                       Import dari Komunitas
                     </h3>
-                    <p className="text-emerald-100/90 text-sm lg:text-base leading-relaxed">
+                    <p className="text-gray-600 text-sm lg:text-base leading-relaxed">
                       Jelajahi workflow public dan fork untuk dimodifikasi sesuai kebutuhan Anda
                     </p>
                   </div>
                 </div>
 
-                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-sm rounded-full group-hover:bg-white/30 transition-colors">
-                  <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-yellow-400 rounded-full border-2 border-black group-hover:bg-yellow-300 transition-colors">
+                  <span className="text-2xl">→</span>
                 </div>
               </div>
             </button>
@@ -293,32 +286,28 @@ export default function LearningPathPage() {
             {/* Option 3 - Import from Knowledge Base */}
             <button
               onClick={() => setMode('topic-import')}
-              className="group relative w-full bg-gradient-to-br from-amber-600 to-orange-700 rounded-2xl p-6 lg:p-8
-                text-left hover:scale-[1.01] transition-all duration-300 shadow-xl hover:shadow-amber-500/40
-                border border-amber-400/30 hover:border-amber-300/50
+              className="group relative w-full bg-white rounded-2xl p-6 lg:p-8
+                text-left transition-all duration-300 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+                border-2 border-black hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:scale-102
                 overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-24 -mt-24 group-hover:scale-125 transition-transform duration-500" />
-
               <div className="relative z-10 flex items-center justify-between gap-6">
                 <div className="flex items-center gap-5">
-                  <div className="flex-shrink-0 inline-flex items-center justify-center w-16 h-16 lg:w-20 lg:h-20 bg-white/20 backdrop-blur-sm rounded-2xl">
+                  <div className="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-yellow-400 rounded-full flex items-center justify-center border-2 border-black">
                     <span className="text-4xl lg:text-5xl">🤖</span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl lg:text-3xl font-bold text-white mb-2">
+                    <h3 className="text-2xl lg:text-3xl font-black text-black mb-2">
                       Import dari Materi
                     </h3>
-                    <p className="text-amber-100/90 text-sm lg:text-base leading-relaxed">
+                    <p className="text-gray-600 text-sm lg:text-base leading-relaxed">
                       AI otomatis membuat workflow dari topik di knowledge base dengan struktur optimal
                     </p>
                   </div>
                 </div>
 
-                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-sm rounded-full group-hover:bg-white/30 transition-colors">
-                  <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-yellow-400 rounded-full border-2 border-black group-hover:bg-yellow-300 transition-colors">
+                  <span className="text-2xl">→</span>
                 </div>
               </div>
             </button>
@@ -332,7 +321,7 @@ export default function LearningPathPage() {
   // Topic Selection
   if (mode === 'select-topic') {
     return (
-      <div className="min-h-screen bg-slate-900">
+      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200">
         <TopicSelector
           onSelect={handleTopicSelect}
           onCancel={() => setMode('entry')}
@@ -367,28 +356,28 @@ export default function LearningPathPage() {
   // Canvas
   if (mode === 'canvas' && selectedTopic) {
     return (
-      <div className="h-screen flex flex-col bg-slate-900">
+      <div className="h-screen flex flex-col bg-gradient-to-b from-blue-100 to-blue-200">
         {/* Header */}
-        <header className="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+        <header className="bg-white border-b-2 border-black px-6 py-4 flex items-center justify-between shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMode('entry')}
-              className="text-slate-400 hover:text-white transition-colors"
+              className="text-gray-800 hover:text-black font-bold transition-colors"
             >
               ← Kembali
             </button>
-            <div className="h-6 w-px bg-slate-700" />
-            <h1 className="text-xl font-bold text-white">
+            <div className="h-6 w-px bg-gray-300" />
+            <h1 className="text-xl font-black text-black">
               🎓 Learning Path Builder
             </h1>
             {forkedWorkflow && (
-              <span className="text-xs bg-emerald-600/20 text-emerald-400 px-2 py-1 rounded">
+              <span className="text-xs bg-teal-400 text-black px-2 py-1 rounded-full border-2 border-black font-bold">
                 Forked from: {forkedWorkflow.title}
               </span>
             )}
           </div>
-          <div className="text-sm text-slate-400">
-            Topik: <span className="text-indigo-400 font-medium">{selectedTopic.title}</span>
+          <div className="text-sm text-gray-700 font-semibold">
+            Topik: <span className="text-blue-600 font-black">{selectedTopic.title}</span>
           </div>
         </header>
 
