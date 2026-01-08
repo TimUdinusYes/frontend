@@ -156,6 +156,7 @@ export async function POST(
       .single();
 
     const xpPerQuestion = 5;
+    const totalQuestions = 3;
 
     if (!existingProgress) {
       // Create new progress
@@ -166,7 +167,7 @@ export async function POST(
           materials_id: materialId,
           questions_answered: 1,
           correct_answers: isCorrect ? 1 : 0,
-          total_questions: 3,
+          total_questions: totalQuestions,
           is_completed: false,
           xp_earned: isCorrect ? xpPerQuestion : 0
         });
@@ -175,11 +176,36 @@ export async function POST(
         console.error('Error creating progress:', progressError);
       }
     } else {
-      // Update existing progress
-      const newAnswered = existingProgress.questions_answered + 1;
-      const newCorrect = existingProgress.correct_answers + (isCorrect ? 1 : 0);
-      const isCompleted = newAnswered >= 3;
-      const totalXP = newCorrect * xpPerQuestion;
+      // Check if this is a retake (user already completed before)
+      const isRetake = existingProgress.is_completed;
+
+      let newAnswered: number;
+      let newCorrect: number;
+
+      if (isRetake) {
+        // Reset counter for new attempt
+        newAnswered = 1;
+        newCorrect = isCorrect ? 1 : 0;
+      } else {
+        // Continue current attempt
+        newAnswered = existingProgress.questions_answered + 1;
+        newCorrect = existingProgress.correct_answers + (isCorrect ? 1 : 0);
+      }
+
+      const isCompleted = newAnswered >= totalQuestions;
+
+      // Calculate XP based on best score
+      // If this is a retake and completed, compare with previous best
+      let finalXP: number;
+      if (isCompleted && isRetake) {
+        // Take the maximum between current attempt and previous best
+        const currentAttemptXP = newCorrect * xpPerQuestion;
+        const previousBestXP = existingProgress.xp_earned || 0;
+        finalXP = Math.max(currentAttemptXP, previousBestXP);
+      } else {
+        // For ongoing attempt or first completion, use current score
+        finalXP = newCorrect * xpPerQuestion;
+      }
 
       const { error: updateError } = await supabase
         .from('user_materials_quiz_progress')
@@ -187,8 +213,8 @@ export async function POST(
           questions_answered: newAnswered,
           correct_answers: newCorrect,
           is_completed: isCompleted,
-          xp_earned: totalXP,
-          completed_at: isCompleted ? new Date().toISOString() : null,
+          xp_earned: finalXP,
+          completed_at: isCompleted ? new Date().toISOString() : existingProgress.completed_at,
           updated_at: new Date().toISOString()
         })
         .eq('user_id', userId)

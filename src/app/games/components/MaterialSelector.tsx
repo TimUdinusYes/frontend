@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
 interface Material {
@@ -16,29 +16,28 @@ interface Material {
 }
 
 interface MaterialSelectorProps {
-  topikId?: number;
+  topicId: number;
+  topicName: string;
   userId: string; // UUID
   onSelectMaterial: (material: Material) => void;
+  onBack?: () => void;
 }
 
 export default function MaterialSelector({
-  topikId,
+  topicId,
+  topicName,
   userId,
   onSelectMaterial,
+  onBack,
 }: MaterialSelectorProps) {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTopik, setSelectedTopik] = useState<number | null>(topikId || null);
 
-  useEffect(() => {
-    fetchMaterials();
-  }, [selectedTopik, userId]);
-
-  const fetchMaterials = async () => {
+  const fetchMaterials = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (selectedTopik) params.append('topicId', selectedTopik.toString());
+      if (topicId) params.append('topicId', topicId.toString());
       if (userId) params.append('userId', userId);
 
       const response = await fetch(`/api/materials?${params.toString()}`);
@@ -74,7 +73,11 @@ export default function MaterialSelector({
     } finally {
       setLoading(false);
     }
-  };
+  }, [topicId, userId]);
+
+  useEffect(() => {
+    fetchMaterials();
+  }, [fetchMaterials]);
 
   if (loading) {
     return (
@@ -103,7 +106,20 @@ export default function MaterialSelector({
 
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Back button and breadcrumb */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="mb-6 inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium transition"
+        >
+          <span>←</span> Back to Topics
+        </button>
+      )}
+
       <div className="mb-8 text-center">
+        <div className="text-sm text-blue-600 font-semibold mb-2">
+          {topicName}
+        </div>
         <h2 className="text-3xl font-bold text-gray-800 mb-2">
           Choose a Material to Quiz
         </h2>

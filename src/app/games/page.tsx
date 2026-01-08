@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import QuizGame from './components/QuizGame';
 import MaterialSelector from './components/MaterialSelector';
+import TopicSelector from './components/TopicSelector';
+import LevelDisplay from './components/LevelDisplay';
 
 interface Material {
   id: number;
@@ -23,6 +25,7 @@ export default function GamesPage() {
   const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedTopic, setSelectedTopic] = useState<{ id: number; name: string } | null>(null);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
 
   // Get authenticated user
@@ -61,6 +64,15 @@ export default function GamesPage() {
     setSelectedMaterial(null);
   };
 
+  const handleBackToTopics = () => {
+    setSelectedTopic(null);
+    setSelectedMaterial(null);
+  };
+
+  const handleSelectTopic = (topicId: number, topicName: string) => {
+    setSelectedTopic({ id: topicId, name: topicName });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
@@ -95,6 +107,13 @@ export default function GamesPage() {
           </p>
         </div>
 
+        {/* Level Display - Only show when not in quiz */}
+        {!selectedMaterial && (
+          <div className="mb-8">
+            <LevelDisplay userId={userId} compact />
+          </div>
+        )}
+
         {selectedMaterial ? (
           <div>
             <button
@@ -110,10 +129,18 @@ export default function GamesPage() {
               onComplete={handleQuizComplete}
             />
           </div>
-        ) : (
+        ) : selectedTopic ? (
           <MaterialSelector
+            topicId={selectedTopic.id}
+            topicName={selectedTopic.name}
             userId={userId}
             onSelectMaterial={setSelectedMaterial}
+            onBack={handleBackToTopics}
+          />
+        ) : (
+          <TopicSelector
+            userId={userId}
+            onSelectTopic={handleSelectTopic}
           />
         )}
       </div>

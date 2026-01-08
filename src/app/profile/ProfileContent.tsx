@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import UserProfileForm from '@/components/UserProfileForm'
+import LevelDisplay from '@/app/games/components/LevelDisplay'
+import BadgeCollection from '@/app/games/components/BadgeCollection'
 
 const fadeInUp = {
   animation: 'fadeInUp 0.6s ease-out forwards',
@@ -19,6 +21,7 @@ export function ProfileContent() {
   const [userId, setUserId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
+  const [userLevel, setUserLevel] = useState<number>(1)
 
   const checkAuth = useCallback(async () => {
     try {
@@ -47,6 +50,25 @@ export function ProfileContent() {
       setAlertMessage(decodeURIComponent(message))
     }
   }, [searchParams, checkAuth])
+
+  // Fetch user level
+  useEffect(() => {
+    const fetchUserLevel = async () => {
+      if (!userId) return
+
+      try {
+        const response = await fetch(`/api/user/stats?userId=${userId}`)
+        const data = await response.json()
+        if (data.success) {
+          setUserLevel(data.stats.level)
+        }
+      } catch (error) {
+        console.error('Error fetching user level:', error)
+      }
+    }
+
+    fetchUserLevel()
+  }, [userId])
 
   const handleSuccess = () => {
     // Redirect to home or show success message
@@ -108,6 +130,17 @@ export function ProfileContent() {
           </div>
         </div>
       )}
+
+      {/* Level Display Section */}
+      <div className="max-w-4xl mx-auto px-4 mb-6">
+        <LevelDisplay userId={userId} />
+      </div>
+
+      {/* Badge Collection Section */}
+      <div className="max-w-4xl mx-auto px-4 mb-6">
+        <BadgeCollection currentLevel={userLevel} />
+      </div>
+
       <UserProfileForm userId={userId} onSuccess={handleSuccess} />
     </div>
   )
