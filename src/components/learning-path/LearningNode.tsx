@@ -13,57 +13,60 @@ function LearningNode({ data, selected }: NodeProps<LearningNodeData>) {
     const bgColor = data.color || '#6366f1';
 
     return (
-        <div
-            className={`
-        relative px-4 py-3 rounded-xl shadow-lg min-w-[160px]
-        transition-all duration-200 cursor-grab active:cursor-grabbing
-        ${selected ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-900 scale-105' : ''}
-      `}
-            style={{
-                background: `linear-gradient(135deg, ${bgColor} 0%, ${adjustColor(bgColor, -20)} 100%)`,
-            }}
-        >
-            {/* Input Handle (Left) */}
-            <Handle
-                type="target"
-                position={Position.Left}
-                className="!w-4 !h-4 !bg-slate-700 !border-2 !border-slate-400
-          hover:!bg-indigo-500 hover:!border-white hover:!scale-125
-          transition-all duration-200"
-                style={{ left: -8 }}
+        <div className="relative group" style={{ marginLeft: '8px', marginBottom: '8px' }}>
+            {/* Stacked shadow layers - retro style */}
+            <div
+                className="absolute inset-0 rounded-2xl border-[3px] border-black z-0 transition-all duration-300"
+                style={{
+                    backgroundColor: adjustColor(bgColor, -40),
+                    transform: selected ? 'translate(6px, 6px)' : 'translate(4px, 4px)'
+                }}
             />
 
-            {/* Content */}
-            <div className="flex items-center gap-3">
-                <div>
-                    <div className="font-semibold text-white text-sm">
+            {/* Main node */}
+            <div
+                className={`
+                    relative px-5 py-3.5 rounded-2xl min-w-[160px] z-10
+                    transition-all duration-300 cursor-grab active:cursor-grabbing
+                    border-[3px] border-black
+                    ${selected ? '-translate-x-1 -translate-y-1' : 'group-hover:-translate-x-0.5 group-hover:-translate-y-0.5'}
+                `}
+                style={{
+                    backgroundColor: bgColor,
+                }}
+            >
+                {/* Input Handle (Left) */}
+                <Handle
+                    type="target"
+                    position={Position.Left}
+                    className="!w-5 !h-5 !bg-white !border-[3px] !border-black
+                        hover:!bg-yellow-400 hover:!scale-110
+                        transition-all duration-200"
+                    style={{ left: -10 }}
+                />
+
+                {/* Content */}
+                <div className="flex flex-col gap-1">
+                    <div className="font-bold text-white text-base drop-shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
                         {data.label}
                     </div>
                     {data.description && (
-                        <div className="text-xs text-white/70 mt-0.5">
+                        <div className="text-sm text-white/90 drop-shadow-[1px_1px_0px_rgba(0,0,0,0.2)]">
                             {data.description}
                         </div>
                     )}
                 </div>
-            </div>
 
-            {/* Output Handle (Right) */}
-            <Handle
-                type="source"
-                position={Position.Right}
-                className="!w-4 !h-4 !bg-slate-700 !border-2 !border-slate-400 
-          hover:!bg-green-500 hover:!border-white hover:!scale-125
-          transition-all duration-200"
-                style={{ right: -8 }}
-            />
-
-            {/* Glow effect when selected */}
-            {selected && (
-                <div
-                    className="absolute inset-0 rounded-xl -z-10 blur-xl opacity-40"
-                    style={{ background: bgColor }}
+                {/* Output Handle (Right) */}
+                <Handle
+                    type="source"
+                    position={Position.Right}
+                    className="!w-5 !h-5 !bg-white !border-[3px] !border-black
+                        hover:!bg-green-400 hover:!scale-110
+                        transition-all duration-200"
+                    style={{ right: -10 }}
                 />
-            )}
+            </div>
         </div>
     );
 }

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { getCurrentUserProfile } from '@/lib/profile'
 import Navbar from '@/components/Navbar'
 import type { Profile } from '@/types/database'
+import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import { useRef } from 'react'
 
 export default function HomePage() {
   const router = useRouter()
@@ -14,6 +16,13 @@ export default function HomePage() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
   const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set())
   const [skateVisible, setSkateVisible] = useState(false)
+  const [characterVisible, setCharacterVisible] = useState(false)
+
+  // Framer Motion scroll animations
+  const { scrollY } = useScroll()
+  const characterY = useTransform(scrollY, [0, 500], [0, 200])
+  const logoY = useTransform(scrollY, [0, 500], [0, 100])
+  const cloudY = useTransform(scrollY, [0, 500], [0, -150])
 
   // Animation styles
   const getCardAnimation = (delay: number, isVisible: boolean) => ({
@@ -117,11 +126,35 @@ export default function HomePage() {
       <div className="flex-1">
         {/* Hero Section - Light Blue Background */}
         <div className="relative bg-gradient-to-b from-blue-100 to-blue-200 min-h-[55vh] sm:min-h-[65vh] md:min-h-screen overflow-hidden flex flex-col">
-          {/* Decorative clouds - Responsive sizing */}
-          <div className="absolute top-10 md:top-20 left-5 md:left-10 w-16 md:w-32 h-8 md:h-16 bg-white rounded-full opacity-70 blur-sm"></div>
-          <div className="absolute top-16 md:top-32 left-16 md:left-32 w-10 md:w-20 h-5 md:h-10 bg-white rounded-full opacity-60 blur-sm"></div>
-          <div className="absolute top-12 md:top-24 right-10 md:right-20 w-20 md:w-40 h-10 md:h-20 bg-white rounded-full opacity-70 blur-sm"></div>
-          <div className="absolute top-20 md:top-40 right-24 md:right-48 w-12 md:w-24 h-6 md:h-12 bg-white rounded-full opacity-60 blur-sm"></div>
+          {/* Decorative clouds - Responsive sizing with animation */}
+          <motion.div
+            className="absolute top-10 md:top-20 left-5 md:left-10 w-16 md:w-32 h-8 md:h-16 bg-white rounded-full opacity-70 blur-sm"
+            style={{ y: cloudY }}
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 0.7 }}
+            transition={{ duration: 1, delay: 0.2 }}
+          />
+          <motion.div
+            className="absolute top-16 md:top-32 left-16 md:left-32 w-10 md:w-20 h-5 md:h-10 bg-white rounded-full opacity-60 blur-sm"
+            style={{ y: cloudY }}
+            initial={{ x: -80, opacity: 0 }}
+            animate={{ x: 0, opacity: 0.6 }}
+            transition={{ duration: 1.2, delay: 0.3 }}
+          />
+          <motion.div
+            className="absolute top-12 md:top-24 right-10 md:right-20 w-20 md:w-40 h-10 md:h-20 bg-white rounded-full opacity-70 blur-sm"
+            style={{ y: cloudY }}
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 0.7 }}
+            transition={{ duration: 1, delay: 0.4 }}
+          />
+          <motion.div
+            className="absolute top-20 md:top-40 right-24 md:right-48 w-12 md:w-24 h-6 md:h-12 bg-white rounded-full opacity-60 blur-sm"
+            style={{ y: cloudY }}
+            initial={{ x: 120, opacity: 0 }}
+            animate={{ x: 0, opacity: 0.6 }}
+            transition={{ duration: 1.2, delay: 0.5 }}
+          />
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-20 flex-1 flex flex-col justify-center">
             <div className="text-center mb-auto pt-5 md:pt-10">
@@ -130,17 +163,29 @@ export default function HomePage() {
           </div>
 
           {/* Character and Logo - Stacked Vertically */}
-          <div className="absolute bottom-[6rem] sm:bottom-[4rem] md:bottom-[2rem] lg:bottom-[0rem] left-1/2 -translate-x-1/2 flex flex-col items-center w-full gap-0">
+          <div className="absolute bottom-[6rem] sm:bottom-[4rem] md:bottom-[2rem] lg:bottom-[1rem] left-1/2 -translate-x-1/2 flex flex-col items-center w-full gap-0">
             {/* Logo on top */}
-            <img
+            <motion.img
               src="/SINAUIN.png"
               alt="SINAUIN Logo"
-              className="w-auto h-[6rem] sm:h-[12rem] md:h-[16rem] lg:h-[20rem] xl:h-[24rem] object-contain mb-[-1.5rem] sm:mb-[-3rem] md:mb-[-4rem] lg:mb-[-5rem]"
+              className="w-auto h-[5rem] sm:h-[10rem] md:h-[12rem] lg:h-[14rem] xl:h-[18rem] object-contain mb-[-1rem] sm:mb-[-2rem] md:mb-[-2.5rem] lg:mb-[-3rem]"
+              style={{ y: logoY }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
             />
             {/* Character below - smaller size */}
-            <img src="/landingpage1.png"
+            <motion.img
+              src="/landingpage1.png"
               alt="SINAUIN Character"
-              className="w-auto h-[14rem] sm:h-[26rem] md:h-[34rem] lg:h-[42rem] xl:h-[50rem] object-contain" />
+              className="w-auto h-[12rem] sm:h-[22rem] md:h-[26rem] lg:h-[30rem] xl:h-[38rem] object-contain"
+              style={{
+                y: characterY,
+              }}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            />
           </div>
 
           {/* Checkered Pattern at Bottom - Responsive sizing */}
@@ -216,25 +261,44 @@ export default function HomePage() {
           `}</style>
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Epic Features Section */}
-            <div className="text-center mb-12" style={getCardAnimation(0, true)}>
-              <div className="inline-block bg-yellow-400 px-8 py-3 rounded-full border-[3px] border-black mb-4 rotate-[-2deg]">
-                <span className="text-base font-bold text-black">Superpowers Included</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-black text-black mb-4">
+            <motion.div
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              <motion.h2
+                className="text-4xl md:text-5xl font-black text-black mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
                 Epic Features for Smart Learners
-              </h2>
-              <p className="text-gray-600 text-lg">
+              </motion.h2>
+              <motion.p
+                className="text-gray-600 text-lg"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
                 Discover the magic tools that make Sinauin the best place to grow your brain!
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
             {/* Features Grid - Bento Grid Layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-20 max-w-5xl mx-auto">
               {/* Feature 1 - AI Task Integrator */}
-              <div className="relative group" style={{ marginLeft: '12px', marginBottom: '16px' }}>
-                {/* Decorative colored bar on left - hidden by default, show on hover */}
-                <div className="absolute left-[-12px] top-0 bottom-[-16px] w-3 bg-emerald-400 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
+              <motion.div
+                className="relative group"
+                style={{ marginLeft: '12px', marginBottom: '16px' }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
                 {/* Multiple stacked layers effect - always visible, move more on hover */}
                 <div className="absolute inset-0 bg-blue-500 border-[3px] border-black z-0 translate-x-3 translate-y-3 group-hover:translate-x-4 group-hover:translate-y-4 transition-all duration-300" style={{ transitionDelay: '0ms' }}></div>
                 <div className="absolute inset-0 bg-blue-400 border-[3px] border-black z-[1] translate-x-1.5 translate-y-1.5 group-hover:translate-x-2 group-hover:translate-y-2 transition-all duration-300" style={{ transitionDelay: '50ms' }}></div>
@@ -242,7 +306,7 @@ export default function HomePage() {
                 <div
                   id="feature-card-0"
                   className="relative bg-blue-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
-                  style={{ ...getCardAnimation(0.1, visibleCards.has(0)), transitionDelay: '100ms' }}
+                  style={{ transitionDelay: '100ms' }}
                   onMouseEnter={() => setHoveredCard(0)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
@@ -269,25 +333,27 @@ export default function HomePage() {
                     LET&apos;S GO
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Feature 2 - AI Adaptive Material */}
-              <div className="relative group" style={{ marginLeft: '12px', marginBottom: '16px' }}>
-                {/* Decorative colored bar on left - hidden by default, show on hover */}
-                <div className="absolute left-[-12px] top-0 bottom-[-16px] w-3 bg-pink-400 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                {/* Multiple stacked layers effect - always visible, move more on hover */}
-                <div className="absolute inset-0 bg-teal-500 border-[3px] border-black z-0 translate-x-3 translate-y-3 group-hover:translate-x-4 group-hover:translate-y-4 transition-all duration-300" style={{ transitionDelay: '0ms' }}></div>
-                <div className="absolute inset-0 bg-teal-400 border-[3px] border-black z-[1] translate-x-1.5 translate-y-1.5 group-hover:translate-x-2 group-hover:translate-y-2 transition-all duration-300" style={{ transitionDelay: '50ms' }}></div>
+              <motion.div
+                className="relative group"
+                style={{ marginLeft: '12px', marginBottom: '16px' }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <div className="absolute inset-0 bg-pink-500 border-[3px] border-black z-0 translate-x-3 translate-y-3 group-hover:translate-x-4 group-hover:translate-y-4 transition-all duration-300" style={{ transitionDelay: '0ms' }}></div>
+                <div className="absolute inset-0 bg-pink-400 border-[3px] border-black z-[1] translate-x-1.5 translate-y-1.5 group-hover:translate-x-2 group-hover:translate-y-2 transition-all duration-300" style={{ transitionDelay: '50ms' }}></div>
 
                 <div
                   id="feature-card-1"
-                  className="relative bg-teal-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
-                  style={{ ...getCardAnimation(0.2, visibleCards.has(1)), transitionDelay: '100ms' }}
+                  className="relative bg-pink-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
+                  style={{ transitionDelay: '100ms' }}
                   onMouseEnter={() => setHoveredCard(1)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  {/* Curved "LEARN MORE" text in corner - hidden by default, show on hover */}
                   <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
                       <defs>
@@ -304,31 +370,33 @@ export default function HomePage() {
                     <span>AI ADAPTIVE MATERIAL</span>
                   </div>
                   <p className="text-sm leading-relaxed mb-14 text-black/80">
-                      Lessons that magically change just for you! If it&apos;s too hard, we make it simpler; if it&apos;s too easy, get ready for a challenge.
+                    Lessons that magically change just for you! If it&apos;s too hard, we make it simpler; if it&apos;s too easy, get ready for a challenge.
                   </p>
                   <button className="absolute bottom-6 left-6 right-6 border-[3px] border-black py-3 text-sm font-black hover:bg-black hover:text-white transition-colors bg-white tracking-wider">
                     LET&apos;S GO
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Feature 3 - AI Multi-Source */}
-              <div className="relative group" style={{ marginLeft: '12px', marginBottom: '16px' }}>
-                {/* Decorative colored bar on left - hidden by default, show on hover */}
-                <div className="absolute left-[-12px] top-0 bottom-[-16px] w-3 bg-orange-400 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                {/* Multiple stacked layers effect - always visible, move more on hover */}
-                <div className="absolute inset-0 bg-yellow-500 border-[3px] border-black z-0 translate-x-3 translate-y-3 group-hover:translate-x-4 group-hover:translate-y-4 transition-all duration-300" style={{ transitionDelay: '0ms' }}></div>
-                <div className="absolute inset-0 bg-yellow-400 border-[3px] border-black z-[1] translate-x-1.5 translate-y-1.5 group-hover:translate-x-2 group-hover:translate-y-2 transition-all duration-300" style={{ transitionDelay: '50ms' }}></div>
+              {/* Feature 3 - Multi-Source Knowledge */}
+              <motion.div
+                className="relative group"
+                style={{ marginLeft: '12px', marginBottom: '16px' }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <div className="absolute inset-0 bg-orange-500 border-[3px] border-black z-0 translate-x-3 translate-y-3 group-hover:translate-x-4 group-hover:translate-y-4 transition-all duration-300" style={{ transitionDelay: '0ms' }}></div>
+                <div className="absolute inset-0 bg-orange-400 border-[3px] border-black z-[1] translate-x-1.5 translate-y-1.5 group-hover:translate-x-2 group-hover:translate-y-2 transition-all duration-300" style={{ transitionDelay: '50ms' }}></div>
 
                 <div
                   id="feature-card-2"
-                  className="relative bg-yellow-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
-                  style={{ ...getCardAnimation(0.3, visibleCards.has(2)), transitionDelay: '100ms' }}
+                  className="relative bg-orange-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
+                  style={{ transitionDelay: '100ms' }}
                   onMouseEnter={() => setHoveredCard(2)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  {/* Curved "LEARN MORE" text in corner - hidden by default, show on hover */}
                   <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
                       <defs>
@@ -348,28 +416,30 @@ export default function HomePage() {
                     Connect the dots! See how math links to music and science links to stories in a giant, interactive web of fun facts.
                   </p>
                   <button className="absolute bottom-6 left-6 right-6 border-[3px] border-black py-3 text-sm font-black hover:bg-black hover:text-white transition-colors bg-white tracking-wider">
-                     LET&apos;S GO
+                    LET&apos;S GO
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Feature 4 - Peer Connect */}
-              <div className="relative group" style={{ marginLeft: '12px', marginBottom: '16px' }}>
-                {/* Decorative colored bar on left - hidden by default, show on hover */}
-                <div className="absolute left-[-12px] top-0 bottom-[-16px] w-3 bg-purple-400 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                {/* Multiple stacked layers effect - always visible, move more on hover */}
-                <div className="absolute inset-0 bg-green-500 border-[3px] border-black z-0 translate-x-3 translate-y-3 group-hover:translate-x-4 group-hover:translate-y-4 transition-all duration-300" style={{ transitionDelay: '0ms' }}></div>
-                <div className="absolute inset-0 bg-green-400 border-[3px] border-black z-[1] translate-x-1.5 translate-y-1.5 group-hover:translate-x-2 group-hover:translate-y-2 transition-all duration-300" style={{ transitionDelay: '50ms' }}></div>
+              <motion.div
+                className="relative group"
+                style={{ marginLeft: '12px', marginBottom: '16px' }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <div className="absolute inset-0 bg-purple-500 border-[3px] border-black z-0 translate-x-3 translate-y-3 group-hover:translate-x-4 group-hover:translate-y-4 transition-all duration-300" style={{ transitionDelay: '0ms' }}></div>
+                <div className="absolute inset-0 bg-purple-400 border-[3px] border-black z-[1] translate-x-1.5 translate-y-1.5 group-hover:translate-x-2 group-hover:translate-y-2 transition-all duration-300" style={{ transitionDelay: '50ms' }}></div>
 
                 <div
                   id="feature-card-3"
-                  className="relative bg-green-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
-                  style={{ ...getCardAnimation(0.4, visibleCards.has(3)), transitionDelay: '100ms' }}
+                  className="relative bg-purple-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
+                  style={{ transitionDelay: '100ms' }}
                   onMouseEnter={() => setHoveredCard(3)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  {/* Curved "LEARN MORE" text in corner - hidden by default, show on hover */}
                   <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
                       <defs>
@@ -389,10 +459,10 @@ export default function HomePage() {
                     Join clubs, video call friends to study together, and make new buddies who love what you love in a safe space!
                   </p>
                   <button className="absolute bottom-6 left-6 right-6 border-[3px] border-black py-3 text-sm font-black hover:bg-black hover:text-white transition-colors bg-white tracking-wider">
-                     LET&apos;S GO
+                    LET&apos;S GO
                   </button>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
           </div>
@@ -404,13 +474,19 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50 to-blue-100"></div>
 
           {/* Character Image - 3x bigger in left corner */}
-          <div className="absolute bottom-0 left-0 z-10">
+          <motion.div
+            className="absolute bottom-0 left-0 z-10"
+            initial={{ x: -200, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
             <img
               src="/skate.png"
               alt="SINAUIN Skateboard Character"
               className="h-[600px] w-auto object-contain"
             />
-          </div>
+          </motion.div>
         </div>
 
         {/* How It Works Section */}
@@ -425,14 +501,20 @@ export default function HomePage() {
 
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Section Header */}
-            <div className="text-center mb-16">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.6 }}
+            >
               <h2 className="text-4xl md:text-5xl font-black text-black mb-4">
                 How It Works
               </h2>
               <p className="text-gray-700 text-lg">
                 Start your learning adventure in 3 easy steps!
               </p>
-            </div>
+            </motion.div>
 
             {/* Steps Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
@@ -455,7 +537,13 @@ export default function HomePage() {
               </div>
 
               {/* Step 1 - Create Profile */}
-              <div className="relative z-10">
+              <motion.div
+                className="relative z-10"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
                 <div className="flex flex-col items-center text-center">
                   <div className="w-[85px] h-[85px] bg-white rounded-full flex items-center justify-center border-[4px] border-black mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                     <span className="text-5xl font-black text-pink-500">1</span>
@@ -467,10 +555,16 @@ export default function HomePage() {
                     Sign up for free and customize your avatar.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Step 2 - Pick a Course */}
-              <div className="relative z-10">
+              <motion.div
+                className="relative z-10"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
                 <div className="flex flex-col items-center text-center">
                   <div className="w-[85px] h-[85px] bg-yellow-400 rounded-full flex items-center justify-center border-[4px] border-black mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                     <span className="text-5xl font-black text-black">2</span>
@@ -482,10 +576,16 @@ export default function HomePage() {
                     Choose Math, Reading, or Science adventures.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Step 3 - Play & Learn */}
-              <div className="relative z-10">
+              <motion.div
+                className="relative z-10"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
                 <div className="flex flex-col items-center text-center">
                   <div className="w-[85px] h-[85px] bg-teal-400 rounded-full flex items-center justify-center border-[4px] border-black mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                     <span className="text-5xl font-black text-white">3</span>
@@ -497,7 +597,7 @@ export default function HomePage() {
                     Start the game and collect rewards!
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -508,13 +608,19 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-blue-200 to-blue-200"></div>
 
           {/* Character Image - Right side */}
-          <div className="absolute bottom-0 right-0 z-10">
+          <motion.div
+            className="absolute bottom-0 right-0 z-10"
+            initial={{ x: 200, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
             <img
               src="/mikir.png"
               alt="SINAUIN Thinking Character"
               className="h-[600px] w-auto object-contain"
             />
-          </div>
+          </motion.div>
         </div>
 
         {/* FAQ Section */}
@@ -862,6 +968,7 @@ export default function HomePage() {
         </footer>
       </div>
     </div>
+    
   );
 }
 
