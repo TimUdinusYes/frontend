@@ -278,7 +278,7 @@ export default function MaterialList() {
           onClick={closeModal}
         >
           <div
-            className="bg-white rounded-2xl border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-[95vw] max-w-[1600px] max-h-[90vh] overflow-hidden"
+            className="bg-white rounded-2xl border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-[90vw] max-w-[1200px] max-h-[90vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}

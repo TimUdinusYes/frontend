@@ -16,7 +16,7 @@ function LearningNode({ data, selected }: NodeProps<LearningNodeData>) {
         <div className="relative group" style={{ marginLeft: '8px', marginBottom: '8px' }}>
             {/* Stacked shadow layers - retro style */}
             <div
-                className="absolute inset-0 rounded-2xl border-[3px] border-black z-0 transition-all duration-300"
+                className="absolute inset-0 border-[3px] border-black z-0 transition-all duration-300"
                 style={{
                     backgroundColor: adjustColor(bgColor, -40),
                     transform: selected ? 'translate(6px, 6px)' : 'translate(4px, 4px)'
@@ -26,7 +26,7 @@ function LearningNode({ data, selected }: NodeProps<LearningNodeData>) {
             {/* Main node */}
             <div
                 className={`
-                    relative px-5 py-3.5 rounded-2xl min-w-[160px] z-10
+                    relative px-5 py-3.5 min-w-[200px] max-w-[350px] z-10
                     transition-all duration-300 cursor-grab active:cursor-grabbing
                     border-[3px] border-black
                     ${selected ? '-translate-x-1 -translate-y-1' : 'group-hover:-translate-x-0.5 group-hover:-translate-y-0.5'}
@@ -46,12 +46,12 @@ function LearningNode({ data, selected }: NodeProps<LearningNodeData>) {
                 />
 
                 {/* Content */}
-                <div className="flex flex-col gap-1">
-                    <div className="font-bold text-white text-base drop-shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
+                <div className="flex flex-col gap-1 max-w-[320px]">
+                    <div className="font-bold text-white text-base drop-shadow-[2px_2px_0px_rgba(0,0,0,0.3)] break-words">
                         {data.label}
                     </div>
                     {data.description && (
-                        <div className="text-sm text-white/90 drop-shadow-[1px_1px_0px_rgba(0,0,0,0.2)]">
+                        <div className="text-sm text-white/90 drop-shadow-[1px_1px_0px_rgba(0,0,0,0.2)] break-words line-clamp-2">
                             {data.description}
                         </div>
                     )}

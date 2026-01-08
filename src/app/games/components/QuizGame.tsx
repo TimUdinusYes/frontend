@@ -78,10 +78,10 @@ export default function QuizGame({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center max-w-md">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-800 font-semibold text-lg mb-2">Loading quiz...</p>
-          <p className="text-gray-500 text-sm">
+        <div className="text-center max-w-md bg-white rounded-xl border-[3px] border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] p-8">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-black border-t-transparent mx-auto mb-4"></div>
+          <p className="text-black font-black text-lg mb-2">Loading quiz...</p>
+          <p className="text-black/70 text-sm font-bold">
             If this is your first time, were generating questions with AI. This may take up to 30 seconds.
           </p>
         </div>
@@ -105,13 +105,13 @@ export default function QuizGame({
 
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="text-red-500 text-5xl mb-4">⚠️</div>
-          <h3 className="text-xl font-bold text-red-600 mb-2">Oops!</h3>
-          <p className="text-gray-600 mb-4">{error}</p>
+        <div className="text-center bg-red-200 rounded-xl border-[3px] border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] p-8">
+          <div className="text-5xl mb-4">⚠️</div>
+          <h3 className="text-xl font-black text-black mb-2">Oops!</h3>
+          <p className="text-black/70 font-bold mb-4">{error}</p>
           <button
             onClick={resetQuiz}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            className="px-6 py-3 bg-blue-500 text-white font-black rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
           >
             Try Again
           </button>
@@ -131,7 +131,7 @@ export default function QuizGame({
         animate={{ opacity: 1, scale: 1 }}
         className="flex items-center justify-center min-h-[400px]"
       >
-        <div className="text-center max-w-md">
+        <div className="text-center max-w-md bg-white rounded-xl border-[3px] border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] p-8">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -141,33 +141,33 @@ export default function QuizGame({
             {passed ? '🎉' : '💪'}
           </motion.div>
 
-          <h2 className="text-3xl font-bold mb-2">
+          <h2 className="text-3xl font-black text-black mb-2">
             {passed ? 'Congratulations!' : 'Good Effort!'}
           </h2>
 
-          <p className="text-gray-600 mb-6">
+          <p className="text-black/70 font-bold mb-6">
             {passed
               ? 'You passed the quiz!'
               : 'Keep learning and try again!'}
           </p>
 
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-6">
+          <div className="bg-yellow-200 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] p-6 mb-6">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
-                <div className="text-3xl font-bold text-blue-600">{score}</div>
-                <div className="text-sm text-gray-600">Correct</div>
+                <div className="text-3xl font-black text-black">{score}</div>
+                <div className="text-sm text-black/70 font-bold">Correct</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-purple-600">
+                <div className="text-3xl font-black text-black">
                   {percentage}%
                 </div>
-                <div className="text-sm text-gray-600">Score</div>
+                <div className="text-sm text-black/70 font-bold">Score</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-green-600">
+                <div className="text-3xl font-black text-black">
                   +{totalXP}
                 </div>
-                <div className="text-sm text-gray-600">XP</div>
+                <div className="text-sm text-black/70 font-bold">XP</div>
               </div>
             </div>
           </div>
@@ -175,13 +175,13 @@ export default function QuizGame({
           <div className="space-y-3">
             <button
               onClick={resetQuiz}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
+              className="w-full px-6 py-3 bg-blue-500 text-white font-black rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
             >
               Try Again
             </button>
             <button
               onClick={() => window.history.back()}
-              className="w-full px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              className="w-full px-6 py-3 bg-gray-200 text-black font-black rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
             >
               Back to Materials
             </button>
@@ -207,19 +207,19 @@ export default function QuizGame({
   const getOptionStyle = (option: QuizOption) => {
     if (!showResult) {
       return selectedOption === option.id
-        ? 'bg-blue-100 border-blue-500 border-2'
-        : 'bg-white border-gray-200 hover:border-blue-300';
+        ? 'bg-blue-200 border-black border-[3px] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+        : 'bg-white border-black border-[3px] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]]';
     }
 
     if (currentAnswer?.correctOptionId === option.id) {
-      return 'bg-green-100 border-green-500 border-2';
+      return 'bg-green-200 border-black border-[3px] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]';
     }
 
     if (selectedOption === option.id && !currentAnswer?.isCorrect) {
-      return 'bg-red-100 border-red-500 border-2';
+      return 'bg-red-200 border-black border-[3px] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]';
     }
 
-    return 'bg-gray-50 border-gray-200';
+    return 'bg-gray-100 border-black border-[3px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
   };
 
   return (

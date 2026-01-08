@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import {
   activityTracker,
   type ActivityStats,
@@ -132,24 +131,22 @@ export default function TaskIntegratorUnified() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-        <Navbar />
+      <div className="min-h-screen flex flex-col bg-blue-100">
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-      <Navbar />
+    <div className="min-h-screen flex flex-col bg-blue-100">
 
       <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="mb-6 flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
         >
           <svg
             className="w-5 h-5"
@@ -168,12 +165,12 @@ export default function TaskIntegratorUnified() {
         </button>
 
         {/* Header with Stats */}
-        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-lg p-8 mb-8 text-white">
+        <div className="bg-pink-300 rounded-xl border-[3px] border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] p-8 mb-8 text-black">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+              <div className="w-16 h-16 bg-white rounded-xl border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <svg
-                  className="w-8 h-8"
+                  className="w-8 h-8 text-black"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -187,12 +184,12 @@ export default function TaskIntegratorUnified() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-3xl font-bold">AI Learning Analytics</h1>
-                <p className="text-indigo-100 mt-1">
+                <h1 className="text-3xl font-black">AI Learning Analytics</h1>
+                <p className="text-black/80 mt-1 font-semibold">
                   Peta pengetahuan & analisis pembelajaran dengan AI
                 </p>
                 {lastAnalyzedTime && (
-                  <p className="text-indigo-200 text-xs mt-1">
+                  <p className="text-black/70 text-xs mt-1 font-medium">
                     Terakhir dianalisis:{" "}
                     {lastAnalyzedTime.toLocaleTimeString("id-ID")}
                   </p>
@@ -204,7 +201,7 @@ export default function TaskIntegratorUnified() {
             <button
               onClick={handleManualRefresh}
               disabled={loading || aiLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg backdrop-blur-sm transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all disabled:opacity-50 disabled:shadow-none"
               title="Refresh & Analisis Ulang"
             >
               <svg
@@ -227,292 +224,37 @@ export default function TaskIntegratorUnified() {
           </div>
 
           {stats && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                <div className="text-2xl font-bold">
-                  {stats.totalMaterialsOpened}
-                </div>
-                <div className="text-indigo-100 text-sm">Materi Dibuka</div>
-              </div>
-              <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                <div className="text-2xl font-bold">{stats.totalTimeSpent}</div>
-                <div className="text-indigo-100 text-sm">Menit Belajar</div>
-              </div>
-              <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                <div className="text-2xl font-bold">
-                  {stats.materialsCompleted}
-                </div>
-                <div className="text-indigo-100 text-sm">Selesai</div>
-              </div>
-              <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                <div className="text-2xl font-bold">{completionRate}%</div>
-                <div className="text-indigo-100 text-sm">Completion</div>
-              </div>
-            </div>
-          )}
-
-          {aiLoading && (
-            <div className="mt-6 flex items-center gap-3 bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>AI sedang menganalisis pola belajar Anda...</span>
-            </div>
-          )}
-        </div>
-
-        {!stats || stats.totalMaterialsOpened === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center">
-            <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-10 h-10 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Belum Ada Data Aktivitas
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
-              Mulai belajar dengan membuka materi untuk melihat analisis AI Anda
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* Motivational Message */}
-            {analysis?.motivationalMessage && (
-              <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-blue-200 rounded-xl p-4 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="text-2xl font-black text-black">
+                    {stats.totalMaterialsOpened}
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-2">
-                      Pesan untuk Anda
-                    </h3>
-                    <p className="text-green-50">
-                      {analysis.motivationalMessage}
-                    </p>
+                  <div className="text-black/70 text-sm font-bold">Materi Dibuka</div>
+                </div>
+                <div className="bg-yellow-200 rounded-xl p-4 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="text-2xl font-black text-black">{stats.totalTimeSpent}</div>
+                  <div className="text-black/70 text-sm font-bold">Menit Belajar</div>
+                </div>
+                <div className="bg-green-200 rounded-xl p-4 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="text-2xl font-black text-black">
+                    {stats.materialsCompleted}
                   </div>
+                  <div className="text-black/70 text-sm font-bold">Selesai</div>
+                </div>
+                <div className="bg-pink-200 rounded-xl p-4 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="text-2xl font-black text-black">{completionRate}%</div>
+                  <div className="text-black/70 text-sm font-bold">Completion</div>
                 </div>
               </div>
-            )}
 
-            {/* Knowledge Map */}
-            {analysis?.knowledgeMap && (
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                {/* Mastered Concepts */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 flex flex-col">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-green-600 dark:text-green-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
-                        Sudah Paham
-                      </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {analysis.knowledgeMap.masteredConcepts.length} konsep
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-3 overflow-y-auto max-h-96 pr-2 scrollbar-thin scrollbar-thumb-green-300 dark:scrollbar-thumb-green-700 scrollbar-track-transparent">
-                    {analysis.knowledgeMap.masteredConcepts.map(
-                      (concept, idx) => (
-                        <div
-                          key={idx}
-                          className="border border-green-200 dark:border-green-800 rounded-xl p-3"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium text-gray-900 dark:text-white text-sm">
-                              {concept.concept}
-                            </h4>
-                            <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                              {concept.confidence}%
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {concept.evidence}
-                          </p>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Learning Concepts */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 flex flex-col">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/50 rounded-xl flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-yellow-600 dark:text-yellow-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
-                        Sedang Belajar
-                      </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {analysis.knowledgeMap.learningConcepts.length} konsep
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-3 overflow-y-auto max-h-96 pr-2 scrollbar-thin scrollbar-thumb-yellow-300 dark:scrollbar-thumb-yellow-700 scrollbar-track-transparent">
-                    {analysis.knowledgeMap.learningConcepts.map(
-                      (concept, idx) => (
-                        <div
-                          key={idx}
-                          className="border border-yellow-200 dark:border-yellow-800 rounded-xl p-3"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium text-gray-900 dark:text-white text-sm">
-                              {concept.concept}
-                            </h4>
-                            {concept.needsReview && (
-                              <span className="text-xs bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 px-2 py-1 rounded-full">
-                                Perlu Review
-                              </span>
-                            )}
-                          </div>
-                          <div className="mb-2">
-                            <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-yellow-500"
-                                style={{ width: `${concept.progress}%` }}
-                              />
-                            </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                              {concept.progress}% progress
-                            </p>
-                          </div>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-                            ⏱️ {concept.estimatedTimeToMaster}
-                          </p>
-                          {concept.status && (
-                            <p className="text-xs text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded">
-                              📌 {concept.status}
-                            </p>
-                          )}
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Not Started */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 flex flex-col">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-gray-600 dark:text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
-                        Belum Dimulai
-                      </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {analysis.knowledgeMap.notStartedConcepts.length} konsep
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-3 overflow-y-auto max-h-96 pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
-                    {analysis.knowledgeMap.notStartedConcepts.map(
-                      (concept, idx) => (
-                        <div
-                          key={idx}
-                          className="border border-gray-200 dark:border-gray-700 rounded-xl p-3"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium text-gray-900 dark:text-white text-sm">
-                              {concept.concept}
-                            </h4>
-                            <span
-                              className={`text-xs px-2 py-1 rounded-full ${getDifficultyColor(
-                                concept.difficulty
-                              )}`}
-                            >
-                              {concept.difficulty}
-                            </span>
-                          </div>
-                          {concept.reason && (
-                            <p className="text-xs text-gray-700 dark:text-gray-300 mb-2 italic">
-                              💡 {concept.reason}
-                            </p>
-                          )}
-                          {concept.prerequisite.length > 0 && (
-                            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-                              📚 Butuh: {concept.prerequisite.join(", ")}
-                            </p>
-                          )}
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            ⏱️ {concept.estimatedLearningTime}
-                          </p>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Learning Velocity & Predicted Challenges */}
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              {/* Learning Velocity */}
+              {/* Learning Velocity inside header */}
               {analysis?.learningVelocity && (
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                <div className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] p-5">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-blue-100 border-2 border-black rounded-lg flex items-center justify-center">
                       <svg
-                        className="w-5 h-5 text-indigo-600 dark:text-indigo-400"
+                        className="w-5 h-5 text-black"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -526,7 +268,7 @@ export default function TaskIntegratorUnified() {
                       </svg>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                      <h3 className="font-black text-black">
                         Kecepatan Belajar
                       </h3>
                       <span
@@ -538,10 +280,10 @@ export default function TaskIntegratorUnified() {
                       </span>
                     </div>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {analysis.learningVelocity.fastTopics.length > 0 && (
                       <div>
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <p className="text-sm font-bold text-black mb-2">
                           ⚡ Cepat
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -549,7 +291,7 @@ export default function TaskIntegratorUnified() {
                             (topic, idx) => (
                               <span
                                 key={idx}
-                                className="px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 text-xs rounded-full"
+                                className="px-3 py-1 bg-green-200 border-2 border-black text-black text-xs rounded-full font-bold"
                               >
                                 {topic}
                               </span>
@@ -560,7 +302,7 @@ export default function TaskIntegratorUnified() {
                     )}
                     {analysis.learningVelocity.slowTopics.length > 0 && (
                       <div>
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <p className="text-sm font-bold text-black mb-2">
                           🐢 Perlu Lebih Banyak Waktu
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -568,7 +310,7 @@ export default function TaskIntegratorUnified() {
                             (topic, idx) => (
                               <span
                                 key={idx}
-                                className="px-3 py-1 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 text-xs rounded-full"
+                                className="px-3 py-1 bg-orange-200 border-2 border-black text-black text-xs rounded-full font-bold"
                               >
                                 {topic}
                               </span>
@@ -577,77 +319,328 @@ export default function TaskIntegratorUnified() {
                         </div>
                       </div>
                     )}
-                    <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="pt-3 border-t-2 border-black">
+                      <p className="text-sm text-black font-bold">
                         💡 {analysis.learningVelocity.recommendation}
                       </p>
                     </div>
                   </div>
                 </div>
               )}
+            </>
+          )}
 
-              {/* Predicted Challenges */}
-              {analysis?.predictedChallenges &&
-                analysis.predictedChallenges.length > 0 && (
-                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/50 rounded-xl flex items-center justify-center">
-                        <svg
-                          className="w-5 h-5 text-orange-600 dark:text-orange-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          Prediksi Tantangan
-                        </h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Antisipasi kesulitan
-                        </p>
-                      </div>
+          {aiLoading && (
+            <div className="mt-6 flex items-center gap-3 bg-white rounded-xl p-4 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-black font-bold">AI sedang menganalisis pola belajar Anda...</span>
+            </div>
+          )}
+        </div>
+
+        {!stats || stats.totalMaterialsOpened === 0 ? (
+          <div className="bg-yellow-200 rounded-xl border-[3px] border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] p-12 text-center">
+            <div className="w-20 h-20 bg-white rounded-full border-2 border-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <svg
+                className="w-10 h-10 text-black"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-black text-black mb-2">
+              Belum Ada Data Aktivitas
+            </h3>
+            <p className="text-black/70 mb-6 font-semibold">
+              Mulai belajar dengan membuka materi untuk melihat analisis AI Anda
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Motivational Message */}
+            {analysis?.motivationalMessage && (
+              <div className="bg-green-300 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8 text-black">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white rounded-xl border-2 border-black flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    <svg
+                      className="w-6 h-6 text-black"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-black text-lg mb-2">
+                      Pesan untuk Anda
+                    </h3>
+                    <p className="text-black/80 font-semibold">
+                      {analysis.motivationalMessage}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Knowledge Map */}
+            {analysis?.knowledgeMap && (
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                {/* Mastered Concepts */}
+                <div className="bg-green-200 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 flex flex-col">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-white rounded-xl border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                      <svg
+                        className="w-5 h-5 text-black"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
                     </div>
-                    <div className="space-y-3">
-                      {analysis.predictedChallenges.map((challenge, idx) => (
-                        <div
-                          key={idx}
-                          className="border border-orange-200 dark:border-orange-800 rounded-xl p-3"
-                        >
-                          <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
-                            {challenge.topic}
-                          </h4>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                            {challenge.challenge}
-                          </p>
-                          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-2">
-                            <p className="text-xs text-orange-700 dark:text-orange-300">
-                              💡 <strong>Tips:</strong>{" "}
-                              {challenge.preventionTip}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
+                    <div>
+                      <h3 className="font-black text-black">
+                        Sudah Paham
+                      </h3>
+                      <p className="text-xs text-black/70 font-bold">
+                        {analysis.knowledgeMap.masteredConcepts.length} konsep
+                      </p>
                     </div>
                   </div>
-                )}
-            </div>
+                  <div className="space-y-3 overflow-y-auto max-h-96 pr-2">
+                    {analysis.knowledgeMap.masteredConcepts.map(
+                      (concept, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-white border-2 border-black rounded-xl p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-bold text-black text-sm">
+                              {concept.concept}
+                            </h4>
+                            <span className="text-xs font-black text-black">
+                              {concept.confidence}%
+                            </span>
+                          </div>
+                          <p className="text-xs text-black/70 font-medium">
+                            {concept.evidence}
+                          </p>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Learning Concepts */}
+                <div className="bg-yellow-200 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 flex flex-col">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-white rounded-xl border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                      <svg
+                        className="w-5 h-5 text-black"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-black text-black">
+                        Sedang Belajar
+                      </h3>
+                      <p className="text-xs text-black/70 font-bold">
+                        {analysis.knowledgeMap.learningConcepts.length} konsep
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-3 overflow-y-auto max-h-96 pr-2">
+                    {analysis.knowledgeMap.learningConcepts.map(
+                      (concept, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-white border-2 border-black rounded-xl p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-bold text-black text-sm">
+                              {concept.concept}
+                            </h4>
+                            {concept.needsReview && (
+                              <span className="text-xs bg-orange-200 text-black border border-black px-2 py-1 rounded-full font-bold">
+                                Perlu Review
+                              </span>
+                            )}
+                          </div>
+                          <div className="mb-2">
+                            <div className="h-2 bg-white border border-black rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-yellow-400"
+                                style={{ width: `${concept.progress}%` }}
+                              />
+                            </div>
+                            <p className="text-xs text-black/70 mt-1 font-medium">
+                              {concept.progress}% progress
+                            </p>
+                          </div>
+                          <p className="text-xs text-black/70 mb-1 font-medium">
+                            ⏱️ {concept.estimatedTimeToMaster}
+                          </p>
+                          {concept.status && (
+                            <p className="text-xs text-black bg-yellow-100 border border-black px-2 py-1 rounded font-bold">
+                              📌 {concept.status}
+                            </p>
+                          )}
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Not Started */}
+                <div className="bg-purple-200 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 flex flex-col">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-white rounded-xl border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                      <svg
+                        className="w-5 h-5 text-black"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-black text-black">
+                        Belum Dimulai
+                      </h3>
+                      <p className="text-xs text-black/70 font-bold">
+                        {analysis.knowledgeMap.notStartedConcepts.length} konsep
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-3 overflow-y-auto max-h-96 pr-2">
+                    {analysis.knowledgeMap.notStartedConcepts.map(
+                      (concept, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-white border-2 border-black rounded-xl p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-bold text-black text-sm">
+                              {concept.concept}
+                            </h4>
+                            <span className="text-xs px-2 py-1 rounded-full border border-black bg-orange-200 text-black font-bold">
+                              {concept.difficulty}
+                            </span>
+                          </div>
+                          {concept.reason && (
+                            <p className="text-xs text-black/70 mb-2 italic font-medium">
+                              💡 {concept.reason}
+                            </p>
+                          )}
+                          {concept.prerequisite.length > 0 && (
+                            <p className="text-xs text-black/70 mb-1 font-medium">
+                              📚 Butuh: {concept.prerequisite.join(", ")}
+                            </p>
+                          )}
+                          <p className="text-xs text-black/70 font-medium">
+                            ⏱️ {concept.estimatedLearningTime}
+                          </p>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Predicted Challenges */}
+            {analysis?.predictedChallenges &&
+              analysis.predictedChallenges.length > 0 && (
+                <div className="bg-orange-200 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-white border-2 border-black rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-5 h-5 text-black"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-black text-black">
+                        Prediksi Tantangan
+                      </h3>
+                      <p className="text-xs text-black font-bold">
+                        Antisipasi kesulitan
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {analysis.predictedChallenges.map((challenge, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] p-3"
+                      >
+                        <h4 className="font-bold text-black text-sm mb-1">
+                          {challenge.topic}
+                        </h4>
+                        <p className="text-xs text-black mb-2">
+                          {challenge.challenge}
+                        </p>
+                        <div className="bg-yellow-200 border-2 border-black rounded-lg p-2">
+                          <p className="text-xs text-black font-bold">
+                            💡 <strong>Tips:</strong>{" "}
+                            {challenge.preventionTip}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
 
             {/* Optimal Learning Path */}
             {analysis?.optimalLearningPath &&
               analysis.optimalLearningPath.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
+                <div className="bg-purple-200 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-white border-2 border-black rounded-lg flex items-center justify-center">
                       <svg
-                        className="w-5 h-5 text-purple-600 dark:text-purple-400"
+                        className="w-5 h-5 text-black"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -661,10 +654,10 @@ export default function TaskIntegratorUnified() {
                       </svg>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                      <h3 className="font-black text-black">
                         Jalur Belajar Optimal
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-black font-bold">
                         Rekomendasi urutan belajar
                       </p>
                     </div>
@@ -673,18 +666,18 @@ export default function TaskIntegratorUnified() {
                     {analysis.optimalLearningPath.map((step, idx) => (
                       <div key={idx} className="flex gap-4">
                         <div className="flex-shrink-0">
-                          <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">
+                          <div className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                             {step.step}
                           </div>
                         </div>
-                        <div className="flex-1 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
-                          <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+                        <div className="flex-1 bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] p-4">
+                          <h4 className="font-bold text-black mb-1">
                             {step.topic}
                           </h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                          <p className="text-sm text-black mb-2">
                             {step.reason}
                           </p>
-                          <span className="text-xs text-purple-600 dark:text-purple-400">
+                          <span className="text-xs text-black font-bold">
                             ⏱️ Estimasi: {step.estimatedTime}
                           </span>
                         </div>
@@ -699,11 +692,11 @@ export default function TaskIntegratorUnified() {
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Study Pattern */}
                 {analysis.studyPattern && (
-                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                  <div className="bg-cyan-200 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 bg-white border-2 border-black rounded-lg flex items-center justify-center">
                         <svg
-                          className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                          className="w-5 h-5 text-black"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -716,11 +709,11 @@ export default function TaskIntegratorUnified() {
                           />
                         </svg>
                       </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                      <h3 className="font-black text-black">
                         Pola Belajar Anda
                       </h3>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p className="text-black font-bold">
                       {analysis.studyPattern}
                     </p>
                   </div>
@@ -728,11 +721,11 @@ export default function TaskIntegratorUnified() {
 
                 {/* Quick Insights */}
                 {analysis.insights && analysis.insights.length > 0 && (
-                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                  <div className="bg-pink-200 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/50 rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 bg-white border-2 border-black rounded-lg flex items-center justify-center">
                         <svg
-                          className="w-5 h-5 text-pink-600 dark:text-pink-400"
+                          className="w-5 h-5 text-black"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -745,7 +738,7 @@ export default function TaskIntegratorUnified() {
                           />
                         </svg>
                       </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                      <h3 className="font-black text-black">
                         Quick Insights
                       </h3>
                     </div>
@@ -755,8 +748,8 @@ export default function TaskIntegratorUnified() {
                           key={idx}
                           className="flex items-start gap-2 text-sm"
                         >
-                          <span className="text-pink-500 mt-1">•</span>
-                          <p className="text-gray-600 dark:text-gray-400">
+                          <span className="text-black font-black mt-1">•</span>
+                          <p className="text-black font-bold">
                             {insight.description}
                           </p>
                         </div>

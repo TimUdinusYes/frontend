@@ -377,7 +377,11 @@ export default function LearningPathPage() {
             )}
           </div>
           <div className="text-sm text-gray-700 font-semibold">
-            Topik: <span className="text-blue-600 font-black">{selectedTopic.title}</span>
+            Topik: <span className="text-blue-600 font-black">
+              {selectedTopic.title.length > 20
+                ? selectedTopic.title.substring(0, 20) + '...'
+                : selectedTopic.title}
+            </span>
           </div>
         </header>
 

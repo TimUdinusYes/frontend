@@ -73,7 +73,7 @@ export default function PrivateChatArea({
         {selectedChat.otherUser.avatar_url ? (
           <img src={selectedChat.otherUser.avatar_url} alt={selectedChat.otherUser.nama} className="w-10 h-10 rounded-full object-cover border-2 border-black" />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-yellow-400 border-2 border-black flex items-center justify-center text-black font-black">
+          <div className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 transition-colors border-2 border-black flex items-center justify-center text-white font-black">
             {selectedChat.otherUser.nama?.[0]?.toUpperCase() || 'U'}
           </div>
         )}

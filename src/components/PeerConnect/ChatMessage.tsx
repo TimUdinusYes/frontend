@@ -59,7 +59,7 @@ export default function ChatMessage({
             {message.message && message.message.trim() && (
               <div className={`px-4 py-2 rounded-2xl ${
                 isOwnMessage
-                  ? 'bg-blue-600 text-white rounded-tr-sm'
+                  ? 'bg-teal-300 text-black rounded-tr-sm'
                   : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-tl-sm shadow'
               }`}>
                 <p className="break-words">{message.message}</p>
@@ -76,11 +76,11 @@ export default function ChatMessage({
         ) : (
           <div className={`px-4 py-2 rounded-2xl ${
             isOwnMessage
-              ? 'bg-blue-600 text-white rounded-tr-sm'
+              ? 'bg-teal-300 text-black rounded-tr-sm'
               : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-tl-sm shadow'
           }`}>
             <p className="break-words">{message.message}</p>
-            <p className={`text-xs mt-1 ${isOwnMessage ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
+            <p className={`text-xs mt-1 ${isOwnMessage ? 'text-teal-700' : 'text-gray-500 dark:text-gray-400'}`}>
               {formatTime(message.created_at)}
             </p>
           </div>

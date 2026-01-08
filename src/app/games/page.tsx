@@ -79,10 +79,10 @@ export default function GamesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen flex items-center justify-center bg-blue-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-black border-t-transparent mx-auto mb-4"></div>
+          <p className="text-black font-bold">Loading...</p>
         </div>
       </div>
     );
@@ -93,20 +93,20 @@ export default function GamesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-8">
+    <div className="min-h-screen bg-blue-100 p-8">
       <div className="max-w-6xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-8 font-semibold transition"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-8"
         >
           <span>←</span> Back to Home
         </Link>
 
         <div className="mb-8 text-center">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-5xl font-black text-black mb-3">
             Quiz Game
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-black/70 text-lg font-bold">
             Test your knowledge and earn XP! 🎮
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function GamesPage() {
           <div>
             <button
               onClick={handleBackToMaterials}
-              className="mb-6 inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium transition"
+              className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
             >
               <span>←</span> Back to Materials
             </button>

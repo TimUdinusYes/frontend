@@ -35,7 +35,7 @@ export default function Sidebar({
           {currentUser.avatar_url ? (
             <img src={currentUser.avatar_url} alt="Avatar" className="w-12 h-12 rounded-full object-cover border-2 border-black" />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-yellow-400 border-2 border-black flex items-center justify-center text-black text-lg font-black">
+            <div className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 transition-colors border-2 border-black flex items-center justify-center text-white text-lg font-black">
               {currentUser.nama?.[0]?.toUpperCase() || 'U'}
             </div>
           )}

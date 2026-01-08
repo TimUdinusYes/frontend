@@ -57,8 +57,8 @@ export default function NodeSidebar({ topicId, onDragStart, onAddNode, refreshKe
         return (
             <button
                 onClick={() => setCollapsed(false)}
-                className="absolute left-4 top-4 z-10 bg-slate-800 p-3 rounded-lg border border-slate-700 
-          hover:bg-slate-700 transition-colors"
+                className="absolute left-4 top-4 z-10 bg-white p-3 border-[3px] border-black
+          hover:bg-yellow-300 transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
                 📚
             </button>
@@ -66,28 +66,28 @@ export default function NodeSidebar({ topicId, onDragStart, onAddNode, refreshKe
     }
 
     return (
-        <div className="absolute left-4 top-4 bottom-4 w-72 bg-slate-800/95 backdrop-blur-sm 
-      rounded-xl border border-slate-700 shadow-xl z-10 flex flex-col overflow-hidden">
+        <div className="absolute left-4 top-4 bottom-4 w-72 bg-white border-[3px] border-black
+      shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-10 flex flex-col overflow-hidden">
             {/* Header */}
-            <div className="p-4 border-b border-slate-700 flex items-center justify-between">
-                <h3 className="font-semibold text-white">📚 Nodes</h3>
+            <div className="p-4 border-b-[3px] border-black flex items-center justify-between bg-yellow-300">
+                <h3 className="font-black text-black">📚 Nodes</h3>
                 <button
                     onClick={() => setCollapsed(true)}
-                    className="text-slate-400 hover:text-white"
+                    className="text-black hover:text-red-600 font-black text-xl"
                 >
                     ✕
                 </button>
             </div>
 
             {/* Search */}
-            <div className="p-3 border-b border-slate-700">
+            <div className="p-3 border-b-[3px] border-black bg-blue-100">
                 <input
                     type="text"
                     placeholder="Cari node..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg 
-            text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-white border-[2px] border-black
+            text-black text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
             </div>
 

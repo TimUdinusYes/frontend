@@ -39,7 +39,7 @@ export default function PrivateChatsList({
           {chat.otherUser.avatar_url ? (
             <img src={chat.otherUser.avatar_url} alt={chat.otherUser.nama} className="w-12 h-12 rounded-full object-cover border-2 border-black" />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-pink-400 border-2 border-black flex items-center justify-center text-black font-black">
+            <div className="w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 transition-colors border-2 border-black flex items-center justify-center text-white font-black">
               {chat.otherUser.nama?.[0]?.toUpperCase() || 'U'}
             </div>
           )}

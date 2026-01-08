@@ -136,7 +136,7 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                                 <div className="flex gap-3">
                                     <button
                                         onClick={() => setShowRequestForm(false)}
-                                        className="flex-1 py-2 bg-gray-200 text-black font-bold rounded-lg border-2 border-black"
+                                        className="flex-1 py-2 bg-red-500 hover:bg-red-400 text-white font-bold rounded-lg border-2 border-black"
                                     >
                                         Batal
                                     </button>
@@ -210,7 +210,7 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                             </button>
                             <button
                                 onClick={onCancel}
-                                className="px-4 py-2 text-gray-700 hover:text-black font-bold transition-colors"
+                                className="px-4 py-2 bg-red-500 hover:bg-red-400 text-white font-bold rounded-lg border-2 border-black transition-colors"
                             >
                                 Batal
                             </button>

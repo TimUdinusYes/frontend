@@ -83,8 +83,8 @@ export default function MaterialSelector({
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading materials...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-black border-t-transparent mx-auto mb-4"></div>
+          <p className="text-black font-bold">Loading materials...</p>
         </div>
       </div>
     );
@@ -93,10 +93,10 @@ export default function MaterialSelector({
   if (materials.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
+        <div className="text-center bg-yellow-200 rounded-xl border-[3px] border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] p-12">
           <div className="text-6xl mb-4">📚</div>
-          <h3 className="text-xl font-bold text-gray-700 mb-2">No Materials Available</h3>
-          <p className="text-gray-500">
+          <h3 className="text-xl font-black text-black mb-2">No Materials Available</h3>
+          <p className="text-black/70 font-bold">
             There are no materials available for quiz yet.
           </p>
         </div>
@@ -110,20 +110,20 @@ export default function MaterialSelector({
       {onBack && (
         <button
           onClick={onBack}
-          className="mb-6 inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium transition"
+          className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
         >
           <span>←</span> Back to Topics
         </button>
       )}
 
       <div className="mb-8 text-center">
-        <div className="text-sm text-blue-600 font-semibold mb-2">
+        <div className="text-sm text-black font-bold mb-2 inline-block px-3 py-1 bg-blue-200 border-2 border-black rounded-full">
           {topicName}
         </div>
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">
+        <h2 className="text-3xl font-black text-black mb-2">
           Choose a Material to Quiz
         </h2>
-        <p className="text-gray-600">
+        <p className="text-black/70 font-bold">
           Select any material below to test your knowledge
         </p>
       </div>
@@ -135,22 +135,22 @@ export default function MaterialSelector({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow overflow-hidden border border-gray-100"
+            className="bg-white rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all overflow-hidden"
           >
             <div className="p-6">
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-800 mb-1">
+                  <h3 className="text-xl font-black text-black mb-1">
                     {material.title}
                   </h3>
-                  <p className="text-sm text-blue-600 font-medium">
+                  <p className="text-sm text-black font-bold">
                     {material.topicName}
                   </p>
                 </div>
                 {material.isCompleted && (
                   <div className="flex-shrink-0 ml-3">
-                    <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                    <div className="bg-green-200 text-black border-2 border-black px-3 py-1 rounded-full text-xs font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                       ✓ Completed
                     </div>
                   </div>
@@ -159,24 +159,24 @@ export default function MaterialSelector({
 
               {/* Description */}
               {material.description && (
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                <p className="text-black/70 text-sm mb-4 line-clamp-2 font-bold">
                   {material.description}
                 </p>
               )}
 
               {/* Stats */}
               <div className="flex items-center gap-4 mb-4 text-sm">
-                <div className="flex items-center gap-1 text-gray-600">
+                <div className="flex items-center gap-1 text-black font-bold">
                   <span>📝</span>
                   <span>{material.questionsCount} questions</span>
                 </div>
                 {material.isCompleted && (
                   <>
-                    <div className="flex items-center gap-1 text-green-600">
+                    <div className="flex items-center gap-1 text-black font-bold">
                       <span>✓</span>
                       <span>{material.userScore}/3</span>
                     </div>
-                    <div className="flex items-center gap-1 text-blue-600">
+                    <div className="flex items-center gap-1 text-black font-bold">
                       <span>⭐</span>
                       <span>+{material.userXP} XP</span>
                     </div>
@@ -187,10 +187,10 @@ export default function MaterialSelector({
               {/* Action Button */}
               <button
                 onClick={() => onSelectMaterial(material)}
-                className={`w-full py-3 rounded-lg font-semibold transition ${
+                className={`w-full py-3 rounded-lg font-black border-2 border-black transition-all ${
                   material.isCompleted
-                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
+                    ? 'bg-gray-200 text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5'
+                    : 'bg-blue-500 text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5'
                 }`}
               >
                 {material.isCompleted ? 'Retake Quiz' : 'Start Quiz'} →
@@ -199,13 +199,13 @@ export default function MaterialSelector({
 
             {/* Progress bar for completed */}
             {material.isCompleted && material.userScore !== undefined && (
-              <div className="h-2 bg-gray-100">
+              <div className="h-3 bg-white border-t-2 border-black">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{
                     width: `${(material.userScore / material.questionsCount) * 100}%`,
                   }}
-                  className="h-full bg-gradient-to-r from-green-400 to-green-600"
+                  className="h-full bg-yellow-400"
                 />
               </div>
             )}
@@ -214,25 +214,25 @@ export default function MaterialSelector({
       </div>
 
       {/* Summary Stats */}
-      <div className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
+      <div className="mt-12 bg-white rounded-xl border-[3px] border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] p-6">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-3xl font-bold text-blue-600">
+            <div className="text-3xl font-black text-black">
               {materials.length}
             </div>
-            <div className="text-sm text-gray-600">Total Materials</div>
+            <div className="text-sm text-black/70 font-bold">Total Materials</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-green-600">
+            <div className="text-3xl font-black text-black">
               {materials.filter((m) => m.isCompleted).length}
             </div>
-            <div className="text-sm text-gray-600">Completed</div>
+            <div className="text-sm text-black/70 font-bold">Completed</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-purple-600">
+            <div className="text-3xl font-black text-black">
               {materials.reduce((sum, m) => sum + (m.userXP || 0), 0)}
             </div>
-            <div className="text-sm text-gray-600">Total XP</div>
+            <div className="text-sm text-black/70 font-bold">Total XP</div>
           </div>
         </div>
       </div>

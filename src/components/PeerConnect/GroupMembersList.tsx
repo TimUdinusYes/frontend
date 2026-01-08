@@ -46,7 +46,7 @@ export default function GroupMembersList({
               {member.avatar_url ? (
                 <img src={member.avatar_url} alt={member.nama} className="w-10 h-10 rounded-full object-cover border-2 border-black" />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-pink-400 border-2 border-black flex items-center justify-center text-black text-sm font-black">
+                <div className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 transition-colors border-2 border-black flex items-center justify-center text-white text-sm font-black">
                   {member.nama?.[0]?.toUpperCase() || 'U'}
                 </div>
               )}

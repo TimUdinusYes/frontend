@@ -289,10 +289,10 @@ export default function HomePage() {
             </motion.div>
 
             {/* Features Grid - Bento Grid Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-20 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-10 mb-20 max-w-6xl mx-auto">
               {/* Feature 1 - AI Task Integrator */}
               <motion.div
-                className="relative group"
+                className="relative group md:col-span-2"
                 style={{ marginLeft: '12px', marginBottom: '16px' }}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -305,12 +305,11 @@ export default function HomePage() {
 
                 <div
                   id="feature-card-0"
-                  className="relative bg-blue-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
+                  className="relative bg-blue-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible h-full"
                   style={{ transitionDelay: '100ms' }}
                   onMouseEnter={() => setHoveredCard(0)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  {/* Curved "LEARN MORE" text in corner - hidden by default, show on hover */}
                   <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
                       <defs>
@@ -326,18 +325,15 @@ export default function HomePage() {
                     <span className="text-xl">→</span>
                     <span>AI TASK INTEGRATOR</span>
                   </div>
-                  <p className="text-sm leading-relaxed mb-14 text-black/80">
+                  <p className="text-sm leading-relaxed text-black/80">
                     Let our friendly AI plan your day! It organizes homework, study time, and play into a fun schedule so you never miss a beat.
                   </p>
-                  <button className="absolute bottom-6 left-6 right-6 border-[3px] border-black py-3 text-sm font-black hover:bg-black hover:text-white transition-colors bg-white tracking-wider">
-                    LET&apos;S GO
-                  </button>
                 </div>
               </motion.div>
 
               {/* Feature 2 - AI Adaptive Material */}
               <motion.div
-                className="relative group"
+                className="relative group md:col-span-2"
                 style={{ marginLeft: '12px', marginBottom: '16px' }}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -349,7 +345,7 @@ export default function HomePage() {
 
                 <div
                   id="feature-card-1"
-                  className="relative bg-pink-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
+                  className="relative bg-pink-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible h-full"
                   style={{ transitionDelay: '100ms' }}
                   onMouseEnter={() => setHoveredCard(1)}
                   onMouseLeave={() => setHoveredCard(null)}
@@ -369,18 +365,15 @@ export default function HomePage() {
                     <span className="text-xl">→</span>
                     <span>AI ADAPTIVE MATERIAL</span>
                   </div>
-                  <p className="text-sm leading-relaxed mb-14 text-black/80">
+                  <p className="text-sm leading-relaxed text-black/80">
                     Lessons that magically change just for you! If it&apos;s too hard, we make it simpler; if it&apos;s too easy, get ready for a challenge.
                   </p>
-                  <button className="absolute bottom-6 left-6 right-6 border-[3px] border-black py-3 text-sm font-black hover:bg-black hover:text-white transition-colors bg-white tracking-wider">
-                    LET&apos;S GO
-                  </button>
                 </div>
               </motion.div>
 
               {/* Feature 3 - Multi-Source Knowledge */}
               <motion.div
-                className="relative group"
+                className="relative group md:col-span-2"
                 style={{ marginLeft: '12px', marginBottom: '16px' }}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -392,7 +385,7 @@ export default function HomePage() {
 
                 <div
                   id="feature-card-2"
-                  className="relative bg-orange-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
+                  className="relative bg-orange-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible h-full"
                   style={{ transitionDelay: '100ms' }}
                   onMouseEnter={() => setHoveredCard(2)}
                   onMouseLeave={() => setHoveredCard(null)}
@@ -412,18 +405,15 @@ export default function HomePage() {
                     <span className="text-xl">→</span>
                     <span>MULTI-SOURCE KNOWLEDGE</span>
                   </div>
-                  <p className="text-sm leading-relaxed mb-14 text-black/80">
+                  <p className="text-sm leading-relaxed text-black/80">
                     Connect the dots! See how math links to music and science links to stories in a giant, interactive web of fun facts.
                   </p>
-                  <button className="absolute bottom-6 left-6 right-6 border-[3px] border-black py-3 text-sm font-black hover:bg-black hover:text-white transition-colors bg-white tracking-wider">
-                    LET&apos;S GO
-                  </button>
                 </div>
               </motion.div>
 
               {/* Feature 4 - Peer Connect */}
               <motion.div
-                className="relative group"
+                className="relative group md:col-span-3"
                 style={{ marginLeft: '12px', marginBottom: '16px' }}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -455,12 +445,49 @@ export default function HomePage() {
                     <span className="text-xl">→</span>
                     <span>PEER CONNECT & GROUPS</span>
                   </div>
-                  <p className="text-sm leading-relaxed mb-14 text-black/80">
+                  <p className="text-sm leading-relaxed text-black/80">
                     Join clubs, video call friends to study together, and make new buddies who love what you love in a safe space!
                   </p>
-                  <button className="absolute bottom-6 left-6 right-6 border-[3px] border-black py-3 text-sm font-black hover:bg-black hover:text-white transition-colors bg-white tracking-wider">
-                    LET&apos;S GO
-                  </button>
+                </div>
+              </motion.div>
+
+              {/* Feature 5 - Games & Gamification */}
+              <motion.div
+                className="relative group md:col-span-3"
+                style={{ marginLeft: '12px', marginBottom: '16px' }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+              >
+                <div className="absolute inset-0 bg-green-500 border-[3px] border-black z-0 translate-x-3 translate-y-3 group-hover:translate-x-4 group-hover:translate-y-4 transition-all duration-300" style={{ transitionDelay: '0ms' }}></div>
+                <div className="absolute inset-0 bg-green-400 border-[3px] border-black z-[1] translate-x-1.5 translate-y-1.5 group-hover:translate-x-2 group-hover:translate-y-2 transition-all duration-300" style={{ transitionDelay: '50ms' }}></div>
+
+                <div
+                  id="feature-card-4"
+                  className="relative bg-green-300 border-[3px] border-black p-8 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 z-10 overflow-visible"
+                  style={{ transitionDelay: '100ms' }}
+                  onMouseEnter={() => setHoveredCard(4)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
+                      <defs>
+                        <path id="curve5" d="M 70,40 A 30,30 0 0,0 40,10" fill="none" />
+                      </defs>
+                      <text style={{ fontSize: '9px', fontWeight: 900, fill: 'black', letterSpacing: '0.05em' }}>
+                        <textPath xlinkHref="#curve5">LEARN MORE</textPath>
+                      </text>
+                    </svg>
+                  </div>
+
+                  <div className="font-black tracking-wide mb-4 flex items-center gap-3 text-lg">
+                    <span className="text-xl">→</span>
+                    <span>GAMES & GAMIFICATION</span>
+                  </div>
+                  <p className="text-sm leading-relaxed text-black/80">
+                    Level up while learning! Earn points, unlock achievements, and compete in fun challenges that make studying feel like playing!
+                  </p>
                 </div>
               </motion.div>
             </div>
@@ -475,7 +502,8 @@ export default function HomePage() {
 
           {/* Character Image - 3x bigger in left corner */}
           <motion.div
-            className="absolute bottom-0 left-0 z-10"
+            className="absolute left-0 z-10"
+            style={{ bottom: '-80px' }}
             initial={{ x: -200, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: false, amount: 0.3 }}
@@ -583,7 +611,7 @@ export default function HomePage() {
                 className="relative z-10"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
+                viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
               >
                 <div className="flex flex-col items-center text-center">
@@ -610,9 +638,9 @@ export default function HomePage() {
           {/* Character Image - Right side */}
           <motion.div
             className="absolute bottom-0 right-0 z-10"
-            initial={{ x: 200, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, amount: 0.3 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <img
@@ -627,19 +655,31 @@ export default function HomePage() {
         <div className="relative bg-gradient-to-b from-blue-200 via-blue-50 to-white py-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
-            <div className="text-center mb-16">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.6 }}
+            >
               <h2 className="text-4xl md:text-5xl font-black text-black mb-4">
                 Frequently Asked Questions
               </h2>
               <p className="text-gray-600 text-lg">
                 Punya pertanyaan? Kami punya jawabannya!
               </p>
-            </div>
+            </motion.div>
 
             {/* FAQ Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* FAQ 1 */}
-              <div className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <motion.div
+                className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === 0 ? null : 0)}
                   className="w-full p-5 text-left flex items-center justify-between hover:bg-blue-50 transition-colors"
@@ -660,10 +700,16 @@ export default function HomePage() {
                     Ya! SINAUIN 100% gratis untuk semua fitur. Tidak ada biaya tersembunyi atau premium subscription.
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* FAQ 2 */}
-              <div className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <motion.div
+                className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+              >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === 1 ? null : 1)}
                   className="w-full p-5 text-left flex items-center justify-between hover:bg-blue-50 transition-colors"
@@ -684,10 +730,16 @@ export default function HomePage() {
                     SINAUIN dirancang untuk semua usia! Dari anak SD hingga remaja SMA bisa belajar dengan cara yang fun dan interaktif.
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* FAQ 3 */}
-              <div className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <motion.div
+                className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === 2 ? null : 2)}
                   className="w-full p-5 text-left flex items-center justify-between hover:bg-blue-50 transition-colors"
@@ -708,10 +760,16 @@ export default function HomePage() {
                     Sangat aman! Kami menjaga privasi data siswa dan menyediakan lingkungan belajar yang aman dengan moderasi konten.
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* FAQ 4 */}
-              <div className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <motion.div
+                className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: 0.25 }}
+              >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === 3 ? null : 3)}
                   className="w-full p-5 text-left flex items-center justify-between hover:bg-blue-50 transition-colors"
@@ -732,10 +790,16 @@ export default function HomePage() {
                     Kami merekomendasikan 20-30 menit per hari. Tapi siswa bisa belajar sesuai kecepatan mereka sendiri!
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* FAQ 5 */}
-              <div className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <motion.div
+                className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === 4 ? null : 4)}
                   className="w-full p-5 text-left flex items-center justify-between hover:bg-blue-50 transition-colors"
@@ -756,10 +820,16 @@ export default function HomePage() {
                     SINAUIN bisa diakses melalui web browser di desktop, laptop, tablet, atau smartphone. Tidak perlu download aplikasi!
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* FAQ 6 */}
-              <div className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <motion.div
+                className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: 0.35 }}
+              >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === 5 ? null : 5)}
                   className="w-full p-5 text-left flex items-center justify-between hover:bg-blue-50 transition-colors"
@@ -780,10 +850,16 @@ export default function HomePage() {
                     Ya! Orang tua memiliki akses ke dashboard untuk melihat progress belajar, achievement, dan aktivitas anak mereka.
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* FAQ 7 */}
-              <div className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <motion.div
+                className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === 6 ? null : 6)}
                   className="w-full p-5 text-left flex items-center justify-between hover:bg-blue-50 transition-colors"
@@ -804,10 +880,16 @@ export default function HomePage() {
                     Saat ini kami menyediakan Matematika, Science, dan Reading. Lebih banyak mata pelajaran akan segera hadir!
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* FAQ 8 */}
-              <div className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <motion.div
+                className="bg-white rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: 0.45 }}
+              >
                 <button
                   onClick={() => setOpenFAQ(openFAQ === 7 ? null : 7)}
                   className="w-full p-5 text-left flex items-center justify-between hover:bg-blue-50 transition-colors"
@@ -828,7 +910,7 @@ export default function HomePage() {
                     Klik tombol &quot;Mulai Gratis&quot; di atas, isi informasi dasar, dan langsung mulai belajar! Proses registrasi hanya 2 menit.
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Contact CTA */}
