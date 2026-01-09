@@ -7,17 +7,15 @@ import { Topic } from '@/types/database';
 import TopicSelector from '@/components/learning-path/TopicSelector';
 import WorkflowGallery from '@/components/learning-path/WorkflowGallery';
 import { supabase } from '@/lib/supabase';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const LearningPathCanvas = dynamic(
   () => import('@/components/learning-path/LearningPathCanvas'),
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-blue-100 to-blue-200">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-pink-400 border-t-transparent" />
-          <p className="text-gray-700 font-bold">Loading canvas...</p>
-        </div>
+      <div className="w-full h-full flex items-center justify-center bg-blue-100">
+        <LoadingSpinner text="Loading canvas..." />
       </div>
     )
   }
@@ -189,31 +187,23 @@ export default function LearningPathPage() {
   // Entry Page
   if (mode === 'entry') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        {/* Decorative clouds */}
-        <div className="absolute top-10 left-5 w-16 h-8 bg-white rounded-full opacity-70 blur-sm"></div>
-        <div className="absolute top-16 left-16 w-10 h-5 bg-white rounded-full opacity-60 blur-sm"></div>
-        <div className="absolute top-12 right-10 w-20 h-10 bg-white rounded-full opacity-70 blur-sm"></div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
+      <div className="min-h-screen bg-blue-100 px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="max-w-7xl mx-auto">
           {/* Back Button */}
           <Link
             href="/home"
-            className="inline-flex items-center gap-2 text-gray-800 hover:text-black font-bold mb-8 transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-8"
           >
-            <span className="text-2xl">←</span>
+            <span className="text-xl">←</span>
             <span>Kembali ke Home</span>
           </Link>
 
           {/* Hero Section */}
           <div className="text-center mb-12 lg:mb-16">
-            <div className="inline-block mb-4">
-              <span className="text-7xl lg:text-8xl">🎓</span>
-            </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-black mb-4 lg:mb-6">
               Learning Path Builder
             </h1>
-            <p className="text-gray-700 text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed">
+            <p className="text-black/70 text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed font-bold">
               Buat jalur pembelajaran visual dengan validasi AI atau import dari komunitas
             </p>
           </div>
@@ -223,14 +213,14 @@ export default function LearningPathPage() {
             {/* Option 1 - Buat Workflow Baru */}
             <button
               onClick={() => setMode('select-topic')}
-              className="group relative w-full bg-white rounded-2xl p-6 lg:p-8
-                text-left transition-all duration-300 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
-                border-2 border-black hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:scale-102
+              className="group relative w-full bg-pink-300 rounded-xl p-6 lg:p-8
+                text-left transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                border-[3px] border-black hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
                 overflow-hidden"
             >
               <div className="relative z-10 flex items-center justify-between gap-6">
                 <div className="flex items-center gap-5">
-                  <div className="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-pink-400 rounded-full flex items-center justify-center border-2 border-black">
+                  <div className="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-white rounded-full flex items-center justify-center border-[3px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                     <span className="text-4xl lg:text-5xl">🆕</span>
                   </div>
                   <div className="flex-1">
@@ -238,18 +228,18 @@ export default function LearningPathPage() {
                       <h2 className="text-2xl lg:text-3xl font-black text-black">
                         Buat Workflow Baru
                       </h2>
-                      <span className="px-3 py-0.5 bg-yellow-400 text-black text-xs font-bold rounded-full border-2 border-black">
+                      <span className="px-3 py-1 bg-yellow-300 text-black text-xs font-black rounded-full border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                         RECOMMENDED
                       </span>
                     </div>
-                    <p className="text-gray-600 text-sm lg:text-base leading-relaxed">
+                    <p className="text-black/70 text-sm lg:text-base leading-relaxed font-bold">
                       Pilih topik dan mulai membuat learning path dari awal dengan drag-and-drop editor
                     </p>
                   </div>
                 </div>
 
-                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-yellow-400 rounded-full border-2 border-black group-hover:bg-yellow-300 transition-colors">
-                  <span className="text-2xl">→</span>
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-yellow-300 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:bg-yellow-400 transition-colors">
+                  <span className="text-2xl font-black">→</span>
                 </div>
               </div>
             </button>
@@ -257,28 +247,28 @@ export default function LearningPathPage() {
             {/* Option 2 - Import from Community */}
             <button
               onClick={() => setMode('gallery')}
-              className="group relative w-full bg-white rounded-2xl p-6 lg:p-8
-                text-left transition-all duration-300 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
-                border-2 border-black hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:scale-102
+              className="group relative w-full bg-blue-300 rounded-xl p-6 lg:p-8
+                text-left transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                border-[3px] border-black hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
                 overflow-hidden"
             >
               <div className="relative z-10 flex items-center justify-between gap-6">
                 <div className="flex items-center gap-5">
-                  <div className="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-teal-400 rounded-full flex items-center justify-center border-2 border-black">
+                  <div className="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-white rounded-full flex items-center justify-center border-[3px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                     <span className="text-4xl lg:text-5xl">📥</span>
                   </div>
                   <div className="flex-1">
                     <h3 className="text-2xl lg:text-3xl font-black text-black mb-2">
                       Import dari Komunitas
                     </h3>
-                    <p className="text-gray-600 text-sm lg:text-base leading-relaxed">
+                    <p className="text-black/70 text-sm lg:text-base leading-relaxed font-bold">
                       Jelajahi workflow public dan fork untuk dimodifikasi sesuai kebutuhan Anda
                     </p>
                   </div>
                 </div>
 
-                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-yellow-400 rounded-full border-2 border-black group-hover:bg-yellow-300 transition-colors">
-                  <span className="text-2xl">→</span>
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-yellow-300 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:bg-yellow-400 transition-colors">
+                  <span className="text-2xl font-black">→</span>
                 </div>
               </div>
             </button>
@@ -286,28 +276,28 @@ export default function LearningPathPage() {
             {/* Option 3 - Import from Knowledge Base */}
             <button
               onClick={() => setMode('topic-import')}
-              className="group relative w-full bg-white rounded-2xl p-6 lg:p-8
-                text-left transition-all duration-300 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
-                border-2 border-black hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:scale-102
+              className="group relative w-full bg-green-300 rounded-xl p-6 lg:p-8
+                text-left transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                border-[3px] border-black hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]
                 overflow-hidden"
             >
               <div className="relative z-10 flex items-center justify-between gap-6">
                 <div className="flex items-center gap-5">
-                  <div className="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-yellow-400 rounded-full flex items-center justify-center border-2 border-black">
+                  <div className="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-white rounded-full flex items-center justify-center border-[3px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                     <span className="text-4xl lg:text-5xl">🤖</span>
                   </div>
                   <div className="flex-1">
                     <h3 className="text-2xl lg:text-3xl font-black text-black mb-2">
                       Import dari Materi
                     </h3>
-                    <p className="text-gray-600 text-sm lg:text-base leading-relaxed">
+                    <p className="text-black/70 text-sm lg:text-base leading-relaxed font-bold">
                       AI otomatis membuat workflow dari topik di knowledge base dengan struktur optimal
                     </p>
                   </div>
                 </div>
 
-                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-yellow-400 rounded-full border-2 border-black group-hover:bg-yellow-300 transition-colors">
-                  <span className="text-2xl">→</span>
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-yellow-300 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:bg-yellow-400 transition-colors">
+                  <span className="text-2xl font-black">→</span>
                 </div>
               </div>
             </button>
@@ -321,7 +311,7 @@ export default function LearningPathPage() {
   // Topic Selection
   if (mode === 'select-topic') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200">
+      <div className="min-h-screen bg-blue-100">
         <TopicSelector
           onSelect={handleTopicSelect}
           onCancel={() => setMode('entry')}
@@ -356,28 +346,28 @@ export default function LearningPathPage() {
   // Canvas
   if (mode === 'canvas' && selectedTopic) {
     return (
-      <div className="h-screen flex flex-col bg-gradient-to-b from-blue-100 to-blue-200">
+      <div className="h-screen flex flex-col bg-blue-100">
         {/* Header */}
-        <header className="bg-white border-b-2 border-black px-6 py-4 flex items-center justify-between shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        <header className="bg-white border-b-[3px] border-black px-6 py-4 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMode('entry')}
-              className="text-gray-800 hover:text-black font-bold transition-colors"
+              className="px-4 py-2 bg-blue-300 text-black font-black border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
             >
               ← Kembali
             </button>
-            <div className="h-6 w-px bg-gray-300" />
+            <div className="h-6 w-px bg-black" />
             <h1 className="text-xl font-black text-black">
               🎓 Learning Path Builder
             </h1>
             {forkedWorkflow && (
-              <span className="text-xs bg-teal-400 text-black px-2 py-1 rounded-full border-2 border-black font-bold">
+              <span className="text-xs bg-blue-300 text-black px-3 py-1 rounded-full border-2 border-black font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 Forked from: {forkedWorkflow.title}
               </span>
             )}
           </div>
-          <div className="text-sm text-gray-700 font-semibold">
-            Topik: <span className="text-blue-600 font-black">
+          <div className="text-sm text-black font-bold">
+            Topik: <span className="font-black">
               {selectedTopic.title.length > 20
                 ? selectedTopic.title.substring(0, 20) + '...'
                 : selectedTopic.title}

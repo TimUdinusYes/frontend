@@ -308,22 +308,10 @@ export default function HomePage() {
                   onMouseEnter={() => setHoveredCard(0)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
-                      <defs>
-                        <path id="curve1" d="M 70,40 A 30,30 0 0,0 40,10" fill="none" />
-                      </defs>
-                      <text style={{ fontSize: '9px', fontWeight: 900, fill: 'black', letterSpacing: '0.05em' }}>
-                        <textPath xlinkHref="#curve1">LEARN MORE</textPath>
-                      </text>
-                    </svg>
+                  <div className="font-black tracking-wide mb-4 text-lg text-black">
+                    AI TASK INTEGRATOR
                   </div>
-
-                  <div className="font-black tracking-wide mb-4 flex items-center gap-3 text-lg">
-                    <span className="text-xl">→</span>
-                    <span>AI TASK INTEGRATOR</span>
-                  </div>
-                  <p className="text-sm leading-relaxed text-black/80">
+                  <p className="text-sm leading-relaxed text-black/80 font-sans">
                     Let our friendly AI plan your day! It organizes homework, study time, and play into a fun schedule so you never miss a beat.
                   </p>
                 </div>
@@ -348,22 +336,10 @@ export default function HomePage() {
                   onMouseEnter={() => setHoveredCard(1)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
-                      <defs>
-                        <path id="curve2" d="M 70,40 A 30,30 0 0,0 40,10" fill="none" />
-                      </defs>
-                      <text style={{ fontSize: '9px', fontWeight: 900, fill: 'black', letterSpacing: '0.05em' }}>
-                        <textPath xlinkHref="#curve2">LEARN MORE</textPath>
-                      </text>
-                    </svg>
+                  <div className="font-black tracking-wide mb-4 text-lg text-black">
+                    AI ADAPTIVE MATERIAL
                   </div>
-
-                  <div className="font-black tracking-wide mb-4 flex items-center gap-3 text-lg">
-                    <span className="text-xl">→</span>
-                    <span>AI ADAPTIVE MATERIAL</span>
-                  </div>
-                  <p className="text-sm leading-relaxed text-black/80">
+                  <p className="text-sm leading-relaxed text-black/80 font-sans">
                     Lessons that magically change just for you! If it&apos;s too hard, we make it simpler; if it&apos;s too easy, get ready for a challenge.
                   </p>
                 </div>
@@ -388,22 +364,10 @@ export default function HomePage() {
                   onMouseEnter={() => setHoveredCard(2)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
-                      <defs>
-                        <path id="curve3" d="M 70,40 A 30,30 0 0,0 40,10" fill="none" />
-                      </defs>
-                      <text style={{ fontSize: '9px', fontWeight: 900, fill: 'black', letterSpacing: '0.05em' }}>
-                        <textPath xlinkHref="#curve3">LEARN MORE</textPath>
-                      </text>
-                    </svg>
+                  <div className="font-black tracking-wide mb-4 text-lg text-black">
+                    MULTI-SOURCE KNOWLEDGE
                   </div>
-
-                  <div className="font-black tracking-wide mb-4 flex items-center gap-3 text-lg">
-                    <span className="text-xl">→</span>
-                    <span>MULTI-SOURCE KNOWLEDGE</span>
-                  </div>
-                  <p className="text-sm leading-relaxed text-black/80">
+                  <p className="text-sm leading-relaxed text-black/80 font-sans">
                     Connect the dots! See how math links to music and science links to stories in a giant, interactive web of fun facts.
                   </p>
                 </div>
@@ -428,22 +392,10 @@ export default function HomePage() {
                   onMouseEnter={() => setHoveredCard(3)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
-                      <defs>
-                        <path id="curve4" d="M 70,40 A 30,30 0 0,0 40,10" fill="none" />
-                      </defs>
-                      <text style={{ fontSize: '9px', fontWeight: 900, fill: 'black', letterSpacing: '0.05em' }}>
-                        <textPath xlinkHref="#curve4">LEARN MORE</textPath>
-                      </text>
-                    </svg>
+                  <div className="font-black tracking-wide mb-4 text-lg text-black">
+                    PEER CONNECT & GROUPS
                   </div>
-
-                  <div className="font-black tracking-wide mb-4 flex items-center gap-3 text-lg">
-                    <span className="text-xl">→</span>
-                    <span>PEER CONNECT & GROUPS</span>
-                  </div>
-                  <p className="text-sm leading-relaxed text-black/80">
+                  <p className="text-sm leading-relaxed text-black/80 font-sans">
                     Join clubs, video call friends to study together, and make new buddies who love what you love in a safe space!
                   </p>
                 </div>
@@ -468,22 +420,10 @@ export default function HomePage() {
                   onMouseEnter={() => setHoveredCard(4)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <svg width="80" height="80" viewBox="0 0 80 80" style={{ overflow: 'visible' }}>
-                      <defs>
-                        <path id="curve5" d="M 70,40 A 30,30 0 0,0 40,10" fill="none" />
-                      </defs>
-                      <text style={{ fontSize: '9px', fontWeight: 900, fill: 'black', letterSpacing: '0.05em' }}>
-                        <textPath xlinkHref="#curve5">LEARN MORE</textPath>
-                      </text>
-                    </svg>
+                  <div className="font-black tracking-wide mb-4 text-lg text-black">
+                    GAMES & GAMIFICATION
                   </div>
-
-                  <div className="font-black tracking-wide mb-4 flex items-center gap-3 text-lg">
-                    <span className="text-xl">→</span>
-                    <span>GAMES & GAMIFICATION</span>
-                  </div>
-                  <p className="text-sm leading-relaxed text-black/80">
+                  <p className="text-sm leading-relaxed text-black/80 font-sans">
                     Level up while learning! Earn points, unlock achievements, and compete in fun challenges that make studying feel like playing!
                   </p>
                 </div>

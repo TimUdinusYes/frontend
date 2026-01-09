@@ -15,6 +15,9 @@ export default {
       animation: {
         'spin-slow': 'spin 8s linear infinite',
       },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
     },
   },
   plugins: [],
