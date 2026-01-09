@@ -8,6 +8,7 @@ import TopicSelector from '@/components/learning-path/TopicSelector';
 import WorkflowGallery from '@/components/learning-path/WorkflowGallery';
 import { supabase } from '@/lib/supabase';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import FeatureHamburgerOnly from '@/components/FeatureHamburgerOnly';
 
 const LearningPathCanvas = dynamic(
   () => import('@/components/learning-path/LearningPathCanvas'),
@@ -187,29 +188,22 @@ export default function LearningPathPage() {
   // Entry Page
   if (mode === 'entry') {
     return (
-      <div className="min-h-screen bg-blue-100 px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="max-w-7xl mx-auto">
-          {/* Back Button */}
-          <Link
-            href="/home"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-8"
-          >
-            <span className="text-xl">←</span>
-            <span>Kembali ke Home</span>
-          </Link>
+      <div className="min-h-screen bg-blue-100">
+        <FeatureHamburgerOnly />
+        <div className="px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+          <div className="max-w-7xl mx-auto">
+            {/* Hero Section */}
+            <div className="text-center mb-12 lg:mb-16">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-black mb-4 lg:mb-6">
+                Learning Path Builder
+              </h1>
+              <p className="text-black/70 text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed font-bold">
+                Buat jalur pembelajaran visual dengan validasi AI atau import dari komunitas
+              </p>
+            </div>
 
-          {/* Hero Section */}
-          <div className="text-center mb-12 lg:mb-16">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-black mb-4 lg:mb-6">
-              Learning Path Builder
-            </h1>
-            <p className="text-black/70 text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed font-bold">
-              Buat jalur pembelajaran visual dengan validasi AI atau import dari komunitas
-            </p>
-          </div>
-
-          {/* Main Options - Vertical Stack */}
-          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Main Options - Vertical Stack */}
+            <div className="max-w-4xl mx-auto space-y-6">
             {/* Option 1 - Buat Workflow Baru */}
             <button
               onClick={() => setMode('select-topic')}
@@ -301,8 +295,8 @@ export default function LearningPathPage() {
                 </div>
               </div>
             </button>
+            </div>
           </div>
-
         </div>
       </div>
     );
@@ -312,6 +306,7 @@ export default function LearningPathPage() {
   if (mode === 'select-topic') {
     return (
       <div className="min-h-screen bg-blue-100">
+        <FeatureHamburgerOnly />
         <TopicSelector
           onSelect={handleTopicSelect}
           onCancel={() => setMode('entry')}
@@ -324,22 +319,28 @@ export default function LearningPathPage() {
   // Gallery
   if (mode === 'gallery') {
     return (
-      <WorkflowGallery
-        onSelect={handleWorkflowSelect}
-        onBack={() => setMode('entry')}
-        userId={userId}
-      />
+      <div className="min-h-screen bg-blue-100">
+        <FeatureHamburgerOnly />
+        <WorkflowGallery
+          onSelect={handleWorkflowSelect}
+          onBack={() => setMode('entry')}
+          userId={userId}
+        />
+      </div>
     );
   }
 
   // Topic Import
   if (mode === 'topic-import') {
     return (
-      <TopicImportModal
-        onImport={handleTopicImport}
-        onBack={() => setMode('entry')}
-        userId={userId}
-      />
+      <div className="min-h-screen bg-blue-100">
+        <FeatureHamburgerOnly />
+        <TopicImportModal
+          onImport={handleTopicImport}
+          onBack={() => setMode('entry')}
+          userId={userId}
+        />
+      </div>
     );
   }
 
@@ -347,33 +348,7 @@ export default function LearningPathPage() {
   if (mode === 'canvas' && selectedTopic) {
     return (
       <div className="h-screen flex flex-col bg-blue-100">
-        {/* Header */}
-        <header className="bg-white border-b-[3px] border-black px-6 py-4 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setMode('entry')}
-              className="px-4 py-2 bg-blue-300 text-black font-black border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
-            >
-              ← Kembali
-            </button>
-            <div className="h-6 w-px bg-black" />
-            <h1 className="text-xl font-black text-black">
-              🎓 Learning Path Builder
-            </h1>
-            {forkedWorkflow && (
-              <span className="text-xs bg-blue-300 text-black px-3 py-1 rounded-full border-2 border-black font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                Forked from: {forkedWorkflow.title}
-              </span>
-            )}
-          </div>
-          <div className="text-sm text-black font-bold">
-            Topik: <span className="font-black">
-              {selectedTopic.title.length > 20
-                ? selectedTopic.title.substring(0, 20) + '...'
-                : selectedTopic.title}
-            </span>
-          </div>
-        </header>
+        <FeatureHamburgerOnly />
 
         {/* Canvas */}
         <main className="flex-1 overflow-hidden">

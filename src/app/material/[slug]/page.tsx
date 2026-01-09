@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import type { Material, Topic, UserProfile, MaterialPage } from '@/types/database'
 import { useMaterialTracking } from '@/app/TaskIntegrator/hooks/useMaterialTracking'
 import Quiz from '@/components/Quiz'
+import FeatureHamburgerOnly from '@/components/FeatureHamburgerOnly'
 
 export default function MaterialDetailPage() {
     const params = useParams()
@@ -298,6 +299,7 @@ export default function MaterialDetailPage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-blue-200">
+                <FeatureHamburgerOnly />
                 <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-black"></div>
             </div>
         )
@@ -306,6 +308,7 @@ export default function MaterialDetailPage() {
     if (!material) {
         return (
             <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-100 to-blue-200">
+                <FeatureHamburgerOnly />
                 <div className="flex-1 flex items-center justify-center">
                     <div className="text-center">
                         <h2 className="text-2xl font-black text-black mb-2">Materi Tidak Ditemukan</h2>
@@ -323,11 +326,12 @@ export default function MaterialDetailPage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-100 to-blue-200">
+            <FeatureHamburgerOnly />
             <div className="flex-1 w-[95vw] max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Back Button */}
                 <button
                     onClick={() => router.back()}
-                    className="mb-6 flex items-center gap-2 text-gray-800 hover:text-black font-bold transition-colors"
+                    className="mb-6 flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -405,7 +409,6 @@ export default function MaterialDetailPage() {
                             {/* Translation */}
                             <div className="flex items-center gap-2 bg-yellow-300 p-3 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
                                 <div className="flex items-center gap-2 text-black">
-                                    <span className="text-lg">🌍</span>
                                     <span className="text-sm font-black text-black">Terjemahkan</span>
                                 </div>
                                 <input
@@ -435,7 +438,6 @@ export default function MaterialDetailPage() {
                             {/* Audio */}
                             <div className="flex items-center gap-2 bg-pink-300 p-3 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
                                 <div className="flex items-center gap-2 text-black">
-                                    <span className="text-lg">🎧</span>
                                     <span className="text-sm font-black text-black">Dengarkan</span>
                                 </div>
                                 <div className="flex gap-1">

@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from "next/link"
 import MaterialList from "@/components/MaterialList"
 import { supabase } from '@/lib/supabase'
+import FeatureHamburgerOnly from '@/components/FeatureHamburgerOnly'
 
 export default function MultiSourceKnowledgePage() {
   const router = useRouter()
@@ -47,6 +47,7 @@ export default function MultiSourceKnowledgePage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-blue-200">
+        <FeatureHamburgerOnly />
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-black mx-auto mb-4"></div>
           <p className="text-gray-700 font-bold">Loading...</p>
@@ -61,6 +62,7 @@ export default function MultiSourceKnowledgePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200">
+      <FeatureHamburgerOnly />
       {/* Decorative clouds */}
       <div className="absolute top-10 left-5 w-16 h-8 bg-white rounded-full opacity-70 blur-sm"></div>
       <div className="absolute top-16 left-16 w-10 h-5 bg-white rounded-full opacity-60 blur-sm"></div>
@@ -69,15 +71,6 @@ export default function MultiSourceKnowledgePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         {/* Header Section */}
         <div className="mb-12">
-          {/* Back Button */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-gray-800 hover:text-black font-bold mb-6 transition-all duration-300 hover:scale-105"
-          >
-            <span className="text-2xl">←</span>
-            <span>Kembali ke Home</span>
-          </Link>
-
           {/* Title */}
           <h1 className="text-5xl md:text-6xl font-black text-black mb-4">
             Multi-Source Knowledge

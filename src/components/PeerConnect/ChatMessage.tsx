@@ -27,16 +27,16 @@ export default function ChatMessage({
               <img
                 src={message.user_profiles.avatar_url}
                 alt={message.user_profiles.nama}
-                className="w-6 h-6 rounded-full object-cover"
+                className="w-6 h-6 rounded-full object-cover border-2 border-black"
               />
             ) : (
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-semibold">
+              <div className="w-6 h-6 rounded-full bg-blue-400 flex items-center justify-center text-white text-xs font-black border-2 border-black">
                 {message.user_profiles?.nama?.[0]?.toUpperCase() || 'U'}
               </div>
             )}
             <div className="flex flex-col">
               <span
-                className="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:underline"
+                className="text-xs font-black text-black cursor-pointer hover:underline"
                 onClick={() => {
                   const member = groupMembers.find(m => m.user_id === message.user_id)
                   if (member) onStartPrivateChat(member)
@@ -45,7 +45,7 @@ export default function ChatMessage({
                 {message.user_profiles?.nama || 'User'}
               </span>
               {message.user_profiles?.role && (
-                <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold capitalize">
+                <span className="text-[10px] px-2 py-0.5 bg-yellow-300 text-black font-black capitalize border border-black rounded-full">
                   {message.user_profiles.role}
                 </span>
               )}
@@ -57,30 +57,30 @@ export default function ChatMessage({
         {hasMaterialLink ? (
           <div className="space-y-2">
             {message.message && message.message.trim() && (
-              <div className={`px-4 py-2 rounded-2xl ${
+              <div className={`px-4 py-2 rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
                 isOwnMessage
-                  ? 'bg-teal-300 text-black rounded-tr-sm'
-                  : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-tl-sm shadow'
+                  ? 'bg-yellow-300 text-black'
+                  : 'bg-white text-black'
               }`}>
-                <p className="break-words">{message.message}</p>
+                <p className="break-words font-bold">{message.message}</p>
               </div>
             )}
             <MaterialLinkMessage
               material={message.material_data!}
               isOwnMessage={isOwnMessage}
             />
-            <p className={`text-xs ${isOwnMessage ? 'text-right text-gray-400' : 'text-gray-500 dark:text-gray-400'}`}>
+            <p className={`text-xs font-bold ${isOwnMessage ? 'text-right text-black/70' : 'text-black/70'}`}>
               {formatTime(message.created_at)}
             </p>
           </div>
         ) : (
-          <div className={`px-4 py-2 rounded-2xl ${
+          <div className={`px-4 py-2 rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
             isOwnMessage
-              ? 'bg-teal-300 text-black rounded-tr-sm'
-              : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-tl-sm shadow'
+              ? 'bg-yellow-300 text-black'
+              : 'bg-white text-black'
           }`}>
-            <p className="break-words">{message.message}</p>
-            <p className={`text-xs mt-1 ${isOwnMessage ? 'text-teal-700' : 'text-gray-500 dark:text-gray-400'}`}>
+            <p className="break-words font-bold">{message.message}</p>
+            <p className={`text-xs mt-1 font-bold ${isOwnMessage ? 'text-black/70' : 'text-black/70'}`}>
               {formatTime(message.created_at)}
             </p>
           </div>

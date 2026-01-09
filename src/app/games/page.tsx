@@ -9,6 +9,7 @@ import MaterialSelector from './components/MaterialSelector';
 import TopicSelector from './components/TopicSelector';
 import LevelDisplay from './components/LevelDisplay';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import FeatureHamburgerOnly from '@/components/FeatureHamburgerOnly';
 
 interface Material {
   id: number;
@@ -81,6 +82,7 @@ export default function GamesPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-blue-100">
+        <FeatureHamburgerOnly />
         <LoadingSpinner text="Loading..." />
       </div>
     );
@@ -92,6 +94,7 @@ export default function GamesPage() {
 
   return (
     <div className="min-h-screen bg-blue-100 p-8">
+      <FeatureHamburgerOnly />
       <div className="max-w-6xl mx-auto">
         <div className="mb-8 text-center">
           <h1 className="text-5xl font-black text-black mb-3">

@@ -120,7 +120,7 @@ export default function PeerConnectPage() {
 
   if (initialLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-blue-200">
+      <div className="min-h-screen flex items-center justify-center bg-blue-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-black mx-auto mb-4"></div>
           <p className="text-black font-bold">Memuat...</p>
@@ -131,7 +131,7 @@ export default function PeerConnectPage() {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-blue-200">
+      <div className="min-h-screen flex items-center justify-center bg-blue-100">
         <div className="text-center">
           <p className="text-black font-bold">Loading...</p>
         </div>
@@ -150,7 +150,7 @@ export default function PeerConnectPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200">
+    <div className="min-h-screen bg-blue-100">
       {/* Top Header Bar */}
       <PeerConnectHeader currentUser={currentUser} />
 
@@ -171,7 +171,7 @@ export default function PeerConnectPage() {
         />
 
         {/* Right Side - Chat Area */}
-        <div className="flex-1 flex flex-col bg-blue-50">
+        <div className="flex-1 flex flex-col bg-white">
           {chatMode === 'group' && chatRoom ? (
             <GroupChatArea
               chatRoom={chatRoom}

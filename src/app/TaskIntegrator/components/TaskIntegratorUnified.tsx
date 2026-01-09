@@ -7,6 +7,7 @@ import {
   type ActivityStats,
 } from "../services/activityTracker";
 import { aiAnalysis, type LearningAnalysis } from "../services/aiAnalysis";
+import FeatureHamburgerOnly from "@/components/FeatureHamburgerOnly";
 
 export default function TaskIntegratorUnified() {
   const router = useRouter();
@@ -132,6 +133,7 @@ export default function TaskIntegratorUnified() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col bg-blue-100">
+        <FeatureHamburgerOnly />
         <div className="flex-1 flex items-center justify-center">
           <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -141,6 +143,7 @@ export default function TaskIntegratorUnified() {
 
   return (
     <div className="min-h-screen flex flex-col bg-blue-100">
+      <FeatureHamburgerOnly />
 
       <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
