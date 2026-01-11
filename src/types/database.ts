@@ -83,6 +83,8 @@ export interface Badge {
   badge_id: number; // int4 - Primary Key
   nama: string; // text - Badge name
   gambar: string | null; // text - Badge image URL/path
+  level_min: number; // int4 - Minimum level for this badge
+  level_max: number; // int4 - Maximum level for this badge
 }
 
 // ============================================

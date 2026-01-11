@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Progress } from '@/components/ui/progress';
-import BadgeDisplay from './BadgeDisplay';
+import { useState, useEffect } from "react";
+import { Progress } from "@/components/ui/progress";
+import BadgeDisplay from "./BadgeDisplay";
 
 interface Badge {
   id: number;
@@ -33,12 +33,23 @@ interface LevelDisplayProps {
   compact?: boolean;
 }
 
-export default function LevelDisplay({ userId, compact = false }: LevelDisplayProps) {
+export default function LevelDisplay({
+  userId,
+  compact = false,
+}: LevelDisplayProps) {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Initial fetch
     fetchUserStats();
+
+    // Auto-refresh every 10 seconds to catch badge updates
+    const interval = setInterval(() => {
+      fetchUserStats();
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, [userId]);
 
   const fetchUserStats = async () => {
@@ -48,10 +59,15 @@ export default function LevelDisplay({ userId, compact = false }: LevelDisplayPr
       const data = await response.json();
 
       if (data.success) {
+        console.log("[LevelDisplay] Stats updated:", {
+          level: data.stats.level,
+          badge: data.stats.badge,
+          totalXP: data.stats.totalXP,
+        });
         setStats(data.stats);
       }
     } catch (error) {
-      console.error('Error fetching user stats:', error);
+      console.error("Error fetching user stats:", error);
     } finally {
       setLoading(false);
     }
@@ -109,7 +125,10 @@ export default function LevelDisplay({ userId, compact = false }: LevelDisplayPr
               <span>{stats.currentLevelXP} XP</span>
               <span>{stats.xpForNextLevel} XP</span>
             </div>
-            <Progress value={stats.progressPercentage} className="h-4 max-w-sm mx-auto" />
+            <Progress
+              value={stats.progressPercentage}
+              className="h-4 max-w-sm mx-auto"
+            />
           </div>
         )}
       </div>
@@ -138,8 +157,12 @@ export default function LevelDisplay({ userId, compact = false }: LevelDisplayPr
             <div className="text-sm font-bold mb-1">Level {stats.level}</div>
             <div className="text-3xl font-black mb-2">{stats.levelName}</div>
             <div className="text-right md:text-left">
-              <div className="text-4xl font-black inline-block">{stats.totalXP}</div>
-              <div className="text-sm font-bold inline-block ml-2">Total XP</div>
+              <div className="text-4xl font-black inline-block">
+                {stats.totalXP}
+              </div>
+              <div className="text-sm font-bold inline-block ml-2">
+                Total XP
+              </div>
             </div>
           </div>
         </div>
@@ -151,15 +174,21 @@ export default function LevelDisplay({ userId, compact = false }: LevelDisplayPr
               <span>Level {stats.level}</span>
               <span>Level {stats.level + 1}</span>
             </div>
-            <Progress value={stats.progressPercentage} className="h-5 max-w-xl mx-auto" />
+            <Progress
+              value={stats.progressPercentage}
+              className="h-5 max-w-xl mx-auto"
+            />
             <div className="text-sm mt-2 text-center font-bold">
-              {stats.currentLevelXP} / {stats.xpNeeded} XP ({stats.progressPercentage}%)
+              {stats.currentLevelXP} / {stats.xpNeeded} XP (
+              {stats.progressPercentage}%)
             </div>
           </div>
         ) : (
           <div className="text-center py-2">
             <div className="text-2xl font-black mb-1">🏆 MAX LEVEL 🏆</div>
-            <div className="text-sm font-bold">Anda telah mencapai level tertinggi!</div>
+            <div className="text-sm font-bold">
+              Anda telah mencapai level tertinggi!
+            </div>
           </div>
         )}
       </div>
@@ -169,19 +198,27 @@ export default function LevelDisplay({ userId, compact = false }: LevelDisplayPr
         <h3 className="text-lg font-black text-black mb-4">Statistik</h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-blue-200 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] p-4">
-            <div className="text-2xl font-black text-black">{stats.completedQuizzes}</div>
+            <div className="text-2xl font-black text-black">
+              {stats.completedQuizzes}
+            </div>
             <div className="text-sm text-black/70 font-bold">Quiz Selesai</div>
           </div>
           <div className="bg-green-200 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] p-4">
-            <div className="text-2xl font-black text-black">{stats.accuracy}%</div>
+            <div className="text-2xl font-black text-black">
+              {stats.accuracy}%
+            </div>
             <div className="text-sm text-black/70 font-bold">Akurasi</div>
           </div>
           <div className="bg-purple-200 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] p-4">
-            <div className="text-2xl font-black text-black">{stats.totalCorrectAnswers}</div>
+            <div className="text-2xl font-black text-black">
+              {stats.totalCorrectAnswers}
+            </div>
             <div className="text-sm text-black/70 font-bold">Jawaban Benar</div>
           </div>
           <div className="bg-orange-200 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] p-4">
-            <div className="text-2xl font-black text-black">{stats.totalQuestionsAnswered}</div>
+            <div className="text-2xl font-black text-black">
+              {stats.totalQuestionsAnswered}
+            </div>
             <div className="text-sm text-black/70 font-bold">Total Soal</div>
           </div>
         </div>

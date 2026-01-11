@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { NextRequest, NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase";
+import { getUserLevelInfo } from "@/lib/levelSystem";
 
 // GET - Fetch quiz questions for a specific materi
 export async function GET(
@@ -13,8 +14,9 @@ export async function GET(
     let questions, questionsError;
     try {
       const result = await supabase
-        .from('quiz_questions')
-        .select(`
+        .from("quiz_questions")
+        .select(
+          `
           id,
           question_number,
           question_text,
@@ -23,43 +25,53 @@ export async function GET(
             option_letter,
             option_text
           )
-        `)
-        .eq('materials_id', materialId)
-        .order('question_number', { ascending: true });
-      
+        `
+        )
+        .eq("materials_id", materialId)
+        .order("question_number", { ascending: true });
+
       questions = result.data;
       questionsError = result.error;
     } catch (e) {
-      console.error('Error accessing quiz_questions table:', e);
-      return NextResponse.json({
-        success: false,
-        error: 'Quiz questions table not found',
-        message: 'Please generate questions first using /api/quiz/generate',
-        materialId: materialId
-      }, { status: 404 });
+      console.error("Error accessing quiz_questions table:", e);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Quiz questions table not found",
+          message: "Please generate questions first using /api/quiz/generate",
+          materialId: materialId,
+        },
+        { status: 404 }
+      );
     }
 
-    console.log('DEBUG - materialId:', materialId);
-    console.log('DEBUG - questionsError:', questionsError);
-    console.log('DEBUG - questions:', questions);
+    console.log("DEBUG - materialId:", materialId);
+    console.log("DEBUG - questionsError:", questionsError);
+    console.log("DEBUG - questions:", questions);
 
     if (questionsError) {
-      console.error('Database error details:', questionsError);
-      return NextResponse.json({
-        error: 'Database error',
-        details: questionsError.message,
-        hint: questionsError.hint,
-        code: questionsError.code
-      }, { status: 500 });
+      console.error("Database error details:", questionsError);
+      return NextResponse.json(
+        {
+          error: "Database error",
+          details: questionsError.message,
+          hint: questionsError.hint,
+          code: questionsError.code,
+        },
+        { status: 500 }
+      );
     }
 
     if (!questions || questions.length === 0) {
-      return NextResponse.json({
-        success: false,
-        error: 'No quiz questions found for this material',
-        message: 'Please generate questions first using /api/quiz/generate',
-        materialId: materialId
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No quiz questions found for this material",
+          message: "Please generate questions first using /api/quiz/generate",
+          materialId: materialId,
+        },
+        { status: 404 }
+      );
     }
 
     // Format the response
@@ -68,12 +80,14 @@ export async function GET(
       questionNumber: q.question_number,
       questionText: q.question_text,
       options: q.quiz_options
-        .sort((a: any, b: any) => a.option_letter.localeCompare(b.option_letter))
+        .sort((a: any, b: any) =>
+          a.option_letter.localeCompare(b.option_letter)
+        )
         .map((opt: any) => ({
           id: opt.id,
           letter: opt.option_letter,
-          text: opt.option_text
-        }))
+          text: opt.option_text,
+        })),
     }));
 
     return NextResponse.json({
@@ -82,11 +96,11 @@ export async function GET(
       questions: formattedQuestions,
     });
   } catch (error) {
-    console.error('Error fetching quiz:', error);
+    console.error("Error fetching quiz:", error);
     return NextResponse.json(
       {
-        error: 'Failed to fetch quiz questions',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: "Failed to fetch quiz questions",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
@@ -104,55 +118,58 @@ export async function POST(
 
     if (!userId || !questionId || !selectedOptionId) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
     // 1. Check if the selected option is correct
     const { data: optionData, error: optionError } = await supabase
-      .from('quiz_options')
-      .select('is_correct, option_letter')
-      .eq('id', selectedOptionId)
+      .from("quiz_options")
+      .select("is_correct, option_letter")
+      .eq("id", selectedOptionId)
       .single();
 
     if (optionError || !optionData) {
-      throw new Error('Invalid option ID');
+      throw new Error("Invalid option ID");
     }
 
     const isCorrect = optionData.is_correct;
 
     // 2. Get correct option ID for response
     const { data: correctOption } = await supabase
-      .from('quiz_options')
-      .select('id')
-      .eq('question_id', questionId)
-      .eq('is_correct', true)
+      .from("quiz_options")
+      .select("id")
+      .eq("question_id", questionId)
+      .eq("is_correct", true)
       .single();
 
     // 3. Save user answer (upsert)
     const { error: answerError } = await supabase
-      .from('user_quiz_answers')
-      .upsert({
-        user_id: userId,
-        question_id: questionId,
-        selected_option_id: selectedOptionId,
-        is_correct: isCorrect,
-        answered_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,question_id'
-      });
+      .from("user_quiz_answers")
+      .upsert(
+        {
+          user_id: userId,
+          question_id: questionId,
+          selected_option_id: selectedOptionId,
+          is_correct: isCorrect,
+          answered_at: new Date().toISOString(),
+        },
+        {
+          onConflict: "user_id,question_id",
+        }
+      );
 
     if (answerError) {
-      console.error('Error saving answer:', answerError);
+      console.error("Error saving answer:", answerError);
     }
 
     // 4. Update or create progress
     const { data: existingProgress } = await supabase
-      .from('user_materials_quiz_progress')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('materials_id', materialId)
+      .from("user_materials_quiz_progress")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("materials_id", materialId)
       .single();
 
     const xpPerQuestion = 5;
@@ -161,7 +178,7 @@ export async function POST(
     if (!existingProgress) {
       // Create new progress
       const { error: progressError } = await supabase
-        .from('user_materials_quiz_progress')
+        .from("user_materials_quiz_progress")
         .insert({
           user_id: userId,
           materials_id: materialId,
@@ -169,11 +186,11 @@ export async function POST(
           correct_answers: isCorrect ? 1 : 0,
           total_questions: totalQuestions,
           is_completed: false,
-          xp_earned: isCorrect ? xpPerQuestion : 0
+          xp_earned: isCorrect ? xpPerQuestion : 0,
         });
 
       if (progressError) {
-        console.error('Error creating progress:', progressError);
+        console.error("Error creating progress:", progressError);
       }
     } else {
       // Check if this is a retake (user already completed before)
@@ -208,21 +225,64 @@ export async function POST(
       }
 
       const { error: updateError } = await supabase
-        .from('user_materials_quiz_progress')
+        .from("user_materials_quiz_progress")
         .update({
           questions_answered: newAnswered,
           correct_answers: newCorrect,
           is_completed: isCompleted,
           xp_earned: finalXP,
-          completed_at: isCompleted ? new Date().toISOString() : existingProgress.completed_at,
-          updated_at: new Date().toISOString()
+          completed_at: isCompleted
+            ? new Date().toISOString()
+            : existingProgress.completed_at,
+          updated_at: new Date().toISOString(),
         })
-        .eq('user_id', userId)
-        .eq('materials_id', materialId);
+        .eq("user_id", userId)
+        .eq("materials_id", materialId);
 
       if (updateError) {
-        console.error('Error updating progress:', updateError);
+        console.error("Error updating progress:", updateError);
       }
+    }
+
+    // 5. Auto-update badge based on new level after XP change
+    try {
+      // Get user's total XP from all completed quizzes
+      const { data: allProgress } = await supabase
+        .from("user_materials_quiz_progress")
+        .select("xp_earned")
+        .eq("user_id", userId);
+
+      const totalXP =
+        allProgress?.reduce(
+          (sum, record) => sum + (record.xp_earned || 0),
+          0
+        ) || 0;
+
+      // Get current level based on total XP
+      const levelInfo = getUserLevelInfo(totalXP);
+
+      // Find badge for current level
+      const { data: badge } = await supabase
+        .from("badge")
+        .select("*")
+        .lte("level_min", levelInfo.level)
+        .gte("level_max", levelInfo.level)
+        .single();
+
+      // Update user's badge if found
+      if (badge) {
+        await supabase
+          .from("user_profiles")
+          .update({ badge_id: badge.badge_id })
+          .eq("user_id", userId);
+
+        console.log(
+          `[AUTO-UPDATE] Badge updated for user ${userId}: Level ${levelInfo.level} -> Badge ${badge.nama} (ID: ${badge.badge_id})`
+        );
+      }
+    } catch (badgeError) {
+      // Don't fail the request if badge update fails
+      console.error("Error auto-updating badge:", badgeError);
     }
 
     return NextResponse.json({
@@ -232,11 +292,11 @@ export async function POST(
       correctOptionId: correctOption?.id || selectedOptionId,
     });
   } catch (error) {
-    console.error('Error submitting answer:', error);
+    console.error("Error submitting answer:", error);
     return NextResponse.json(
       {
-        error: 'Failed to submit answer',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: "Failed to submit answer",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );

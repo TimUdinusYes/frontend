@@ -10,25 +10,28 @@ export const LEVEL_CONFIG = {
 };
 
 export const LEVEL_NAMES: Record<number, string> = {
-  1: 'Pemula',
-  2: 'Pemula',
-  3: 'Amatir',
-  4: 'Amatir',
-  5: 'Basic',
-  6: 'Basic',
-  7: 'Pro',
-  8: 'Ace',
+  1: "Pemula",
+  2: "Pemula",
+  3: "Amatir",
+  4: "Amatir",
+  5: "Basic",
+  6: "Basic",
+  7: "Pro",
+  8: "Ace",
 };
 
-export const BADGE_INFO: Record<number, { name: string; color: string; icon: string }> = {
-  1: { name: 'Pemula', color: 'from-gray-400 to-gray-600', icon: '🌱' },
-  2: { name: 'Pemula', color: 'from-gray-400 to-gray-600', icon: '🌱' },
-  3: { name: 'Amatir', color: 'from-green-400 to-green-600', icon: '🌿' },
-  4: { name: 'Amatir', color: 'from-green-400 to-green-600', icon: '🌿' },
-  5: { name: 'Basic', color: 'from-blue-400 to-blue-600', icon: '⭐' },
-  6: { name: 'Basic', color: 'from-blue-400 to-blue-600', icon: '⭐' },
-  7: { name: 'Pro', color: 'from-purple-400 to-purple-600', icon: '💎' },
-  8: { name: 'Ace', color: 'from-yellow-400 to-yellow-600', icon: '👑' },
+export const BADGE_INFO: Record<
+  number,
+  { name: string; color: string; icon: string }
+> = {
+  1: { name: "Pemula", color: "from-gray-400 to-gray-600", icon: "🌱" },
+  2: { name: "Pemula", color: "from-gray-400 to-gray-600", icon: "🌱" },
+  3: { name: "Amatir", color: "from-green-400 to-green-600", icon: "🌿" },
+  4: { name: "Amatir", color: "from-green-400 to-green-600", icon: "🌿" },
+  5: { name: "Basic", color: "from-blue-400 to-blue-600", icon: "⭐" },
+  6: { name: "Basic", color: "from-blue-400 to-blue-600", icon: "⭐" },
+  7: { name: "Pro", color: "from-purple-400 to-purple-600", icon: "💎" },
+  8: { name: "Ace", color: "from-yellow-400 to-yellow-600", icon: "👑" },
 };
 
 /**
@@ -117,7 +120,19 @@ export function getLevelProgress(totalXP: number, currentLevel: number) {
  * @returns Level name in Indonesian
  */
 export function getLevelName(level: number): string {
-  return LEVEL_NAMES[level] || 'Unknown';
+  return LEVEL_NAMES[level] || "Unknown";
+}
+
+/**
+ * Get badge ID for a given level
+ * @param level - User's current level
+ * @returns Badge ID
+ */
+export function getBadgeIdForLevel(level: number): number {
+  if (level >= 8) return 4; // Ace
+  if (level >= 6) return 3; // Pro
+  if (level >= 3) return 2; // Amatir
+  return 1; // Pemula (level 1-2)
 }
 
 /**

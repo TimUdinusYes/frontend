@@ -38,3 +38,24 @@ export async function getAllBadges(): Promise<Badge[]> {
 
   return data || [];
 }
+
+/**
+ * Get the appropriate badge for a given level
+ * @param level - User's current level
+ * @returns Badge object or null if not found
+ */
+export async function getBadgeByLevel(level: number): Promise<Badge | null> {
+  const { data, error } = await supabase
+    .from("badge")
+    .select("*")
+    .lte("level_min", level)
+    .gte("level_max", level)
+    .single();
+
+  if (error) {
+    console.error("Error fetching badge by level:", error);
+    return null;
+  }
+
+  return data;
+}
