@@ -48,38 +48,23 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
     const [dailyHours, setDailyHours] = useState(2);
 
     useEffect(() => {
-        // Check if user is logged in with Google provider and extract provider token
         const checkGoogleAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-
+            
             if (session?.user) {
-                // Check if user logged in with Google provider
                 const provider = session.user.app_metadata?.provider;
-                if (provider === 'google') {
-                    // Extract Google provider token from session
-                    const providerToken = session.provider_token;
-                    if (providerToken) {
-                        setIsGoogleConnected(true);
-                        setGoogleAccessToken(providerToken);
-                    }
-                }
+                // Just check if user signed in with Google
+                // Backend will handle token extraction
+                setIsGoogleConnected(provider === 'google');
             }
         };
 
         checkGoogleAuth();
 
-        // Listen for auth state changes (after OAuth redirect)
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' && session) {
                 const provider = session.user.app_metadata?.provider;
-                if (provider === 'google') {
-                    // Extract Google provider token from session
-                    const providerToken = session.provider_token;
-                    if (providerToken) {
-                        setIsGoogleConnected(true);
-                        setGoogleAccessToken(providerToken);
-                    }
-                }
+                setIsGoogleConnected(provider === 'google');
             }
         });
 
@@ -181,19 +166,27 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
     };
 
     const handleImplement = async () => {
-        if (!googleAccessToken) {
-            setError('Hubungkan Google Calendar terlebih dahulu');
+        // Get Supabase session
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+            setError('Please sign in to continue');
             return;
         }
 
         setLoading(true);
         setError(null);
         try {
+            // SECURITY: Send only Supabase access token via Authorization header
+            // Backend will securely extract Google token from Supabase
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/workflows/${workflowId}/implement`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}` // Supabase token, NOT Google token
+                },
                 body: JSON.stringify({
-                    access_token: googleAccessToken,
+                    // Remove access_token from body - it's now in Authorization header
                     start_date: startDate,
                     daily_hours: dailyHours
                 })
@@ -209,6 +202,7 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
         }
         setLoading(false);
     };
+
 
     if (!isOpen) return null;
 
