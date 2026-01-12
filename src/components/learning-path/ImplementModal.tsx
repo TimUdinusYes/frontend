@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
 import { generateLearningSchedule, createCalendarEvents } from '@/lib/googleCalendar';
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
 interface NodeEstimate {
     nodeId: string;
@@ -34,7 +34,7 @@ interface ImplementModalProps {
     canvasNodes?: CanvasNode[]; // For unsaved workflows
 }
 
-export default function ImplementModal({ isOpen, onClose, workflowId, workflowTitle, canvasNodes }: ImplementModalProps) {
+function ImplementModalInner({ isOpen, onClose, workflowId, workflowTitle, canvasNodes }: ImplementModalProps) {
     const [step, setStep] = useState<'estimate' | 'configure' | 'success'>('estimate');
     const [schedule, setSchedule] = useState<Schedule | null>(null);
     const [loading, setLoading] = useState(false);
@@ -49,58 +49,21 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
     const [dailyHours, setDailyHours] = useState(2);
     const [createdEventCount, setCreatedEventCount] = useState(0);
 
+    // Check if we have Google token in localStorage
     useEffect(() => {
-        const checkGoogleAuth = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+        console.log('🔍 Checking Google Calendar auth...');
 
-            console.log('🔍 Checking Google Auth...');
-            console.log('Session exists:', !!session);
-            console.log('Provider:', session?.user?.app_metadata?.provider);
-            console.log('Provider token exists:', !!session?.provider_token);
+        const savedToken = localStorage.getItem('google_calendar_token');
 
-            if (session?.user) {
-                const provider = session.user.app_metadata?.provider;
-
-                if (provider === 'google') {
-                    // Extract Google provider token from Supabase session
-                    const providerToken = session.provider_token;
-
-                    if (providerToken) {
-                        console.log('✅ Google access token found');
-                        setIsGoogleConnected(true);
-                        setGoogleAccessToken(providerToken);
-                    } else {
-                        console.warn('⚠️ Signed in with Google but no provider_token found');
-                        setIsGoogleConnected(false);
-                        setGoogleAccessToken(null);
-                    }
-                }
-            }
-        };
-
-        checkGoogleAuth();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            console.log('🔄 Auth state changed:', event);
-
-            if (event === 'SIGNED_IN' && session) {
-                const provider = session.user.app_metadata?.provider;
-
-                if (provider === 'google') {
-                    const providerToken = session.provider_token;
-
-                    if (providerToken) {
-                        console.log('✅ Google access token obtained after sign-in');
-                        setIsGoogleConnected(true);
-                        setGoogleAccessToken(providerToken);
-                    }
-                }
-            }
-        });
-
-        return () => {
-            subscription.unsubscribe();
-        };
+        if (savedToken) {
+            console.log('✅ Found saved Google Calendar token');
+            setIsGoogleConnected(true);
+            setGoogleAccessToken(savedToken);
+        } else {
+            console.log('❌ No Google Calendar token found');
+            setIsGoogleConnected(false);
+            setGoogleAccessToken(null);
+        }
     }, []);
 
     const fetchEstimate = useCallback(async () => {
@@ -156,51 +119,36 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
         }
     }, [isOpen, schedule, fetchEstimate]);
 
-    const handleConnectGoogle = async () => {
-        setLoading(true);
-        try {
-            console.log('🔐 Starting Google OAuth...');
+    // Google OAuth login handler using @react-oauth/google
+    const googleLogin = useGoogleLogin({
+        onSuccess: (tokenResponse) => {
+            console.log('✅ Google OAuth success:', tokenResponse);
 
-            // Save state to localStorage BEFORE OAuth redirect
-            try {
-                localStorage.setItem('n8n_modal_should_open', 'true');
-                localStorage.setItem('n8n_modal_workflow_id', workflowId || '');
-                localStorage.setItem('n8n_modal_workflow_title', workflowTitle || '');
+            // Save token to localStorage
+            localStorage.setItem('google_calendar_token', tokenResponse.access_token);
 
-                console.log('💾 Saved to localStorage:', {
-                    should_open: localStorage.getItem('n8n_modal_should_open'),
-                    workflow_id: localStorage.getItem('n8n_modal_workflow_id'),
-                    workflow_title: localStorage.getItem('n8n_modal_workflow_title')
-                });
-            } catch (err) {
-                console.error('❌ Failed to save state:', err);
-            }
-
-            // Sign in with Google via Supabase with Calendar scope
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: `${window.location.origin}${window.location.pathname}?google_calendar_auth=success`,
-                    scopes: 'https://www.googleapis.com/auth/calendar.events',
-                    queryParams: {
-                        access_type: 'offline',
-                        prompt: 'consent'
-                    }
-                }
-            });
-
-            if (error) {
-                console.error('❌ OAuth error:', error);
-                setError('Gagal terhubung ke Google Calendar');
-                setLoading(false);
-            }
-
-            // User will be redirected to Google, then back here with ?google_calendar_auth=success
-        } catch (err) {
-            console.error('❌ Connect Google error:', err);
-            setError('Gagal terhubung ke Google');
+            // Update state
+            setGoogleAccessToken(tokenResponse.access_token);
+            setIsGoogleConnected(true);
             setLoading(false);
-        }
+
+            console.log('💾 Token saved to localStorage');
+        },
+        onError: (error) => {
+            console.error('❌ Google OAuth error:', error);
+            setError('Gagal terhubung ke Google Calendar');
+            setLoading(false);
+        },
+        scope: 'https://www.googleapis.com/auth/calendar.events',
+    });
+
+    const handleConnectGoogle = () => {
+        console.log('🔐 Starting Google Calendar OAuth...');
+        setLoading(true);
+        setError(null);
+
+        // Trigger Google OAuth flow
+        googleLogin();
     };
 
     const handleImplement = async () => {
@@ -427,5 +375,21 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
                 </div>
             </div>
         </div>
+    );
+}
+
+// Wrapper component with GoogleOAuthProvider
+export default function ImplementModal(props: ImplementModalProps) {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
+
+    if (!clientId) {
+        console.error('❌ NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set!');
+        return null;
+    }
+
+    return (
+        <GoogleOAuthProvider clientId={clientId}>
+            <ImplementModalInner {...props} />
+        </GoogleOAuthProvider>
     );
 }
