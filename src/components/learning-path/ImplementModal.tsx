@@ -63,6 +63,21 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
         };
 
         checkGoogleAuth();
+
+        // Listen for auth state changes (after OAuth redirect)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                const provider = session.user.app_metadata?.provider;
+                if (provider === 'google') {
+                    setIsGoogleConnected(true);
+                    setSupabaseToken(session.access_token);
+                }
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, []);
 
     const fetchEstimate = useCallback(async () => {
@@ -125,7 +140,7 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/n8n-workflow`,
+                    redirectTo: `${window.location.origin}${window.location.pathname}?google_calendar_auth=success`,
                     scopes: 'https://www.googleapis.com/auth/calendar.events',
                     queryParams: {
                         access_type: 'offline',
@@ -138,7 +153,7 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
                 setError('Gagal terhubung ke Google Calendar');
                 setLoading(false);
             }
-            // User will be redirected to Google, then back here
+            // User will be redirected to Google, then back here with ?google_calendar_auth=success
         } catch (err) {
             setError('Gagal terhubung ke Google');
             setLoading(false);
