@@ -55,6 +55,28 @@ export default function LearningPathPage() {
         setUserId(data.user.id);
       }
     });
+
+    // Check for Google Calendar auth success
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('google_calendar_auth') === 'success') {
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Restore canvas state from localStorage
+      try {
+        const savedState = localStorage.getItem('n8n_canvas_state');
+        if (savedState) {
+          const state = JSON.parse(savedState);
+          setMode('canvas');
+          setSelectedTopic(state.selectedTopic);
+          setForkedWorkflow(state.forkedWorkflow);
+          setInitialData(state.initialData);
+          localStorage.removeItem('n8n_canvas_state'); // Clean up
+        }
+      } catch (error) {
+        console.error('Failed to restore canvas state:', error);
+      }
+    }
   }, []);
 
   const handleTopicSelect = (topic: Topic) => {

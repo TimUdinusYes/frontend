@@ -136,6 +136,18 @@ export default function ImplementModal({ isOpen, onClose, workflowId, workflowTi
     const handleConnectGoogle = async () => {
         setLoading(true);
         try {
+            // Save current page state to localStorage so we can restore after OAuth
+            // This is needed because OAuth will reload the page
+            try {
+                // Try to get current canvas state from parent
+                // We'll save minimal info to restore the canvas view
+                localStorage.setItem('n8n_modal_should_open', 'true');
+                localStorage.setItem('n8n_modal_workflow_id', workflowId || '');
+                localStorage.setItem('n8n_modal_workflow_title', workflowTitle || '');
+            } catch (err) {
+                console.warn('Failed to save state:', err);
+            }
+
             // Sign in with Google via Supabase with Calendar scope
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',

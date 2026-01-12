@@ -77,6 +77,17 @@ function LearningPathCanvasInner({ topic, workflowId, userId, onSave, initialDat
     const pendingEdgeRef = useRef<Edge | null>(null);
     const reactFlowInstance = useReactFlow();
 
+    // Check if modal should auto-open after OAuth redirect
+    useEffect(() => {
+        const shouldOpen = localStorage.getItem('n8n_modal_should_open');
+        if (shouldOpen === 'true') {
+            setShowImplement(true);
+            localStorage.removeItem('n8n_modal_should_open');
+            localStorage.removeItem('n8n_modal_workflow_id');
+            localStorage.removeItem('n8n_modal_workflow_title');
+        }
+    }, []);
+
     // Load initial data if editing/forking
     useEffect(() => {
         if (initialData?.edges && initialData.edges.length > 0) {
