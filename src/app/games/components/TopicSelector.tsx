@@ -114,9 +114,9 @@ export default function TopicSelector({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               onClick={() => onSelectTopic(topic.id, topic.title)}
-              className="bg-white rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all cursor-pointer overflow-hidden group"
+              className="bg-white rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all cursor-pointer overflow-hidden group flex flex-col h-full"
             >
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 {/* Header */}
                 <div className="mb-4">
                   <h3 className="text-xl font-black text-black mb-2">
@@ -130,7 +130,7 @@ export default function TopicSelector({
                 </div>
 
                 {/* Stats */}
-                <div className="space-y-3 mb-4">
+                <div className="space-y-3 mb-4 flex-grow">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-black font-bold flex items-center gap-1">
                       📚 Materials
@@ -173,7 +173,7 @@ export default function TopicSelector({
                 )}
 
                 {/* Button */}
-                <div className="pt-3 border-t-2 border-black">
+                <div className="pt-3 border-t-2 border-black mt-auto">
                   <div className="flex items-center justify-between text-black font-black">
                     <span>View Materials</span>
                     <span className="transform group-hover:translate-x-1 transition">→</span>

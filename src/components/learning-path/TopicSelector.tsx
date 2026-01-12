@@ -76,9 +76,14 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-5xl w-full border-2 border-black overflow-hidden">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-pink-400 to-purple-400 px-6 py-4 border-b-2 border-black">
-                    <h2 className="text-xl font-black text-black">
-                        {showRequestForm ? '📝 Request Topik Baru' : 'Pilih Topik'}
+                <div className="bg-blue-300 px-6 py-4 border-b-2 border-black">
+                    <h2 className="text-xl font-black text-black flex items-center gap-2">
+                        {showRequestForm ? (
+                            <>
+                                <img src="/materi.png" alt="Icon" className="w-12 h-12 object-contain" />
+                                Request Topik Baru
+                            </>
+                        ) : 'Pilih Topik'}
                     </h2>
                     <p className="text-sm text-black font-semibold">
                         {showRequestForm
@@ -145,7 +150,7 @@ export default function TopicSelector({ onSelect, onCancel, userId }: TopicSelec
                                         disabled={!newTopicTitle.trim() || submitting}
                                         className="flex-1 py-2 bg-pink-400 text-black font-bold rounded-lg border-2 border-black disabled:bg-gray-300"
                                     >
-                                        {submitting ? 'Mengirim...' : '📤 Kirim Request'}
+                                        {submitting ? 'Mengirim...' : 'Kirim Request'}
                                     </button>
                                 </div>
                             </>

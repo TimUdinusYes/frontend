@@ -98,9 +98,17 @@ export default function MaterialSelector({
           <h3 className="text-xl font-black text-black mb-2">
             No Materials Available
           </h3>
-          <p className="text-black/70 font-bold">
+          <p className="text-black/70 font-bold mb-6">
             There are no materials available for quiz yet.
           </p>
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="px-6 py-3 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+            >
+              ← Back to Topics
+            </button>
+          )}
         </div>
       </div>
     );
@@ -142,8 +150,7 @@ export default function MaterialSelector({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className={`bg-white rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden ${
-                isLocked
+              className={`bg-white rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden ${isLocked
                   ? "opacity-60"
                   : "hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]]"
                 } transition-all`}
@@ -217,10 +224,10 @@ export default function MaterialSelector({
                   onClick={() => !isLocked && onSelectMaterial(material)}
                   disabled={isLocked}
                   className={`w-full py-3 rounded-lg font-black border-2 border-black transition-all ${isLocked
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                      : material.isCompleted
-                        ? "bg-gray-200 text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
-                        : "bg-blue-500 text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                    : material.isCompleted
+                      ? "bg-gray-200 text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+                      : "bg-blue-500 text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
                     }`}
                 >
                   {isLocked
@@ -238,8 +245,7 @@ export default function MaterialSelector({
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{
-                      width: `${
-                        (material.userScore / material.questionsCount) * 100
+                      width: `${(material.userScore / material.questionsCount) * 100
                         }%`,
                     }}
                     className="h-full bg-yellow-400"

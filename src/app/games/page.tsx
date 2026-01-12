@@ -111,50 +111,51 @@ export default function GamesPage() {
           )}
 
           <div className="mb-8 text-center">
-          <h1 className="text-5xl font-black text-black mb-3">
-            Quiz Game
-          </h1>
-          <p className="text-black/70 text-lg font-bold">
-            Test your knowledge and earn XP!
-          </p>
-        </div>
-
-        {/* Level Display - Only show when not in quiz */}
-        {!selectedMaterial && (
-          <div className="mb-8 max-w-5xl mx-auto">
-            <LevelDisplay userId={userId} compact />
+            <h1 className="text-5xl font-black text-black mb-3">
+              Quiz Game
+            </h1>
+            <p className="text-black/70 text-lg font-bold">
+              Test your knowledge and earn XP!
+            </p>
           </div>
-        )}
 
-        {selectedMaterial ? (
-          <div>
-            <button
-              onClick={handleBackToMaterials}
-              className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
-            >
-              <span>←</span> Back to Materials
-            </button>
-            <QuizGame
-              materiId={selectedMaterial.id}
-              materiTitle={selectedMaterial.title}
+          {/* Level Display - Only show when not in quiz */}
+          {!selectedMaterial && (
+            <div className="mb-8 max-w-5xl mx-auto">
+              <LevelDisplay userId={userId} compact />
+            </div>
+          )}
+
+          {selectedMaterial ? (
+            <div>
+              <button
+                onClick={handleBackToMaterials}
+                className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-white text-black font-black border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+              >
+                <span>←</span> Back to Materials
+              </button>
+              <QuizGame
+                materiId={selectedMaterial.id}
+                materiTitle={selectedMaterial.title}
+                userId={userId}
+                onComplete={handleQuizComplete}
+                onBack={handleBackToMaterials}
+              />
+            </div>
+          ) : selectedTopic ? (
+            <MaterialSelector
+              topicId={selectedTopic.id}
+              topicName={selectedTopic.name}
               userId={userId}
-              onComplete={handleQuizComplete}
+              onSelectMaterial={handleSelectMaterial}
+              onBack={handleBackToTopics}
             />
-          </div>
-        ) : selectedTopic ? (
-          <MaterialSelector
-            topicId={selectedTopic.id}
-            topicName={selectedTopic.name}
-            userId={userId}
-            onSelectMaterial={handleSelectMaterial}
-            onBack={handleBackToTopics}
-          />
-        ) : (
-          <TopicSelector
-            userId={userId}
-            onSelectTopic={handleSelectTopic}
-          />
-        )}
+          ) : (
+            <TopicSelector
+              userId={userId}
+              onSelectTopic={handleSelectTopic}
+            />
+          )}
         </div>
       </div>
     </div>

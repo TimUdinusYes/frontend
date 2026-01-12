@@ -56,37 +56,38 @@ export default function AddTopicModal({ userId, onClose, onSuccess }: AddTopicMo
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all duration-300">
+      <div className="bg-white rounded-xl border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-lg w-full overflow-hidden transform transition-all">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="flex justify-between items-center p-6 bg-blue-300 border-b-[3px] border-black">
+          <h2 className="text-2xl font-black text-white uppercase tracking-wider text-shadow-sm">
             Request Topik Baru
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            className="text-white hover:text-black transition-colors transform hover:rotate-90 duration-300"
             disabled={loading}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg className="w-8 h-8 drop-shadow-md" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         {/* Info Banner */}
-        <div className="mx-6 mt-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
-            ⚠️ Topik baru akan memerlukan persetujuan dari admin sebelum dapat digunakan.
+        <div className="mx-6 mt-6 p-4 bg-yellow-300 border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg flex gap-3 items-start">
+          <span className="text-2xl">⚠️</span>
+          <p className="text-sm font-bold text-black leading-tight pt-1">
+            Topik baru akan memerlukan persetujuan dari admin sebelum dapat digunakan.
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Judul Topik <span className="text-red-500">*</span>
+            <label htmlFor="title" className="block text-base font-black text-black mb-2 uppercase tracking-wide">
+              Judul Topik <span className="text-pink-500">*</span>
             </label>
             <input
               type="text"
@@ -94,7 +95,10 @@ export default function AddTopicModal({ userId, onClose, onSuccess }: AddTopicMo
               required
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-3 bg-white border-[3px] border-black rounded-lg 
+                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] 
+                focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all outline-none 
+                font-bold text-black placeholder-gray-400"
               placeholder="Contoh: JavaScript Fundamentals"
               disabled={loading}
             />
@@ -102,7 +106,7 @@ export default function AddTopicModal({ userId, onClose, onSuccess }: AddTopicMo
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="description" className="block text-base font-black text-black mb-2 uppercase tracking-wide">
               Deskripsi (Opsional)
             </label>
             <textarea
@@ -110,7 +114,10 @@ export default function AddTopicModal({ userId, onClose, onSuccess }: AddTopicMo
               rows={4}
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-3 bg-white border-[3px] border-black rounded-lg 
+                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] 
+                focus:translate-x-[-2px] focus:translate-y-[-2px] transition-all outline-none 
+                font-bold text-black placeholder-gray-400 resize-none"
               placeholder="Deskripsi singkat tentang topik ini"
               disabled={loading}
             />
@@ -119,9 +126,9 @@ export default function AddTopicModal({ userId, onClose, onSuccess }: AddTopicMo
           {/* Message */}
           {message && (
             <div
-              className={`rounded-md p-4 ${message.type === 'error'
-                  ? 'bg-red-50 text-red-800 dark:bg-red-900 dark:text-red-200'
-                  : 'bg-green-50 text-green-800 dark:bg-green-900 dark:text-green-200'
+              className={`rounded-lg border-[3px] border-black p-4 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${message.type === 'error'
+                ? 'bg-red-400 text-white'
+                : 'bg-green-400 text-black'
                 }`}
             >
               <p className="text-sm">{message.text}</p>
@@ -129,21 +136,25 @@ export default function AddTopicModal({ userId, onClose, onSuccess }: AddTopicMo
           )}
 
           {/* Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-4 pt-2">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-3 bg-gray-200 border-[3px] border-black text-black font-black rounded-lg 
+                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] 
+                hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Batal
+              BATAL
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-3 bg-purple-500 text-white border-[3px] border-black font-black rounded-lg 
+                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] 
+                hover:-translate-y-1 hover:bg-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Mengirim...' : 'Kirim Request'}
+              {loading ? 'MENGIRIM...' : 'KIRIM REQUEST'}
             </button>
           </div>
         </form>

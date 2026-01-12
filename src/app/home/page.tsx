@@ -9,6 +9,7 @@ import type { Profile } from '@/types/database'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import FeatureShowcase from '@/components/FeatureShowcase'
 
 export default function HomePage() {
   const router = useRouter()
@@ -167,7 +168,7 @@ export default function HomePage() {
             <motion.img
               src="/SINAUIN.png"
               alt="SINAUIN Logo"
-              className="w-auto h-[5rem] sm:h-[10rem] md:h-[12rem] lg:h-[14rem] xl:h-[18rem] object-contain mb-[-1rem] sm:mb-[-2rem] md:mb-[-2.5rem] lg:mb-[-3rem]"
+              className="w-auto h-[5rem] sm:h-[10rem] md:h-[12rem] lg:h-[14rem] xl:h-[16rem] 2xl:h-[18rem] object-contain mb-[-1rem] sm:mb-[-2rem] md:mb-[-2.5rem] lg:mb-[-3rem]"
               style={{ y: logoY }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -177,7 +178,7 @@ export default function HomePage() {
             <motion.img
               src="/landingpage1.png"
               alt="SINAUIN Character"
-              className="w-auto h-[12rem] sm:h-[22rem] md:h-[26rem] lg:h-[30rem] xl:h-[38rem] object-contain"
+              className="w-auto h-[12rem] sm:h-[22rem] md:h-[26rem] lg:h-[30rem] xl:h-[34rem] 2xl:h-[38rem] object-contain"
               style={{
                 y: characterY,
               }}
@@ -432,6 +433,11 @@ export default function HomePage() {
             </div>
 
           </div>
+        </div>
+
+        {/* Detailed Feature Showcase */}
+        <div className="relative bg-[#FFFDF5] py-20 border-t-[3px] border-black">
+          <FeatureShowcase />
         </div>
 
         {/* Skateboard Character Divider */}

@@ -10,6 +10,7 @@ interface QuizGameProps {
   materiTitle: string;
   userId: string; // UUID
   onComplete?: (score: number, totalXP: number) => void;
+  onBack?: () => void;
 }
 
 export default function QuizGame({
@@ -17,6 +18,7 @@ export default function QuizGame({
   materiTitle,
   userId,
   onComplete,
+  onBack,
 }: QuizGameProps) {
   const {
     currentQuestion,
@@ -180,7 +182,7 @@ export default function QuizGame({
               Try Again
             </button>
             <button
-              onClick={() => window.history.back()}
+              onClick={onBack}
               className="w-full px-6 py-3 bg-gray-200 text-black font-black rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
             >
               Back to Materials
@@ -291,15 +293,14 @@ export default function QuizGame({
               >
                 <div className="flex items-center gap-4">
                   <div
-                    className={`flex-shrink-0 w-10 h-10 rounded-full border-2 border-black flex items-center justify-center font-black text-lg ${
-                      showResult && currentAnswer?.correctOptionId === option.id
-                        ? 'bg-green-400 text-black'
-                        : showResult && selectedOption === option.id && !currentAnswer?.isCorrect
+                    className={`flex-shrink-0 w-10 h-10 rounded-full border-2 border-black flex items-center justify-center font-black text-lg ${showResult && currentAnswer?.correctOptionId === option.id
+                      ? 'bg-green-400 text-black'
+                      : showResult && selectedOption === option.id && !currentAnswer?.isCorrect
                         ? 'bg-red-400 text-black'
                         : selectedOption === option.id
-                        ? 'bg-blue-400 text-black'
-                        : 'bg-white text-black'
-                    }`}
+                          ? 'bg-blue-400 text-black'
+                          : 'bg-white text-black'
+                      }`}
                   >
                     {option.letter}
                   </div>
@@ -325,11 +326,10 @@ export default function QuizGame({
                 className="mt-6"
               >
                 <div
-                  className={`p-4 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
-                    currentAnswer.isCorrect
-                      ? 'bg-green-200'
-                      : 'bg-red-200'
-                  }`}
+                  className={`p-4 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${currentAnswer.isCorrect
+                    ? 'bg-green-200'
+                    : 'bg-red-200'
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="text-3xl">
@@ -361,11 +361,10 @@ export default function QuizGame({
           <button
             onClick={handleSubmit}
             disabled={!selectedOption || isSubmitting}
-            className={`flex-1 py-4 rounded-xl font-black text-lg border-2 border-black transition-all ${
-              selectedOption && !isSubmitting
-                ? 'bg-blue-500 text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-            }`}
+            className={`flex-1 py-4 rounded-xl font-black text-lg border-2 border-black transition-all ${selectedOption && !isSubmitting
+              ? 'bg-blue-500 text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+              }`}
           >
             {isSubmitting ? 'Submitting...' : 'Submit Answer'}
           </button>
