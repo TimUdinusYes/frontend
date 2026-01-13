@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { getBadgeById } from '@/lib/badges'
+import { getUserTotalXP, getUnlockedBadgesByLevel } from '@/lib/badges'
+import { calculateLevel } from '@/lib/levelSystem'
 import type { UserProfile, Badge, Gender, UserProfileUpdate } from '@/types/database'
 
 interface UserProfileModalProps {
@@ -12,7 +13,8 @@ interface UserProfileModalProps {
 
 export default function UserProfileModal({ userId, onClose }: UserProfileModalProps) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [badge, setBadge] = useState<Badge | null>(null)
+  const [badges, setBadges] = useState<Badge[]>([])
+  const [userLevel, setUserLevel] = useState<number>(0)
   const [loading, setLoading] = useState(true)
   const [isEditMode, setIsEditMode] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -77,11 +79,12 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
           avatar_url: data.avatar_url || '',
         })
 
-        // Fetch badge data if user has a badge
-        if (data.badge_id) {
-          const badgeData = await getBadgeById(data.badge_id)
-          setBadge(badgeData)
-        }
+        // Fetch all user badges based on level
+        const totalXP = await getUserTotalXP(userId)
+        const level = calculateLevel(totalXP)
+        setUserLevel(level)
+        const unlockedBadges = await getUnlockedBadgesByLevel(level)
+        setBadges(unlockedBadges)
       }
     } catch (error) {
       console.error('Error loading profile:', error)
@@ -578,26 +581,29 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
           {/* Badge Display */}
           <div>
             <h4 className="text-lg font-black text-black mb-3">
-              Badge
+              Badges (Level {userLevel})
             </h4>
-            {badge ? (
-              <div className="flex items-center gap-4 p-4 bg-white border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                {badge.gambar && (
-                  <div className="flex-shrink-0">
-                    <img
-                      src={badge.gambar}
-                      alt={badge.nama}
-                      className="w-20 h-20 object-contain"
-                    />
-                  </div>
-                )}
-                <div className="flex-1">
-                  <h3 className="text-xl font-black text-black">
-                    {badge.nama}
-                  </h3>
-                  <p className="text-sm font-semibold text-gray-700 mt-1">
-                    Badge yang sedang digunakan
-                  </p>
+            {badges.length > 0 ? (
+              <div className="p-4 bg-white border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div className="grid grid-cols-4 gap-4">
+                  {badges.map((badge) => (
+                    <div key={badge.badge_id} className="flex flex-col items-center">
+                      {badge.gambar && (
+                        <img
+                          src={badge.gambar}
+                          alt={badge.nama}
+                          className="w-16 h-16 object-contain"
+                          title={badge.nama}
+                        />
+                      )}
+                      <p className="text-xs font-bold text-black text-center mt-2">
+                        {badge.nama}
+                      </p>
+                      <p className="text-[10px] font-semibold text-gray-600 text-center">
+                        Level {badge.level_min}-{badge.level_max}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             ) : (

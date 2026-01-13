@@ -1,6 +1,10 @@
+import { useState, useEffect } from 'react'
 import { ChatMessageData, UserProfile } from './types'
 import { formatTime } from './utils'
 import MaterialLinkMessage from './MaterialLinkMessage'
+import { getUserTotalXP, getUnlockedBadgesByLevel } from '@/lib/badges'
+import { calculateLevel } from '@/lib/levelSystem'
+import type { Badge } from '@/types/database'
 
 interface ChatMessageProps {
   message: ChatMessageData
@@ -15,6 +19,28 @@ export default function ChatMessage({
   groupMembers,
   onStartPrivateChat
 }: ChatMessageProps) {
+  const [userBadges, setUserBadges] = useState<Badge[]>([])
+
+  // Fetch user badges
+  useEffect(() => {
+    async function loadUserBadges() {
+      if (!message.user_id) return
+
+      try {
+        const totalXP = await getUserTotalXP(message.user_id)
+        const userLevel = calculateLevel(totalXP)
+        const badges = await getUnlockedBadgesByLevel(userLevel)
+        setUserBadges(badges)
+      } catch (error) {
+        console.error('Error loading user badges:', error)
+      }
+    }
+
+    if (!isOwnMessage) {
+      loadUserBadges()
+    }
+  }, [message.user_id, isOwnMessage])
+
   // Check if this message contains a material link
   const hasMaterialLink = message.material_id && message.material_data
 
@@ -34,7 +60,7 @@ export default function ChatMessage({
                 {message.user_profiles?.nama?.[0]?.toUpperCase() || 'U'}
               </div>
             )}
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-0.5">
               <span
                 className="text-xs font-black text-black cursor-pointer hover:underline"
                 onClick={() => {
@@ -44,11 +70,28 @@ export default function ChatMessage({
               >
                 {message.user_profiles?.nama || 'User'}
               </span>
-              {message.user_profiles?.role && (
-                <span className="text-[10px] px-2 py-0.5 bg-yellow-300 text-black font-black capitalize border border-black rounded-full">
-                  {message.user_profiles.role}
-                </span>
-              )}
+              <div className="flex items-center gap-1.5">
+                {message.user_profiles?.role && (
+                  <span className="text-[10px] px-2 py-0.5 bg-yellow-300 text-black font-black capitalize border border-black rounded-full whitespace-nowrap">
+                    {message.user_profiles.role}
+                  </span>
+                )}
+                {userBadges.length > 0 && (
+                  <div className="flex items-center gap-0.5">
+                    {userBadges.map((badge) => (
+                      badge.gambar && (
+                        <img
+                          key={badge.badge_id}
+                          src={badge.gambar}
+                          alt={badge.nama}
+                          className="w-3 h-3 object-contain"
+                          title={badge.nama}
+                        />
+                      )
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

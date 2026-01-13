@@ -35,6 +35,7 @@ export interface ChatMessageData {
     nama: string
     avatar_url: string
     role?: string
+    badge_id?: number | null
   }
 }
 
@@ -45,6 +46,7 @@ export interface UserProfile {
   interest_id: number | null
   avatar_url: string
   role?: string
+  badge_id?: number | null
 }
 
 export interface PrivateChatWithUser extends PrivateChat {

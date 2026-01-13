@@ -6,7 +6,7 @@
 
 export const LEVEL_CONFIG = {
   MAX_LEVEL: 8,
-  XP_PER_LEVEL: 100, // XP needed to reach each level
+  XP_PER_LEVEL: 10, // XP needed to reach each level
 };
 
 export const LEVEL_NAMES: Record<number, string> = {

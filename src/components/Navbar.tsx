@@ -8,7 +8,8 @@ import {
   getCurrentUserProfile,
   getCurrentUserDetailProfile,
 } from "@/lib/profile";
-import { getBadgeById } from "@/lib/badges";
+import { getUserTotalXP, getUnlockedBadgesByLevel } from "@/lib/badges";
+import { calculateLevel } from "@/lib/levelSystem";
 import UserProfileModal from "@/components/UserProfileModal";
 import AuthModal from "@/components/AuthModal";
 import type { Profile, UserProfile, Badge } from "@/types/database";
@@ -16,7 +17,7 @@ import type { Profile, UserProfile, Badge } from "@/types/database";
 export default function Navbar() {
   const [user, setUser] = useState<Profile | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [badge, setBadge] = useState<Badge | null>(null);
+  const [badges, setBadges] = useState<Badge[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -32,11 +33,13 @@ export default function Navbar() {
         const detailProfile = await getCurrentUserDetailProfile();
         setUserProfile(detailProfile);
 
-        // Fetch badge if user has one
-        if (detailProfile?.badge_id) {
-          const badgeData = await getBadgeById(detailProfile.badge_id);
-          setBadge(badgeData);
-        }
+        // Fetch all unlocked badges based on user level
+        const totalXP = await getUserTotalXP(profile.id);
+        const userLevel = calculateLevel(totalXP);
+        console.log(`[Navbar] Total XP: ${totalXP}, User Level: ${userLevel}`);
+        const unlockedBadges = await getUnlockedBadgesByLevel(userLevel);
+        console.log(`[Navbar] Unlocked badges count: ${unlockedBadges.length}`, unlockedBadges);
+        setBadges(unlockedBadges);
       }
     }
 
@@ -234,16 +237,19 @@ export default function Navbar() {
                     {userProfile?.nama || user.username}
                   </p>
                   <p className="text-xs font-bold text-gray-600">{user.role}</p>
-                  {badge ? (
-                    <div className="flex items-center justify-end gap-1 mt-1">
-                      {badge.gambar && (
-                        <img
-                          src={badge.gambar}
-                          alt={badge.nama}
-                          className="w-4 h-4 object-contain"
-                        />
-                      )}
-
+                  {badges.length > 0 ? (
+                    <div className="flex items-center justify-end gap-1 mt-1 flex-wrap">
+                      {badges.map((badge) => (
+                        badge.gambar && (
+                          <img
+                            key={badge.badge_id}
+                            src={badge.gambar}
+                            alt={badge.nama}
+                            className="w-4 h-4 object-contain"
+                            title={badge.nama}
+                          />
+                        )
+                      ))}
                     </div>
                   ) : (
                     <p className="text-xs font-bold text-gray-600">No Badge</p>

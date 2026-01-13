@@ -193,18 +193,19 @@ export async function POST(
         console.error("Error creating progress:", progressError);
       }
     } else {
-      // Check if this is a retake (user already completed before)
-      const isRetake = existingProgress.is_completed;
+      // Check if this is a retake (user already completed before AND starting fresh)
+      const wasCompleted = existingProgress.is_completed;
+      const isStartingRetake = wasCompleted && existingProgress.questions_answered >= totalQuestions;
 
       let newAnswered: number;
       let newCorrect: number;
 
-      if (isRetake) {
-        // Reset counter for new attempt
+      if (isStartingRetake) {
+        // Reset counter for new attempt (only when starting fresh)
         newAnswered = 1;
         newCorrect = isCorrect ? 1 : 0;
       } else {
-        // Continue current attempt
+        // Continue current attempt (either first attempt or ongoing retake)
         newAnswered = existingProgress.questions_answered + 1;
         newCorrect = existingProgress.correct_answers + (isCorrect ? 1 : 0);
       }
@@ -214,7 +215,7 @@ export async function POST(
       // Calculate XP based on best score
       // If this is a retake and completed, compare with previous best
       let finalXP: number;
-      if (isCompleted && isRetake) {
+      if (isCompleted && wasCompleted) {
         // Take the maximum between current attempt and previous best
         const currentAttemptXP = newCorrect * xpPerQuestion;
         const previousBestXP = existingProgress.xp_earned || 0;
