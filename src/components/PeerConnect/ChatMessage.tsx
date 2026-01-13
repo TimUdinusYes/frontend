@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { ChatMessageData, UserProfile } from './types'
 import { formatTime } from './utils'
 import MaterialLinkMessage from './MaterialLinkMessage'
-import { getUserTotalXP, getUnlockedBadgesByLevel } from '@/lib/badges'
+import { getUserTotalXP, getBadgeByLevel } from '@/lib/badges'
 import { calculateLevel } from '@/lib/levelSystem'
 import type { Badge } from '@/types/database'
 
@@ -19,25 +19,25 @@ export default function ChatMessage({
   groupMembers,
   onStartPrivateChat
 }: ChatMessageProps) {
-  const [userBadges, setUserBadges] = useState<Badge[]>([])
+  const [userBadge, setUserBadge] = useState<Badge | null>(null)
 
-  // Fetch user badges
+  // Fetch user badge (ranking system)
   useEffect(() => {
-    async function loadUserBadges() {
+    async function loadUserBadge() {
       if (!message.user_id) return
 
       try {
         const totalXP = await getUserTotalXP(message.user_id)
         const userLevel = calculateLevel(totalXP)
-        const badges = await getUnlockedBadgesByLevel(userLevel)
-        setUserBadges(badges)
+        const badge = await getBadgeByLevel(userLevel)
+        setUserBadge(badge)
       } catch (error) {
-        console.error('Error loading user badges:', error)
+        console.error('Error loading user badge:', error)
       }
     }
 
     if (!isOwnMessage) {
-      loadUserBadges()
+      loadUserBadge()
     }
   }, [message.user_id, isOwnMessage])
 
@@ -76,20 +76,13 @@ export default function ChatMessage({
                     {message.user_profiles.role}
                   </span>
                 )}
-                {userBadges.length > 0 && (
-                  <div className="flex items-center gap-0.5">
-                    {userBadges.map((badge) => (
-                      badge.gambar && (
-                        <img
-                          key={badge.badge_id}
-                          src={badge.gambar}
-                          alt={badge.nama}
-                          className="w-3 h-3 object-contain"
-                          title={badge.nama}
-                        />
-                      )
-                    ))}
-                  </div>
+                {userBadge && userBadge.gambar && (
+                  <img
+                    src={userBadge.gambar}
+                    alt={userBadge.nama}
+                    className="w-3 h-3 object-contain"
+                    title={userBadge.nama}
+                  />
                 )}
               </div>
             </div>

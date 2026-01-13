@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import Image from 'next/image';
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface BadgeDisplayProps {
   badgeId?: number;
   badgeName?: string;
   badgeImageUrl?: string;
   level: number;
-  size?: 'small' | 'medium' | 'large';
+  size?: "small" | "medium" | "large";
   showLabel?: boolean;
   animated?: boolean;
 }
@@ -18,14 +18,14 @@ export default function BadgeDisplay({
   badgeName,
   badgeImageUrl,
   level,
-  size = 'medium',
+  size = "medium",
   showLabel = true,
   animated = true,
 }: BadgeDisplayProps) {
   const sizeClasses = {
-    small: 'w-16 h-16',
-    medium: 'w-24 h-24',
-    large: 'w-32 h-32',
+    small: "w-16 h-16",
+    medium: "w-24 h-24",
+    large: "w-32 h-32",
   };
 
   const imageSizes = {
@@ -55,17 +55,14 @@ export default function BadgeDisplay({
           // Fallback placeholder
           <div className="text-4xl">🏅</div>
         )}
-
-        {/* Level number badge */}
-        <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full w-8 h-8 flex items-center justify-center border-2 border-white shadow-md">
-          <span className="text-xs font-bold text-white">{level}</span>
-        </div>
       </div>
 
       {/* Badge Name */}
       {showLabel && (
         <div className="mt-3 text-center">
-          <div className="text-sm font-bold text-gray-800">{badgeName || 'Badge'}</div>
+          <div className="text-sm font-bold text-gray-800">
+            {badgeName || "Badge"}
+          </div>
           <div className="text-xs text-gray-500">Level {level}</div>
         </div>
       )}
@@ -78,7 +75,7 @@ export default function BadgeDisplay({
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{
-          type: 'spring',
+          type: "spring",
           stiffness: 260,
           damping: 20,
         }}

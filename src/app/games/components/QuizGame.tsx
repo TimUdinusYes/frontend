@@ -11,6 +11,7 @@ interface QuizGameProps {
   userId: string; // UUID
   onComplete?: (score: number, totalXP: number) => void;
   onBack?: () => void;
+  onRetry?: () => void;
 }
 
 export default function QuizGame({
@@ -19,6 +20,7 @@ export default function QuizGame({
   userId,
   onComplete,
   onBack,
+  onRetry,
 }: QuizGameProps) {
   const {
     currentQuestion,
@@ -100,7 +102,7 @@ export default function QuizGame({
         <GenerateQuizPrompt
           materiId={materiId}
           materiTitle={materiTitle}
-          onGenerated={resetQuiz}
+          onGenerated={onRetry || resetQuiz}
         />
       );
     }
@@ -112,7 +114,7 @@ export default function QuizGame({
           <h3 className="text-xl font-black text-black mb-2">Oops!</h3>
           <p className="text-black/70 font-bold mb-4">{error}</p>
           <button
-            onClick={resetQuiz}
+            onClick={onRetry || resetQuiz}
             className="px-6 py-3 bg-blue-500 text-white font-black rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
           >
             Try Again
@@ -176,7 +178,7 @@ export default function QuizGame({
 
           <div className="space-y-3">
             <button
-              onClick={resetQuiz}
+              onClick={onRetry || resetQuiz}
               className="w-full px-6 py-3 bg-blue-500 text-white font-black rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
             >
               Try Again

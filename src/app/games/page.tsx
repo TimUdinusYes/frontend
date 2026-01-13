@@ -36,6 +36,7 @@ export default function GamesPage() {
     null
   );
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [quizKey, setQuizKey] = useState(0); // Key to force re-mount QuizGame
 
   // Get authenticated user
   useEffect(() => {
@@ -64,15 +65,17 @@ export default function GamesPage() {
 
   const handleQuizComplete = (score: number, totalXP: number) => {
     console.log("Quiz completed!", { score, totalXP });
-
-    // Show material selector again after a delay
-    setTimeout(() => {
-      setSelectedMaterial(null);
-    }, 3000);
+    // Don't auto-navigate away, let user decide
   };
 
   const handleBackToMaterials = () => {
     setSelectedMaterial(null);
+    setQuizKey(prev => prev + 1); // Reset quiz key when going back
+  };
+
+  const handleQuizRetry = () => {
+    // Force re-mount by changing key - this will reset all state without page reload
+    setQuizKey(prev => prev + 1);
   };
 
   const handleBackToTopics = () => {
@@ -174,11 +177,13 @@ export default function GamesPage() {
                 <span>←</span> Back to Materials
               </button>
               <QuizGame
+                key={quizKey}
                 materiId={selectedMaterial.id}
                 materiTitle={selectedMaterial.title}
                 userId={userId}
                 onComplete={handleQuizComplete}
                 onBack={handleBackToMaterials}
+                onRetry={handleQuizRetry}
               />
             </div>
           ) : selectedTopic ? (

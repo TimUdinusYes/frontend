@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { getUserTotalXP, getUnlockedBadgesByLevel } from '@/lib/badges'
-import { calculateLevel } from '@/lib/levelSystem'
-import type { UserProfile, Badge, Gender, UserProfileUpdate } from '@/types/database'
+import { getUserTotalXP, getBadgeByLevel } from '@/lib/badges'
+import { calculateLevel, getLevelName } from '@/lib/levelSystem'
+import { isUsernameAvailable } from '@/lib/profile'
+import type { UserProfile, Badge, Gender, UserProfileUpdate, Profile } from '@/types/database'
 
 interface UserProfileModalProps {
   userId: string
@@ -13,7 +14,8 @@ interface UserProfileModalProps {
 
 export default function UserProfileModal({ userId, onClose }: UserProfileModalProps) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [badges, setBadges] = useState<Badge[]>([])
+  const [userAccount, setUserAccount] = useState<Profile | null>(null)
+  const [badge, setBadge] = useState<Badge | null>(null)
   const [userLevel, setUserLevel] = useState<number>(0)
   const [loading, setLoading] = useState(true)
   const [isEditMode, setIsEditMode] = useState(false)
@@ -22,6 +24,7 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
   const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null)
 
   const [formData, setFormData] = useState({
+    username: '',
     nama: '',
     tanggal_lahir: '',
     gender: 'Pria' as Gender,
@@ -56,6 +59,7 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
     try {
       setLoading(true)
 
+      // Load user_profiles data
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
@@ -67,11 +71,24 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
         return
       }
 
+      // Load user account data (username, email)
+      const { data: accountData, error: accountError } = await supabase
+        .from('user')
+        .select('*')
+        .eq('id', userId)
+        .single()
+
+      if (accountError) {
+        console.error('Error loading user account:', accountError)
+      }
+
       if (data) {
         setProfile(data)
+        setUserAccount(accountData)
 
         // Set form data
         setFormData({
+          username: accountData?.username || '',
           nama: data.nama || '',
           tanggal_lahir: data.tanggal_lahir || '',
           gender: data.gender || 'Pria',
@@ -79,12 +96,12 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
           avatar_url: data.avatar_url || '',
         })
 
-        // Fetch all user badges based on level
+        // Fetch current badge based on level (ranking system)
         const totalXP = await getUserTotalXP(userId)
         const level = calculateLevel(totalXP)
         setUserLevel(level)
-        const unlockedBadges = await getUnlockedBadgesByLevel(level)
-        setBadges(unlockedBadges)
+        const currentBadge = await getBadgeByLevel(level)
+        setBadge(currentBadge)
       }
     } catch (error) {
       console.error('Error loading profile:', error)
@@ -153,7 +170,20 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
       setSaving(true)
       setMessage(null)
 
-      // 1. Update Password if provided
+      // 1. Validate username
+      if (!formData.username || formData.username.trim().length < 3) {
+        throw new Error('Username must be at least 3 characters')
+      }
+
+      // Check if username changed and is available
+      if (formData.username !== userAccount?.username) {
+        const available = await isUsernameAvailable(formData.username)
+        if (!available) {
+          throw new Error('Username sudah digunakan, silakan pilih username lain')
+        }
+      }
+
+      // 2. Update Password if provided
       if (showPasswordSection && passwordFormData.newPassword) {
         if (passwordFormData.newPassword.length < 6) {
           throw new Error('Password must be at least 6 characters')
@@ -169,7 +199,17 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
         if (authError) throw authError
       }
 
-      // 2. Update Profile
+      // 3. Update username in user table
+      if (formData.username !== userAccount?.username) {
+        const { error: userError } = await supabase
+          .from('user')
+          .update({ username: formData.username })
+          .eq('id', userId)
+
+        if (userError) throw userError
+      }
+
+      // 4. Update Profile in user_profiles table
       const profileData: UserProfileUpdate = {
         nama: formData.nama,
         tanggal_lahir: formData.tanggal_lahir || null,
@@ -285,8 +325,9 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
 
   const handleCancel = () => {
     // Reset form data to original profile data
-    if (profile) {
+    if (profile && userAccount) {
       setFormData({
+        username: userAccount.username || '',
         nama: profile.nama || '',
         tanggal_lahir: profile.tanggal_lahir || '',
         gender: (profile.gender || 'Pria') as Gender,
@@ -436,10 +477,29 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
           {isEditMode ? (
             /* Edit Mode - Form Fields */
             <div className="space-y-4">
-              {/* Nama */}
+              {/* Username */}
               <div>
                 <label className="block text-sm font-black text-black mb-2">
-                  Nama <span className="text-red-500">*</span>
+                  Username <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.username}
+                  onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value.toLowerCase().replace(/\s/g, '') }))}
+                  className="w-full px-4 py-2 border-2 border-black rounded-xl focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black font-semibold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                  placeholder="username (min 3 karakter, tanpa spasi)"
+                  minLength={3}
+                />
+                <p className="mt-1 text-xs font-semibold text-gray-600">
+                  Username digunakan untuk login dan identitas unik Anda
+                </p>
+              </div>
+
+              {/* Nama Lengkap */}
+              <div>
+                <label className="block text-sm font-black text-black mb-2">
+                  Nama Lengkap <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -447,7 +507,7 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
                   value={formData.nama}
                   onChange={(e) => setFormData(prev => ({ ...prev, nama: e.target.value }))}
                   className="w-full px-4 py-2 border-2 border-black rounded-xl focus:ring-2 focus:ring-black focus:border-transparent bg-white text-black font-semibold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                  placeholder="Enter your name"
+                  placeholder="Nama lengkap Anda"
                 />
               </div>
 
@@ -581,29 +641,26 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
           {/* Badge Display */}
           <div>
             <h4 className="text-lg font-black text-black mb-3">
-              Badges (Level {userLevel})
+              Badge Ranking (Level {userLevel} - {getLevelName(userLevel)})
             </h4>
-            {badges.length > 0 ? (
-              <div className="p-4 bg-white border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                <div className="grid grid-cols-4 gap-4">
-                  {badges.map((badge) => (
-                    <div key={badge.badge_id} className="flex flex-col items-center">
-                      {badge.gambar && (
-                        <img
-                          src={badge.gambar}
-                          alt={badge.nama}
-                          className="w-16 h-16 object-contain"
-                          title={badge.nama}
-                        />
-                      )}
-                      <p className="text-xs font-bold text-black text-center mt-2">
-                        {badge.nama}
-                      </p>
-                      <p className="text-[10px] font-semibold text-gray-600 text-center">
-                        Level {badge.level_min}-{badge.level_max}
-                      </p>
-                    </div>
-                  ))}
+            {badge ? (
+              <div className="flex items-center gap-4 p-4 bg-white border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                {badge.gambar && (
+                  <div className="flex-shrink-0">
+                    <img
+                      src={badge.gambar}
+                      alt={badge.nama}
+                      className="w-20 h-20 object-contain"
+                    />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <h3 className="text-xl font-black text-black">
+                    {badge.nama}
+                  </h3>
+                  <p className="text-sm font-semibold text-gray-700 mt-1">
+                    Badge untuk Level {badge.level_min}-{badge.level_max}
+                  </p>
                 </div>
               </div>
             ) : (
@@ -625,7 +682,7 @@ export default function UserProfileModal({ userId, onClose }: UserProfileModalPr
                   Belum memiliki badge
                 </p>
                 <p className="text-xs font-semibold text-gray-600 mt-1">
-                  Raih achievement untuk mendapatkan badge!
+                  Raih XP untuk mendapatkan badge!
                 </p>
               </div>
             )}

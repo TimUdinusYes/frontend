@@ -183,12 +183,12 @@ export default function MaterialList() {
             return (
               <div
                 key={topic.id}
-                className="bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden transition-all duration-500 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2 hover:scale-102"
+                className="bg-white rounded-2xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden transition-all duration-500 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-2"
               >
                 {/* Topic Header - Clickable */}
                 <div
                   onClick={() => handleTopicClick(topic)}
-                  className="p-6 cursor-pointer hover:bg-blue-50 transition-colors border-b-2 border-black"
+                  className="p-6 cursor-pointer hover:bg-blue-50 transition-colors"
                 >
                   <h3 className="text-xl font-black text-black mb-3 truncate" title={topic.title}>
                     {topic.title.length > 25 ? topic.title.substring(0, 25) + '...' : topic.title}
@@ -205,7 +205,7 @@ export default function MaterialList() {
                 </div>
 
                 {/* Recent Materials Preview - Always Visible */}
-                <div className="p-6">
+                <div className="p-6 bg-gray-50">
                   {recentMaterials.length > 0 ? (
                     <div className="space-y-3">
                       {recentMaterials.map((material, index) => (
@@ -215,11 +215,11 @@ export default function MaterialList() {
                             e.stopPropagation()
                             handleMaterialClick(material)
                           }}
-                          className="flex items-center gap-3 p-4 bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:scale-102 cursor-pointer"
+                          className="flex items-center gap-3 p-4 bg-white rounded-xl border-3 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 cursor-pointer"
                         >
                           {/* Material Type Icon */}
                           <div className="flex-shrink-0">
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 border-black ${
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center border-3 border-black ${
                               index % 4 === 0 ? 'bg-pink-400' :
                               index % 4 === 1 ? 'bg-teal-400' :
                               index % 4 === 2 ? 'bg-yellow-400' : 'bg-green-400'
@@ -311,11 +311,11 @@ export default function MaterialList() {
                     <div
                       key={material.id}
                       onClick={() => handleMaterialClick(material)}
-                      className="flex items-start p-5 bg-white rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:scale-[1.02] cursor-pointer"
+                      className="flex items-start p-5 bg-white rounded-xl border-3 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 cursor-pointer"
                     >
                       {/* Material Type Icon */}
                       <div className="flex-shrink-0 mr-4">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 border-black ${
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center border-3 border-black ${
                           index % 4 === 0 ? 'bg-pink-400' :
                           index % 4 === 1 ? 'bg-teal-400' :
                           index % 4 === 2 ? 'bg-yellow-400' : 'bg-green-400'

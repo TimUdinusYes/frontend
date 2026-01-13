@@ -46,14 +46,18 @@ export default function LevelDisplay({
 
     // Auto-refresh every 10 seconds to catch badge updates
     const interval = setInterval(() => {
-      fetchUserStats();
+      fetchUserStats(true); // Pass true to indicate it's a background refresh
     }, 10000);
 
     return () => clearInterval(interval);
   }, [userId]);
 
-  const fetchUserStats = async () => {
-    setLoading(true);
+  const fetchUserStats = async (isBackgroundRefresh = false) => {
+    // Only show loading state on initial load, not during auto-refresh
+    if (!isBackgroundRefresh) {
+      setLoading(true);
+    }
+
     try {
       const response = await fetch(`/api/user/stats?userId=${userId}`);
       const data = await response.json();
@@ -69,7 +73,9 @@ export default function LevelDisplay({
     } catch (error) {
       console.error("Error fetching user stats:", error);
     } finally {
-      setLoading(false);
+      if (!isBackgroundRefresh) {
+        setLoading(false);
+      }
     }
   };
 
